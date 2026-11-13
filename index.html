@@ -73,13 +73,37 @@
     <!-- STEP 4 -->
     <section class="card" aria-labelledby="s4">
       <h2 id="s4"><span class="step">4</span> One price for everyone</h2>
-      <p class="hint">Many lender agreements (and some state laws) don't let you charge financed customers more than cash customers. Instead, build the expected fees into a single price for all customers. Enter roughly what share of your customers ends up on each plan; everyone else pays cash.</p>
-      <div class="table-scroll">
-        <table class="mix">
-          <thead><tr><th>Plan</th><th>Dealer fee</th><th>% of customers</th><th>You net on this plan</th></tr></thead>
-          <tbody id="mix-rows"></tbody>
-        </table>
+      <p class="hint">Many lender agreements (and some state laws) don't let you charge financed customers more than cash customers. Instead, build the expected fees into a single price for all customers, based on how your customers usually end up paying.</p>
+      <div class="mode" role="radiogroup" aria-label="How to estimate your financing mix">
+        <label><input type="radio" name="mixMode" value="waterfall" checked> Estimate from approval rates</label>
+        <label><input type="radio" name="mixMode" value="manual"> Enter each plan's share myself</label>
       </div>
+
+      <div id="waterfall-panel">
+        <p class="hint">Applicants go to your lenders in the order listed in step 2. Anyone the primary lender declines is sent to the backup.</p>
+        <div class="grid">
+          <label>Customers who apply for financing <span class="pct"><input id="applyPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="45"></span></label>
+          <label>Declined by every lender but still buy with cash <span class="pct"><input id="declinedCashPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="30"></span></label>
+        </div>
+        <div class="table-scroll">
+          <table class="mix wf">
+            <thead><tr><th>Plan</th><th>Dealer fee</th><th>Split of approvals</th><th>Share of closed jobs</th><th>You net on this plan</th></tr></thead>
+            <tbody id="wf-rows"></tbody>
+          </table>
+        </div>
+        <div id="funnel" class="funnel" aria-live="polite"></div>
+      </div>
+
+      <div id="manual-panel" hidden>
+        <p class="hint">Enter roughly what share of your customers ends up on each plan; everyone else pays cash.</p>
+        <div class="table-scroll">
+          <table class="mix">
+            <thead><tr><th>Plan</th><th>Dealer fee</th><th>% of customers</th><th>You net on this plan</th></tr></thead>
+            <tbody id="mix-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="blend-out" class="summary" aria-live="polite"></div>
     </section>
 
@@ -89,6 +113,7 @@
         <li><strong>Financed price = cash price ÷ (1 − dealer fee).</strong> With a 10% fee on a $10,000 job, charge $11,111 — the lender keeps $1,111 and you net $10,000.</li>
         <li>Adding the fee on top (×1.10 = $11,000) doesn't work: the lender takes 10% of the bigger number, and you net only $9,900.</li>
         <li>With a cash down payment, the fee only applies to the financed part.</li>
+        <li>Approval waterfall: if 45% of customers apply and your primary lender approves 70%, it funds 31.5% of customers. The backup lender sees the other 13.5% and, at a 50% approval rate, funds 6.75%.</li>
         <li>Margin here is a percentage of the selling price. A 20% margin equals a 25% markup on cost.</li>
         <li>Monthly payments are simple amortized estimates. Deferred-interest and "same as cash" plans bill differently, so use the lender's figures when quoting payments.</li>
       </ul>

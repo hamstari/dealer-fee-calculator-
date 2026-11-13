@@ -80,3 +80,43 @@ test('blended mix rejects shares over 100%', () => {
 test('blended mix with no financing is the cash price', () => {
   close(C.blendedPriceMix(10000, []).price, 10000);
 });
+
+test('waterfall sends declined customers to the backup lender', () => {
+  const w = C.waterfall({
+    applyPct: 50, declinedCashPct: 20,
+    lenders: [
+      { approvalPct: 70, plans: [{ fee: 6, splitPct: 100 }] },
+      { approvalPct: 50, plans: [{ fee: 3, splitPct: 50 }, { fee: 9, splitPct: 50 }] },
+    ],
+  });
+  close(w.lenders[0].approved, 35);   // 50 * .7
+  close(w.lenders[1].reached, 15);
+  close(w.lenders[1].approved, 7.5);
+  close(w.lenders[1].plans[0].share, 3.75);
+  close(w.declined, 7.5);
+  close(w.declinedCash, 1.5);
+  close(w.lost, 6);
+  close(w.closed, 94);
+  close(w.cashBuyers, 51.5);
+  // mix is % of closed jobs and sums with cash to 100
+  const total = w.mix.reduce((t, m) => t + m.share, 0) + w.cashBuyers / w.closed * 100;
+  close(total, 100);
+});
+
+test('waterfall normalizes plan splits and defaults to first plan', () => {
+  const w = C.waterfall({ applyPct: 100, declinedCashPct: 0, lenders: [
+    { approvalPct: 100, plans: [{ fee: 5, splitPct: 0 }, { fee: 8, splitPct: 0 }] },
+  ] });
+  close(w.lenders[0].plans[0].share, 100);
+  close(w.lenders[0].plans[1].share, 0);
+  const w2 = C.waterfall({ applyPct: 100, declinedCashPct: 0, lenders: [
+    { approvalPct: 100, plans: [{ fee: 5, splitPct: 30 }, { fee: 8, splitPct: 30 }] },
+  ] });
+  close(w2.lenders[0].plans[0].share, 50);
+});
+
+test('waterfall result feeds blended price', () => {
+  const w = C.waterfall({ applyPct: 40, declinedCashPct: 100, lenders: [{ approvalPct: 100, plans: [{ fee: 10, splitPct: 100 }] }] });
+  const b = C.blendedPriceMix(10000, w.mix);
+  close(b.price, 10000 / (1 - 0.4 * 0.1));
+});

@@ -128,6 +128,55 @@
     };
   }
 
+  /**
+   * Approval waterfall: customers who want financing go to lenders in order;
+   * anyone declined moves to the next lender. Declined by all => some still
+   * buy with cash, the rest are lost.
+   *   opts.applyPct         % of all customers who apply for financing
+   *   opts.declinedCashPct  % of fully-declined customers who still buy with cash
+   *   opts.lenders          [{ approvalPct, plans: [{ fee, splitPct }] }] in waterfall order
+   * Plan splits within a lender are normalized to 100% (all on the first plan if they sum to 0).
+   * Returns shares as % of ALL customers, and `mix` as % of CLOSED jobs, ready for blendedPriceMix.
+   */
+  function waterfall(opts) {
+    var apply = Math.min(1, Math.max(0, num(opts.applyPct) / 100));
+    var remaining = apply;
+    var lenders = (opts.lenders || []).map(function (l) {
+      var r = Math.min(1, Math.max(0, num(l.approvalPct) / 100));
+      var reached = remaining;
+      var approved = reached * r;
+      remaining = reached - approved;
+      var plans = l.plans || [];
+      var splitSum = plans.reduce(function (t, p) { return t + Math.max(0, num(p.splitPct)); }, 0);
+      return {
+        reached: reached * 100,
+        approved: approved * 100,
+        splitSum: splitSum,
+        plans: plans.map(function (p, i) {
+          var w = splitSum > 0 ? Math.max(0, num(p.splitPct)) / splitSum : (i === 0 ? 1 : 0);
+          return { fee: num(p.fee), share: approved * w * 100 };
+        }),
+      };
+    });
+    var dc = Math.min(1, Math.max(0, num(opts.declinedCashPct) / 100));
+    var declined = remaining;
+    var lost = declined * (1 - dc);
+    var closed = 1 - lost;
+    var mix = [];
+    lenders.forEach(function (l) {
+      l.plans.forEach(function (p) { mix.push({ fee: p.fee, share: closed > 0 ? p.share / closed : 0 }); });
+    });
+    return {
+      lenders: lenders,
+      declined: declined * 100,
+      declinedCash: declined * dc * 100,
+      lost: lost * 100,
+      cashBuyers: (1 - apply + declined * dc) * 100,
+      closed: closed * 100,
+      mix: mix,
+    };
+  }
+
   /** What happens to your margin if you absorb the fee instead of passing it on. */
   function absorbFee(cashPrice, profit, feePct) {
     var fee = num(cashPrice) * (num(feePct) / 100);
@@ -155,6 +204,7 @@
     naiveMarkup: naiveMarkup,
     blendedPrice: blendedPrice,
     blendedPriceMix: blendedPriceMix,
+    waterfall: waterfall,
     absorbFee: absorbFee,
     monthlyPayment: monthlyPayment,
     round2: round2,

@@ -118,6 +118,14 @@ tbody tr.group:first-child th { padding-top: 6px; }
 .mix .cash-row td { color: var(--muted); }
 .stat small { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 
+/* waterfall */
+.role { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--card); background: var(--accent); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+.wf-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.wf-head .approval { display: inline-flex; align-items: center; gap: 6px; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 400; font-size: 0.9rem; }
+.wf-head .approval .pct { width: 84px; }
+.wf-note { width: 100%; text-transform: none; letter-spacing: 0; color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+.funnel { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--field); border: 1px solid var(--line); font-size: 0.93rem; line-height: 1.7; }
+
 /* summaries */
 .summary { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 .stat {
