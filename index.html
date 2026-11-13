@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dealer Fee Calculator | America Home Financial</title>
-  <meta name="description" content="Price jobs for customer financing so dealer fees don't eat your margin.">
+  <meta name="description" content="Estimate your job cost, set your price, and know what to charge when a customer finances.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:wght@400;600;700&display=swap">
@@ -13,104 +13,100 @@
 <body>
   <header class="wrap top">
     <p class="eyebrow"><span class="star">★</span>America Home Financial</p>
-    <h1>Dealer Fee <span class="light">Calculator</span></h1>
-    <p class="lede">Know what to charge when a customer finances, so the lender's fee doesn't come out of your pocket.</p>
+    <h1>Job Price <span class="light">Calculator</span></h1>
+    <p class="lede">Add up your costs, set your markup, and see exactly what to charge, including when the customer finances.</p>
   </header>
 
-  <nav class="wrap">
-    <div class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" id="tab-job" aria-controls="panel-job" aria-selected="true">Price a job</button>
-      <button role="tab" id="tab-blend" aria-controls="panel-blend" aria-selected="false">One price for all</button>
-      <button role="tab" id="tab-lenders" aria-controls="panel-lenders" aria-selected="false">My lenders</button>
-    </div>
-  </nav>
-
   <main class="wrap">
-    <!-- ============ PRICE A JOB ============ -->
-    <section id="panel-job" role="tabpanel" aria-labelledby="tab-job">
-      <div class="card">
-        <label class="big-label" for="price">Your cash price for this job</label>
-        <div class="money xl"><input id="price" type="number" inputmode="decimal" min="0" step="any" value="17700"></div>
-        <button type="button" class="link" id="toggle-costs" aria-expanded="false" aria-controls="costs">Work it out from my costs</button>
+    <!-- 1. COSTS -->
+    <section class="card" aria-labelledby="h-costs">
+      <h2 id="h-costs"><span class="num">1</span> What will the job cost you?</h2>
 
-        <div id="costs" class="costs" hidden>
-          <div class="grid">
-            <label>Materials <span class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6500"></span></label>
-            <label>Labor <span class="money"><input id="labor" type="number" inputmode="decimal" min="0" step="any" value="4200"></span></label>
-            <label>Subcontractors <span class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
-            <label>Permits &amp; other <span class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></span></label>
-            <label>Overhead <small>% of price</small> <span class="pct"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></span></label>
-            <label>Profit <small>% of price</small> <span class="pct"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></span></label>
-          </div>
-          <p id="cost-line" class="muted small-text" aria-live="polite"></p>
-        </div>
-
-        <details class="mini">
-          <summary>Customer is putting cash down?</summary>
-          <label class="inline">Down payment <span class="money"><input id="down" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
-          <p class="muted small-text">The lender's fee only applies to the part they finance.</p>
-        </details>
+      <div class="field-row">
+        <label for="materials">Materials</label>
+        <div class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6000"></div>
+      </div>
+      <div class="field-row sub">
+        <label for="wastePct">Extra for waste &amp; mistakes <span class="hint">Cuts, scraps, returns. 10% is common.</span></label>
+        <div class="pct short"><input id="wastePct" type="number" inputmode="decimal" min="0" max="100" step="any" value="10"></div>
       </div>
 
-      <h2 class="section-title">If they finance, charge:</h2>
-      <div id="plan-cards" aria-live="polite"></div>
+      <div class="field-row">
+        <label>Labor <span class="hint">Count your own time too, not just your crew's.</span></label>
+        <div class="labor">
+          <div class="unit hrs"><input id="laborHours" type="number" inputmode="decimal" min="0" step="any" value="80" aria-label="Labor hours"></div>
+          <span class="times">×</span>
+          <div class="money unit rate"><input id="laborRate" type="number" inputmode="decimal" min="0" step="any" value="55" aria-label="Cost per labor hour"></div>
+        </div>
+      </div>
 
-      <details class="card faq">
-        <summary>Why not just add the fee % on top?</summary>
-        <p id="mistake"></p>
+      <div class="field-row">
+        <label for="subs">Subcontractors</label>
+        <div class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+      </div>
+      <div class="field-row">
+        <label for="other">Permits, dumpster, equipment &amp; other</label>
+        <div class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></div>
+      </div>
+
+      <div class="total-row" aria-live="polite">
+        <span>Total job cost</span>
+        <strong id="cost-total">—</strong>
+      </div>
+    </section>
+
+    <!-- 2. MARKUP -->
+    <section class="card" aria-labelledby="h-markup">
+      <h2 id="h-markup"><span class="num">2</span> What do you need on top?</h2>
+      <div class="field-row">
+        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, phone, office, ads: what it costs to run your business, as a % of the price.</span></label>
+        <div class="pct short"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></div>
+      </div>
+      <div class="field-row">
+        <label for="marginPct">Profit <span class="hint">What you keep after every bill is paid.</span></label>
+        <div class="pct short"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section class="card result" aria-labelledby="h-price" aria-live="polite">
+      <h2 id="h-price" class="result-label">Your price (cash or check)</h2>
+      <div id="cash-price" class="result-price">—</div>
+      <div id="markup-line" class="result-sub"></div>
+      <div id="split-bar" class="split" aria-hidden="true"></div>
+      <ul id="split-legend" class="split-legend"></ul>
+      <p id="price-error" class="result-error" hidden></p>
+    </section>
+
+    <!-- 3. FINANCING -->
+    <section class="card" aria-labelledby="h-fin">
+      <h2 id="h-fin"><span class="num">3</span> If the customer finances, charge:</h2>
+      <p class="hint block">The lender keeps a dealer fee. These prices cover it, so you still get your full price.</p>
+      <ul id="plan-list" class="plan-list"></ul>
+
+      <details class="edit-plans">
+        <summary>Edit financing plans</summary>
+        <p class="hint block">Use the dealer fees from your lenders' rate sheets. The starting ones are only examples.</p>
+        <div id="plan-editor"></div>
+        <div class="editor-actions">
+          <button type="button" id="add-plan" class="btn">+ Add plan</button>
+          <button type="button" id="reset-plans" class="link quiet">Reset to examples</button>
+        </div>
       </details>
     </section>
 
-    <!-- ============ ONE PRICE FOR ALL ============ -->
-    <section id="panel-blend" role="tabpanel" aria-labelledby="tab-blend" hidden>
-      <div class="card">
-        <p class="muted top-note">Many lenders (and some states) don't let you charge financed customers more than cash customers. Instead, set one price for everyone that covers the fees you can expect over all your jobs.</p>
-        <div class="grid two">
-          <label>Customers who apply for financing <span class="pct"><input id="applyPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="45"></span></label>
-          <label>Declined by every lender but still pay cash <span class="pct"><input id="declinedCashPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="30"></span></label>
-        </div>
-        <p class="muted small-text">Approval rates and which plans customers pick are set in <button type="button" class="link inline-link" data-goto="lenders">My lenders</button>.</p>
-      </div>
-
-      <div id="blend-hero" class="card hero-card" aria-live="polite"></div>
-
-      <div class="card">
-        <h3 class="card-title">Out of 100 customers</h3>
-        <div id="funnel-bar" class="bar" aria-hidden="true"></div>
-        <ul id="funnel-legend" class="legend"></ul>
-      </div>
-
-      <details class="card faq">
-        <summary>See the breakdown by plan</summary>
-        <div class="table-scroll">
-          <table class="breakdown">
-            <thead><tr><th>Plan</th><th>Fee</th><th>Share of jobs</th><th>You net</th></tr></thead>
-            <tbody id="breakdown-rows"></tbody>
-          </table>
-        </div>
-      </details>
-    </section>
-
-    <!-- ============ MY LENDERS ============ -->
-    <section id="panel-lenders" role="tabpanel" aria-labelledby="tab-lenders" hidden>
-      <p class="muted top-note">Set this up once from your lenders' rate sheets. It's saved on this device. <strong>The starting numbers are only examples.</strong></p>
-      <div id="lenders"></div>
-      <div class="row-actions">
-        <button type="button" id="add-lender" class="btn ghost">+ Add lender</button>
-        <button type="button" id="reset-plans" class="btn ghost quiet">Reset to examples</button>
-      </div>
-    </section>
-
-    <details class="card faq how">
+    <details class="card faq">
+      <summary>Why not just add the fee % on top?</summary>
+      <p id="mistake"></p>
+    </details>
+    <details class="card faq">
       <summary>How the math works</summary>
       <ul>
-        <li><strong>Financed price = cash price ÷ (1 − dealer fee).</strong> With a 10% fee on a $10,000 job, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
-        <li>With a cash down payment, the fee only applies to the financed part.</li>
-        <li>Overhead and profit are a % of the selling price. A 20% profit margin is a 25% markup on cost.</li>
-        <li><strong>One price for all</strong> spreads the fees you expect across every job. Customers try your primary lender first; anyone it declines tries the backup.</li>
-        <li>Monthly payments are rough estimates. Same-as-cash and deferred-interest plans bill differently, so quote the lender's numbers.</li>
+        <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
+        <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
+        <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
       </ul>
-      <p class="fine">For estimating only. Check your lender agreement and local rules before you change how you price financed jobs.</p>
+      <p class="fine">For estimating only.</p>
     </details>
   </main>
 

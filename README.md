@@ -1,27 +1,25 @@
-# Dealer Fee Calculator
+# Job Price Calculator
 
 By America Home Financial.
 
-A small web app that helps contractors price jobs when customers pay with consumer financing, so lender dealer fees don't come out of your profit.
+A simple one-page calculator that helps contractors estimate a job and price it, including what to charge when the customer finances.
 
 ## What it does
 
-Three tabs:
+1. **What will the job cost you?** Materials (plus an allowance for waste), labor as hours × rate, subcontractors, and permits/dumpster/other. Shows the total job cost.
+2. **What do you need on top?** Overhead % and profit %, with plain-English hints.
+3. **Your price.** The cash price, its markup on cost, and a bar showing how it splits into job cost, overhead and profit.
+4. **If the customer finances, charge:** a list of financing plans with the price that covers each plan's dealer fee, so you still get your full price. Plans (lender, plan name, dealer fee) are edited under *Edit financing plans*.
 
-- **Price a job.** Type your cash price, or open *Work it out from my costs* (materials, labor, subs, other, overhead %, profit %). Each financing plan gets a card showing what to charge so you still get your full cash price after the dealer fee, plus a rough monthly payment. If you entered costs, it also shows what your profit drops to if you absorb the fee instead. An optional cash down payment applies the fee only to the financed part.
-- **One price for all.** Many lender agreements don't let you charge financed customers more. Enter the share of customers who apply for financing and how many fully declined customers still pay cash. It gives one price for everyone that covers expected fees, plus a picture of 100 customers: who pays cash, who each lender funds, and who's lost.
-- **My lenders.** Set up once from your rate sheets. Lenders are in waterfall order (primary, then backup); each has an approval rate and plans (dealer fee, APR, months, and *mix*: the share of that lender's approvals that pick each plan).
-
-It also explains why simply adding the fee % on top leaves you short.
+Fold-outs explain why simply adding the fee % on top leaves you short, and how the math works.
 
 ## The math
 
 | | Formula |
 |---|---|
-| Cash price from costs | `cost ÷ (1 − overhead% − margin%)` |
-| Financed price | `(cash − fee × down) ÷ (1 − fee)` |
-| Blended price | `cash ÷ (1 − Σ share × fee)` across every plan (shares of closed jobs) |
-| Waterfall | lender *n* funds `applicants still undeclined × approval rate`; the rest move to lender *n+1* |
+| Job cost | `materials × (1 + waste%) + hours × rate + subs + other` |
+| Price | `job cost ÷ (1 − overhead% − profit%)` |
+| Financed price | `price ÷ (1 − dealer fee)` |
 
 ## Live site
 
@@ -51,7 +49,7 @@ Inputs are saved in your browser (localStorage), so they're still there next tim
 5. Switch to the mobile view and make the box taller there too (about 2,200 px).
 6. **Publish**.
 
-Wix runs embedded code in a sandboxed frame, so some browsers may not remember saved lenders between visits. Set your real lenders as the defaults (`DEFAULT_LENDERS` in `js/app.js`), then rebuild, so every visitor starts with them.
+Wix runs embedded code in a sandboxed frame, so some browsers may not remember saved lenders between visits. Set your real plans as the defaults (`DEFAULT_PLANS` in `js/app.js`), then rebuild, so every visitor starts with them.
 
 ## Files
 

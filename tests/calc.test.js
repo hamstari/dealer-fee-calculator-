@@ -120,3 +120,16 @@ test('waterfall result feeds blended price', () => {
   const b = C.blendedPriceMix(10000, w.mix);
   close(b.price, 10000 / (1 - 0.4 * 0.1));
 });
+
+test('job cost adds waste to materials and multiplies labor hours by rate', () => {
+  const r = C.jobCost({ materials: 6000, wastePct: 10, laborHours: 80, laborRate: 55, subs: 0, other: 800 });
+  close(r.materials, 6600);
+  close(r.waste, 600);
+  close(r.labor, 4400);
+  close(r.total, 11800);
+});
+
+test('job cost ignores blanks and negatives', () => {
+  const r = C.jobCost({ materials: '', wastePct: -5, laborHours: 10, laborRate: '', other: -100 });
+  assert.equal(r.total, 0);
+});

@@ -16,6 +16,26 @@
   }
 
   /**
+   * Total job cost from estimating inputs:
+   * materials plus a waste allowance, labor as hours x rate, subs and other.
+   */
+  function jobCost(input) {
+    var materials = Math.max(0, num(input.materials));
+    var waste = materials * (Math.max(0, num(input.wastePct)) / 100);
+    var labor = Math.max(0, num(input.laborHours)) * Math.max(0, num(input.laborRate));
+    var subs = Math.max(0, num(input.subs));
+    var other = Math.max(0, num(input.other));
+    return {
+      materials: materials + waste,
+      waste: waste,
+      labor: labor,
+      subs: subs,
+      other: other,
+      total: materials + waste + labor + subs + other,
+    };
+  }
+
+  /**
    * Build a cash price from job costs using margin-on-price
    * (overhead and profit are expressed as a % of the selling price, not of cost).
    */
@@ -199,6 +219,7 @@
   }
 
   var api = {
+    jobCost: jobCost,
     cashPriceFromCosts: cashPriceFromCosts,
     grossUp: grossUp,
     naiveMarkup: naiveMarkup,

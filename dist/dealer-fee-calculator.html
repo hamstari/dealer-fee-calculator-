@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dealer Fee Calculator | America Home Financial</title>
-  <meta name="description" content="Price jobs for customer financing so dealer fees don't eat your margin.">
+  <meta name="description" content="Estimate your job cost, set your price, and know what to charge when a customer finances.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:wght@400;600;700&display=swap">
@@ -21,17 +21,7 @@
   --muted: #5d6680;
   --line: #dde2ec;
   --field: #f7f9fc;
-  --accent: #2b5fae;
-  --accent-ink: #ffffff;
-  --accent-soft: #e8eff9;
-  --neg: #c8283a;
-  --cash: #c9d1df;
-  --cash2: #e1e6ef;
-  --lost: #c8283a;
-  --l1: #2b5fae;
-  --l2: #1b2a57;
-  --l3: #8eaedc;
-  --l4: #5d6680;
+  --soft: #e8eff9;
   --radius: 14px;
   --display: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -44,30 +34,16 @@ body {
   color: var(--ink);
   font: 16px/1.5 "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
-.wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
-.top { padding: 28px 16px 6px; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+/* header */
+.top { padding: 28px 16px 4px; }
 .eyebrow { margin: 0 0 6px; font-family: var(--display); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); }
 .eyebrow .star { color: var(--red); margin-right: 4px; }
-h1 { margin: 0; font-family: var(--display); font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800; letter-spacing: -0.01em; color: var(--navy); line-height: 1.15; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(1.7rem, 6vw, 2.3rem); font-weight: 800; color: var(--navy); line-height: 1.15; }
 h1 .light { font-weight: 400; color: #4a5470; }
+.lede { margin: 8px 0 0; color: var(--muted); }
 .top::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 2px; background: var(--red); margin-top: 14px; }
-.lede { margin: 4px 0 0; color: var(--muted); }
-.muted { color: var(--muted); }
-.neg { color: var(--neg); }
-.small-text { font-size: 0.88rem; }
-
-/* tabs */
-.tabs {
-  display: flex; gap: 4px; margin: 16px 0 4px;
-  background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 4px;
-}
-.tabs button {
-  flex: 1; font: inherit; font-family: var(--display); font-weight: 700; font-size: 0.95rem; cursor: pointer;
-  background: none; border: none; color: var(--muted);
-  padding: 10px 8px; border-radius: 9px; white-space: nowrap;
-}
-.tabs button[aria-selected="true"] { background: var(--navy); color: #fff; }
-.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* cards */
 .card {
@@ -77,264 +53,251 @@ h1 .light { font-weight: 400; color: #4a5470; }
   padding: 20px;
   margin: 14px 0;
 }
-.section-title { font-family: var(--display); font-weight: 800; color: var(--navy); font-size: 1.15rem; margin: 26px 0 4px; }
-.card-title { font-size: 1rem; margin: 0 0 12px; }
-.top-note { margin: 0 0 14px; }
-section > .top-note { margin: 18px 0 4px; }
+h2 {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 14px; font-family: var(--display); font-weight: 800; font-size: 1.1rem; color: var(--navy);
+}
+.num {
+  display: inline-grid; place-items: center; flex: none;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--navy); color: #fff; font-size: 0.85rem;
+}
+.hint { display: block; font-weight: 400; font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+.hint.block { margin: -6px 0 12px; }
+.neg { color: var(--red); }
 
-/* inputs */
-label { font-size: 0.9rem; font-weight: 600; }
+/* fields: label on the left, input on the right */
+.field-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.field-row:first-of-type { padding-top: 0; }
+.field-row > label { font-weight: 600; flex: 1 1 auto; }
+.field-row > .money, .field-row > .pct, .field-row > .labor { flex: none; width: 170px; }
+.field-row > .short { width: 110px; }
+.field-row > .labor { width: 280px; }
+.field-row.sub { padding-left: 14px; border-left: 3px solid var(--soft); }
+.field-row.sub > label { font-weight: 400; font-size: 0.93rem; }
+
 input {
-  font: inherit; color: var(--ink);
+  font: inherit; font-weight: 600; color: var(--ink);
   background: var(--field);
   border: 1px solid var(--line);
   border-radius: 9px;
-  padding: 9px 11px;
+  padding: 10px 12px;
   width: 100%; min-width: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
-.money, .pct { position: relative; display: block; }
-.money::before, .pct::after {
+input[type=text] { text-align: left; font-weight: 400; }
+input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: transparent; background: #fff; }
+.money, .pct, .unit { position: relative; display: block; }
+.money::before, .pct::after, .hrs::after {
   position: absolute; top: 50%; transform: translateY(-50%);
   color: var(--muted); font-weight: 400; pointer-events: none;
 }
-.money::before { content: "$"; left: 11px; }
+.money::before { content: "$"; left: 12px; }
 .money input { padding-left: 24px; }
-.pct::after { content: "%"; right: 10px; }
-.pct input { padding-right: 26px; }
+.pct::after { content: "%"; right: 11px; }
+.pct input { padding-right: 28px; }
+.hrs::after { content: "hrs"; right: 10px; font-size: 0.85rem; }
+.hrs input { padding-right: 36px; }
+.labor { display: flex; align-items: center; gap: 6px; }
+.labor .unit { flex: 1; }
+.rate::after { content: "/hr"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+.rate input { padding-right: 34px; }
+.times { color: var(--muted); }
 
-.big-label { display: block; font-size: 1rem; margin-bottom: 6px; }
-.money.xl { max-width: 360px; }
-.money.xl::before { font-size: 1.6rem; left: 14px; }
-.money.xl input { font-family: var(--display); color: var(--navy); font-size: 2rem; font-weight: 800; padding: 8px 14px 8px 36px; font-variant-numeric: tabular-nums; }
-input.computed { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.total-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-top: 14px; font-weight: 700;
+}
+.total-row strong { font-family: var(--display); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px 14px; }
-.grid.two { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-.grid label, .inline { display: flex; flex-direction: column; gap: 5px; }
-.grid small { font-weight: 400; color: var(--muted); }
-.inline { max-width: 240px; margin-top: 10px; }
-.costs { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
-.costs p { margin: 12px 0 0; }
+/* result */
+.result { background: var(--navy); border-color: var(--navy); color: #fff; text-align: center; padding: 26px 20px 22px; }
+.result-label { justify-content: center; margin: 0; color: #c9d6ee; font-family: inherit; font-weight: 600; font-size: 1rem; }
+.result-price { font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 11vw, 3.4rem); line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.result-sub { color: #c9d6ee; margin-top: 4px; font-size: 0.95rem; }
+.result-error { color: #ffb3ba; margin: 8px 0 0; }
+.split { display: flex; gap: 2px; height: 12px; border-radius: 999px; overflow: hidden; margin: 18px auto 0; max-width: 460px; }
+.split span { min-width: 3px; }
+.s-cost { background: #8eaedc; }
+.s-oh { background: #4f80c9; }
+.s-profit { background: var(--red); }
+.split-legend { list-style: none; padding: 0; margin: 10px 0 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 18px; font-size: 0.88rem; color: #c9d6ee; }
+.split-legend li { display: flex; align-items: center; gap: 6px; }
+.split-legend i { width: 10px; height: 10px; border-radius: 3px; }
+.split-legend b { color: #fff; font-variant-numeric: tabular-nums; }
+
+/* financing list */
+.plan-list { list-style: none; margin: 0; padding: 0; }
+.plan {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+.plan:last-child { border-bottom: none; }
+.plan-name { font-weight: 600; }
+.plan-meta { font-size: 0.85rem; color: var(--muted); }
+.plan-price { text-align: right; flex: none; }
+.plan-price strong { display: block; font-family: var(--display); font-weight: 800; font-size: 1.35rem; color: var(--blue); font-variant-numeric: tabular-nums; }
+.plan-price span { font-size: 0.82rem; color: var(--muted); }
+.tag { font-size: 0.68rem; font-weight: 700; color: #fff; background: var(--red); border-radius: 999px; padding: 2px 7px; vertical-align: 2px; margin-left: 4px; }
+
+/* fold-outs */
+details summary { cursor: pointer; font-weight: 600; color: var(--blue); list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: "+"; display: inline-block; width: 1.1em; font-weight: 700; }
+details[open] summary::before { content: "−"; }
+.edit-plans { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.edit-plans[open] summary { margin-bottom: 14px; }
+.faq p, .faq ul { margin: 12px 0 0; }
+.faq ul { padding-left: 20px; }
+.faq li { margin: 6px 0; }
+.fine { color: var(--muted); font-size: 0.85rem; }
+
+.plan-edit {
+  display: grid; grid-template-columns: 1fr 1.6fr 96px auto; gap: 8px; align-items: end;
+  padding: 8px 0;
+}
+.plan-edit label { display: flex; flex-direction: column; gap: 3px; }
+.plan-edit label > span:first-child { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+.plan-edit + .plan-edit label > span:first-child { display: none; }
+.editor-actions { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
 
 /* buttons */
 .btn {
   font: inherit; font-weight: 600; cursor: pointer;
-  background: var(--accent); color: var(--accent-ink);
-  border: 1px solid var(--accent); border-radius: 9px; padding: 9px 16px;
+  background: var(--blue); color: #fff; border: none; border-radius: 9px; padding: 9px 16px;
 }
-.btn.ghost { background: transparent; color: var(--accent); }
-.btn.quiet { border-color: var(--line); color: var(--muted); }
 .link {
   font: inherit; font-weight: 600; font-size: 0.92rem; cursor: pointer;
-  background: none; border: none; color: var(--accent); padding: 6px 0; text-decoration: underline; text-underline-offset: 3px;
+  background: none; border: none; color: var(--blue); padding: 6px 0; text-decoration: underline; text-underline-offset: 3px;
 }
-.link.danger { color: var(--muted); }
-.link.danger:hover { color: var(--neg); }
-.inline-link { padding: 0; font-size: inherit; }
-#toggle-costs { margin-top: 8px; display: inline-block; }
+.link.quiet { color: var(--muted); }
 .icon {
   font: inherit; font-size: 1.3rem; line-height: 1; cursor: pointer;
-  background: none; border: none; color: var(--muted); padding: 6px 8px; border-radius: 6px;
+  background: none; border: none; color: var(--muted); padding: 8px; border-radius: 6px;
 }
-.icon:hover { color: var(--neg); background: var(--field); }
-.row-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.icon:hover { color: var(--red); background: var(--field); }
+.foot { padding: 0 16px 40px; }
 
-/* fold-outs */
-details summary { cursor: pointer; font-weight: 600; color: var(--accent); list-style: none; }
-details summary::-webkit-details-marker { display: none; }
-details summary::before { content: "+"; display: inline-block; width: 1.1em; font-weight: 700; }
-details[open] summary::before { content: "−"; }
-details.mini { margin-top: 14px; font-size: 0.92rem; }
-details.mini p { margin: 6px 0 0; }
-.faq summary { margin: -4px 0; }
-.faq[open] summary { margin-bottom: 10px; }
-.faq p { margin: 0; }
-.how ul { margin: 0; padding-left: 20px; }
-.how li { margin: 6px 0; }
-.fine { color: var(--muted); font-size: 0.85rem; margin-top: 12px !important; }
-
-/* plan cards */
-.lender-group { margin-top: 10px; }
-.group-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 14px 0 8px; }
-.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.plan-card {
-  background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: var(--radius);
-  padding: 16px;
-}
-.pc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-.pc-name { font-weight: 600; }
-.tag { font-size: 0.72rem; font-weight: 700; color: #fff; background: var(--red); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
-.pc-price { font-family: var(--display); font-size: 2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; margin: 2px 0 4px; font-variant-numeric: tabular-nums; }
-.pc-sub { font-size: 0.9rem; color: var(--muted); }
-.pc-absorb { font-size: 0.85rem; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); }
-.empty { padding: 8px 0; }
-
-/* one price for all */
-.hero-card { background: var(--navy); border-color: transparent; color: #fff; text-align: center; padding: 26px 20px; }
-.hero-label { font-weight: 600; color: #c9d6ee; }
-.hero-price { font-family: var(--display); font-size: clamp(2.4rem, 9vw, 3.2rem); font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.hero-sub { font-weight: 600; margin-top: 4px; }
-.hero-card .link { color: #fff; }
-.hero-card .neg { color: #ffb3ba; }
-.hero-card .muted { color: #c9d6ee; }
-.hero-note { margin: 12px auto 0; max-width: 520px; color: #c9d6ee; font-size: 0.92rem; }
-.bar { display: flex; height: 22px; border-radius: 999px; overflow: hidden; gap: 2px; background: var(--field); }
-.bar span { min-width: 3px; }
-.legend { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 20px; }
-.legend li { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; }
-.legend i { width: 12px; height: 12px; border-radius: 3px; flex: none; }
-.legend b { margin-left: auto; font-variant-numeric: tabular-nums; }
-.table-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 0.93rem; }
-th { text-align: left; font-size: 0.78rem; font-weight: 600; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); }
-td { padding: 8px; border-bottom: 1px solid var(--line); }
-
-/* lenders */
-.lender-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
-.role { font-family: var(--display); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; background: var(--navy); border-radius: 999px; padding: 3px 10px; }
-.lender-name { flex: 1 1 180px; max-width: 320px; font-weight: 700; font-size: 1.05rem; }
-.lender-tools { display: flex; gap: 14px; margin-left: auto; }
-.approval { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 6px; font-weight: 400; }
-.approval .pct { width: 88px; }
-.plan-rows { margin-top: 6px; }
-.plan-row {
-  display: grid; grid-template-columns: minmax(150px, 2.2fr) repeat(4, minmax(70px, 1fr)) auto;
-  gap: 8px; align-items: end; padding: 10px 0; border-bottom: 1px solid var(--line);
-}
-.plan-row label { display: flex; flex-direction: column; gap: 3px; }
-.plan-row label > span:first-child { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
-.plan-row .pct input { padding-right: 22px; }
-.plan-row .pct::after { right: 8px; }
-/* only label the first row on wide screens */
-@media (min-width: 641px) {
-  .plan-row + .plan-row label > span:first-child { display: none; }
-}
-[data-mix-note] { margin: 10px 0 2px; }
-
-.foot { padding: 4px 16px 40px; }
-
-@media (max-width: 640px) {
-  .tabs button { font-size: 0.85rem; padding: 10px 4px; }
+@media (max-width: 520px) {
   .card { padding: 16px; }
-  .plan-row { grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  .plan-row .f-name { grid-column: 1 / 4; }
-  .plan-row .icon { grid-column: 4; grid-row: 1; justify-self: end; }
-  .plan-row input { padding-left: 7px; }
-  .plan-row .pct input { padding-right: 17px; }
-  .plan-row .pct::after { right: 6px; font-size: 0.85rem; }
-  .lender-tools { margin-left: 0; }
+  .field-row > .money, .field-row > .pct { width: 140px; }
+  .field-row > .labor { width: 100%; }
+  .field-row:has(.labor) { flex-wrap: wrap; }
+  .field-row > .short { width: 96px; }
+  .plan-edit { grid-template-columns: 1fr 96px auto; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .plan-edit label:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .plan-edit + .plan-edit label > span:first-child { display: block; }
 }
 
 @media print {
-  body { background: #fff; color: #000; }
-  .tabs, .foot, .link, .icon, .row-actions, #toggle-costs { display: none !important; }
-  [role=tabpanel] { display: block !important; }
-  .card, .plan-card { break-inside: avoid; }
+  body { background: #fff; }
+  .foot, .edit-plans, .faq { display: none !important; }
+  .card { break-inside: avoid; }
+  .result { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 </head>
 <body>
   <header class="wrap top">
     <p class="eyebrow"><span class="star">★</span>America Home Financial</p>
-    <h1>Dealer Fee <span class="light">Calculator</span></h1>
-    <p class="lede">Know what to charge when a customer finances, so the lender's fee doesn't come out of your pocket.</p>
+    <h1>Job Price <span class="light">Calculator</span></h1>
+    <p class="lede">Add up your costs, set your markup, and see exactly what to charge, including when the customer finances.</p>
   </header>
 
-  <nav class="wrap">
-    <div class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" id="tab-job" aria-controls="panel-job" aria-selected="true">Price a job</button>
-      <button role="tab" id="tab-blend" aria-controls="panel-blend" aria-selected="false">One price for all</button>
-      <button role="tab" id="tab-lenders" aria-controls="panel-lenders" aria-selected="false">My lenders</button>
-    </div>
-  </nav>
-
   <main class="wrap">
-    <!-- ============ PRICE A JOB ============ -->
-    <section id="panel-job" role="tabpanel" aria-labelledby="tab-job">
-      <div class="card">
-        <label class="big-label" for="price">Your cash price for this job</label>
-        <div class="money xl"><input id="price" type="number" inputmode="decimal" min="0" step="any" value="17700"></div>
-        <button type="button" class="link" id="toggle-costs" aria-expanded="false" aria-controls="costs">Work it out from my costs</button>
+    <!-- 1. COSTS -->
+    <section class="card" aria-labelledby="h-costs">
+      <h2 id="h-costs"><span class="num">1</span> What will the job cost you?</h2>
 
-        <div id="costs" class="costs" hidden>
-          <div class="grid">
-            <label>Materials <span class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6500"></span></label>
-            <label>Labor <span class="money"><input id="labor" type="number" inputmode="decimal" min="0" step="any" value="4200"></span></label>
-            <label>Subcontractors <span class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
-            <label>Permits &amp; other <span class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></span></label>
-            <label>Overhead <small>% of price</small> <span class="pct"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></span></label>
-            <label>Profit <small>% of price</small> <span class="pct"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></span></label>
-          </div>
-          <p id="cost-line" class="muted small-text" aria-live="polite"></p>
-        </div>
-
-        <details class="mini">
-          <summary>Customer is putting cash down?</summary>
-          <label class="inline">Down payment <span class="money"><input id="down" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
-          <p class="muted small-text">The lender's fee only applies to the part they finance.</p>
-        </details>
+      <div class="field-row">
+        <label for="materials">Materials</label>
+        <div class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6000"></div>
+      </div>
+      <div class="field-row sub">
+        <label for="wastePct">Extra for waste &amp; mistakes <span class="hint">Cuts, scraps, returns. 10% is common.</span></label>
+        <div class="pct short"><input id="wastePct" type="number" inputmode="decimal" min="0" max="100" step="any" value="10"></div>
       </div>
 
-      <h2 class="section-title">If they finance, charge:</h2>
-      <div id="plan-cards" aria-live="polite"></div>
+      <div class="field-row">
+        <label>Labor <span class="hint">Count your own time too, not just your crew's.</span></label>
+        <div class="labor">
+          <div class="unit hrs"><input id="laborHours" type="number" inputmode="decimal" min="0" step="any" value="80" aria-label="Labor hours"></div>
+          <span class="times">×</span>
+          <div class="money unit rate"><input id="laborRate" type="number" inputmode="decimal" min="0" step="any" value="55" aria-label="Cost per labor hour"></div>
+        </div>
+      </div>
 
-      <details class="card faq">
-        <summary>Why not just add the fee % on top?</summary>
-        <p id="mistake"></p>
+      <div class="field-row">
+        <label for="subs">Subcontractors</label>
+        <div class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+      </div>
+      <div class="field-row">
+        <label for="other">Permits, dumpster, equipment &amp; other</label>
+        <div class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></div>
+      </div>
+
+      <div class="total-row" aria-live="polite">
+        <span>Total job cost</span>
+        <strong id="cost-total">—</strong>
+      </div>
+    </section>
+
+    <!-- 2. MARKUP -->
+    <section class="card" aria-labelledby="h-markup">
+      <h2 id="h-markup"><span class="num">2</span> What do you need on top?</h2>
+      <div class="field-row">
+        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, phone, office, ads: what it costs to run your business, as a % of the price.</span></label>
+        <div class="pct short"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></div>
+      </div>
+      <div class="field-row">
+        <label for="marginPct">Profit <span class="hint">What you keep after every bill is paid.</span></label>
+        <div class="pct short"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section class="card result" aria-labelledby="h-price" aria-live="polite">
+      <h2 id="h-price" class="result-label">Your price (cash or check)</h2>
+      <div id="cash-price" class="result-price">—</div>
+      <div id="markup-line" class="result-sub"></div>
+      <div id="split-bar" class="split" aria-hidden="true"></div>
+      <ul id="split-legend" class="split-legend"></ul>
+      <p id="price-error" class="result-error" hidden></p>
+    </section>
+
+    <!-- 3. FINANCING -->
+    <section class="card" aria-labelledby="h-fin">
+      <h2 id="h-fin"><span class="num">3</span> If the customer finances, charge:</h2>
+      <p class="hint block">The lender keeps a dealer fee. These prices cover it, so you still get your full price.</p>
+      <ul id="plan-list" class="plan-list"></ul>
+
+      <details class="edit-plans">
+        <summary>Edit financing plans</summary>
+        <p class="hint block">Use the dealer fees from your lenders' rate sheets. The starting ones are only examples.</p>
+        <div id="plan-editor"></div>
+        <div class="editor-actions">
+          <button type="button" id="add-plan" class="btn">+ Add plan</button>
+          <button type="button" id="reset-plans" class="link quiet">Reset to examples</button>
+        </div>
       </details>
     </section>
 
-    <!-- ============ ONE PRICE FOR ALL ============ -->
-    <section id="panel-blend" role="tabpanel" aria-labelledby="tab-blend" hidden>
-      <div class="card">
-        <p class="muted top-note">Many lenders (and some states) don't let you charge financed customers more than cash customers. Instead, set one price for everyone that covers the fees you can expect over all your jobs.</p>
-        <div class="grid two">
-          <label>Customers who apply for financing <span class="pct"><input id="applyPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="45"></span></label>
-          <label>Declined by every lender but still pay cash <span class="pct"><input id="declinedCashPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="30"></span></label>
-        </div>
-        <p class="muted small-text">Approval rates and which plans customers pick are set in <button type="button" class="link inline-link" data-goto="lenders">My lenders</button>.</p>
-      </div>
-
-      <div id="blend-hero" class="card hero-card" aria-live="polite"></div>
-
-      <div class="card">
-        <h3 class="card-title">Out of 100 customers</h3>
-        <div id="funnel-bar" class="bar" aria-hidden="true"></div>
-        <ul id="funnel-legend" class="legend"></ul>
-      </div>
-
-      <details class="card faq">
-        <summary>See the breakdown by plan</summary>
-        <div class="table-scroll">
-          <table class="breakdown">
-            <thead><tr><th>Plan</th><th>Fee</th><th>Share of jobs</th><th>You net</th></tr></thead>
-            <tbody id="breakdown-rows"></tbody>
-          </table>
-        </div>
-      </details>
-    </section>
-
-    <!-- ============ MY LENDERS ============ -->
-    <section id="panel-lenders" role="tabpanel" aria-labelledby="tab-lenders" hidden>
-      <p class="muted top-note">Set this up once from your lenders' rate sheets. It's saved on this device. <strong>The starting numbers are only examples.</strong></p>
-      <div id="lenders"></div>
-      <div class="row-actions">
-        <button type="button" id="add-lender" class="btn ghost">+ Add lender</button>
-        <button type="button" id="reset-plans" class="btn ghost quiet">Reset to examples</button>
-      </div>
-    </section>
-
-    <details class="card faq how">
+    <details class="card faq">
+      <summary>Why not just add the fee % on top?</summary>
+      <p id="mistake"></p>
+    </details>
+    <details class="card faq">
       <summary>How the math works</summary>
       <ul>
-        <li><strong>Financed price = cash price ÷ (1 − dealer fee).</strong> With a 10% fee on a $10,000 job, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
-        <li>With a cash down payment, the fee only applies to the financed part.</li>
-        <li>Overhead and profit are a % of the selling price. A 20% profit margin is a 25% markup on cost.</li>
-        <li><strong>One price for all</strong> spreads the fees you expect across every job. Customers try your primary lender first; anyone it declines tries the backup.</li>
-        <li>Monthly payments are rough estimates. Same-as-cash and deferred-interest plans bill differently, so quote the lender's numbers.</li>
+        <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
+        <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
+        <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
       </ul>
-      <p class="fine">For estimating only. Check your lender agreement and local rules before you change how you price financed jobs.</p>
+      <p class="fine">For estimating only.</p>
     </details>
   </main>
 
@@ -358,6 +321,26 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 
   function round2(n) {
     return Math.round(n * 100) / 100;
+  }
+
+  /**
+   * Total job cost from estimating inputs:
+   * materials plus a waste allowance, labor as hours x rate, subs and other.
+   */
+  function jobCost(input) {
+    var materials = Math.max(0, num(input.materials));
+    var waste = materials * (Math.max(0, num(input.wastePct)) / 100);
+    var labor = Math.max(0, num(input.laborHours)) * Math.max(0, num(input.laborRate));
+    var subs = Math.max(0, num(input.subs));
+    var other = Math.max(0, num(input.other));
+    return {
+      materials: materials + waste,
+      waste: waste,
+      labor: labor,
+      subs: subs,
+      other: other,
+      total: materials + waste + labor + subs + other,
+    };
   }
 
   /**
@@ -544,6 +527,7 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
   }
 
   var api = {
+    jobCost: jobCost,
     cashPriceFromCosts: cashPriceFromCosts,
     grossUp: grossUp,
     naiveMarkup: naiveMarkup,
@@ -563,27 +547,15 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 (function () {
   'use strict';
   var C = window.DealerCalc;
-  var STORE_KEY = 'dealer-fee-calc-v3';
-  var OLD_STORE_KEY = 'dealer-fee-calc-v2';
+  var STORE_KEY = 'job-price-calc-v4';
+  var OLD_KEYS = ['dealer-fee-calc-v3', 'dealer-fee-calc-v2'];
 
-  var DEFAULT_LENDERS = [
-    {
-      name: 'Lender A',
-      approval: 70,
-      plans: [
-        { name: '12 mo same-as-cash', fee: 6, apr: 0, months: 12, split: 60 },
-        { name: '18 mo no interest', fee: 9, apr: 0, months: 18, split: 30 },
-        { name: '0% APR, 60 mo', fee: 14, apr: 0, months: 60, split: 10 },
-      ],
-    },
-    {
-      name: 'Lender B',
-      approval: 50,
-      plans: [
-        { name: '9.99% APR, 10 yr', fee: 3, apr: 9.99, months: 120, split: 100 },
-        { name: '6.99% APR, 7 yr', fee: 7, apr: 6.99, months: 84, split: 0 },
-      ],
-    },
+  var DEFAULT_PLANS = [
+    { lender: 'Lender A', name: '12 mo same-as-cash', fee: 6 },
+    { lender: 'Lender A', name: '18 mo no interest', fee: 9 },
+    { lender: 'Lender A', name: '0% APR, 60 mo', fee: 14 },
+    { lender: 'Lender B', name: '9.99% APR, 10 yr', fee: 3 },
+    { lender: 'Lender B', name: '6.99% APR, 7 yr', fee: 7 },
   ];
 
   // ---------- helpers ----------
@@ -591,7 +563,6 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
   var money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   var fmt = function (x) { return isFinite(x) ? money.format(x) : '—'; };
   var pct = function (x) { return isFinite(x) ? (Math.round(x * 10) / 10) + '%' : '—'; };
-  var count = function (x) { return String(Math.round(x * 10) / 10); };
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -601,18 +572,13 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
   var val = function (id) { return n($(id).value); };
   var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
-  var FIELDS = ['price', 'materials', 'labor', 'subs', 'other', 'overheadPct', 'marginPct', 'down', 'applyPct', 'declinedCashPct'];
-  var TABS = ['job', 'blend', 'lenders'];
-  var state = { lenders: clone(DEFAULT_LENDERS), costsOpen: false, tab: 'job' };
-
-  function lenderName(li) { return state.lenders[li].name || 'Lender ' + (li + 1); }
-  function planName(p, pi) { return p.name || 'Plan ' + (pi + 1); }
-  function roleLabel(li) { return li === 0 ? 'Primary' : state.lenders.length > 2 ? 'Backup ' + li : 'Backup'; }
+  var FIELDS = ['materials', 'wastePct', 'laborHours', 'laborRate', 'subs', 'other', 'overheadPct', 'marginPct'];
+  var plans = clone(DEFAULT_PLANS);
 
   // ---------- persistence (per-browser convenience only) ----------
   function save() {
     try {
-      var data = { lenders: state.lenders, costsOpen: state.costsOpen, tab: state.tab, fields: {} };
+      var data = { plans: plans, fields: {} };
       FIELDS.forEach(function (f) { data.fields[f] = $(f).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) { /* storage unavailable */ }
@@ -621,312 +587,148 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
   function load() {
     try {
       var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-      if (!data) {
-        var old = JSON.parse(localStorage.getItem(OLD_STORE_KEY) || 'null');
-        if (old) {
-          data = { lenders: old.lenders, costsOpen: old.mode === 'costs', fields: old.fields || {} };
-          if (data.fields.directPrice != null) data.fields.price = data.fields.directPrice;
+      if (data) {
+        if (Array.isArray(data.plans)) plans = data.plans;
+        if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
+        return;
+      }
+      // carry lenders/plans over from the earlier versions
+      for (var i = 0; i < OLD_KEYS.length; i++) {
+        var old = JSON.parse(localStorage.getItem(OLD_KEYS[i]) || 'null');
+        if (old && Array.isArray(old.lenders)) {
+          var flat = [];
+          old.lenders.forEach(function (l) {
+            (l.plans || []).forEach(function (p) { flat.push({ lender: l.name || '', name: p.name || '', fee: p.fee }); });
+          });
+          if (flat.length) plans = flat;
+          var f = old.fields || {};
+          ['materials', 'subs', 'other', 'overheadPct', 'marginPct'].forEach(function (k) { if (f[k] != null) $(k).value = f[k]; });
+          return;
         }
       }
-      if (!data) return;
-      if (Array.isArray(data.lenders) && data.lenders.length) {
-        state.lenders = data.lenders;
-        state.lenders.forEach(function (l, li) {
-          if (l.approval == null) l.approval = li === 0 ? 70 : 50;
-          l.plans = l.plans || [];
-          l.plans.forEach(function (p, pi) { if (p.split == null) p.split = pi === 0 ? 100 : 0; });
-        });
-      }
-      if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
-      state.costsOpen = !!data.costsOpen;
-      if (TABS.indexOf(data.tab) >= 0) state.tab = data.tab;
     } catch (e) { /* ignore bad data */ }
   }
 
-  // ---------- tabs ----------
-  function showTab(tab) {
-    state.tab = tab;
-    TABS.forEach(function (t) {
-      $('tab-' + t).setAttribute('aria-selected', String(t === tab));
-      $('tab-' + t).tabIndex = t === tab ? 0 : -1;
-      $('panel-' + t).hidden = t !== tab;
-    });
-    save();
-  }
-
-  // ---------- cash price ----------
-  function getCash() {
-    if (!state.costsOpen) return { price: val('price'), profit: null };
-    return C.cashPriceFromCosts({
-      materials: val('materials'), labor: val('labor'), subs: val('subs'), other: val('other'),
-      overheadPct: val('overheadPct'), marginPct: val('marginPct'),
-    });
-  }
-
-  function renderCosts(cash) {
-    $('costs').hidden = !state.costsOpen;
-    $('toggle-costs').setAttribute('aria-expanded', String(state.costsOpen));
-    $('toggle-costs').textContent = state.costsOpen ? 'Type a price instead' : 'Work it out from my costs';
-    $('price').readOnly = state.costsOpen;
-    $('price').classList.toggle('computed', state.costsOpen);
-    if (!state.costsOpen) return;
-    if (cash.error) {
-      $('cost-line').innerHTML = '<span class="neg">' + esc(cash.error) + '</span>';
-      $('price').value = '';
-      return;
-    }
-    $('price').value = Math.round(cash.price);
-    $('cost-line').textContent = 'Costs ' + fmt(cash.cost) + ' + overhead ' + fmt(cash.overhead) +
-      ' + profit ' + fmt(cash.profit) + ' = ' + fmt(cash.price) + ' (' + pct(cash.markupPct) + ' markup on cost)';
-  }
-
-  // ---------- tab 1: plan cards ----------
-  function renderPlanCards(cash) {
-    if (cash.error || !(cash.price > 0)) {
-      $('plan-cards').innerHTML = '<p class="muted empty">Enter your cash price above.</p>';
-      $('mistake').textContent = '';
-      return;
-    }
-    var down = val('down');
-    var minFee = Infinity, maxFee = 0, maxPlan = null;
-    state.lenders.forEach(function (l) {
-      l.plans.forEach(function (p) {
-        var f = n(p.fee);
-        if (f < minFee) minFee = f;
-        if (f > maxFee) { maxFee = f; maxPlan = p; }
-      });
-    });
-    var multipleFees = minFee !== maxFee;
-
-    var html = state.lenders.map(function (l, li) {
-      if (!l.plans.length) return '';
-      var cards = l.plans.map(function (p, pi) {
-        var fee = n(p.fee);
-        var g = C.grossUp(cash.price, fee, down);
-        if (g.error) return '<div class="plan-card"><div class="pc-name">' + esc(planName(p, pi)) + '</div><p class="neg">' + esc(g.error) + '</p></div>';
-        var pay = C.monthlyPayment(g.financed, n(p.apr), n(p.months));
-        var absorb = '';
-        if (cash.profit != null) {
-          var a = C.absorbFee(cash.price, cash.profit, fee * Math.max(0, cash.price - down) / cash.price);
-          absorb = '<div class="pc-absorb">If you eat the fee instead: <span class="' + (a.profit < 0 ? 'neg' : '') + '">' + fmt(a.profit) + ' profit (' + pct(a.marginPct) + ')</span></div>';
-        }
-        return '<div class="plan-card">' +
-          '<div class="pc-top"><span class="pc-name">' + esc(planName(p, pi)) + '</span>' +
-            (multipleFees && fee === minFee ? '<span class="tag">Lowest price</span>' : '') + '</div>' +
-          '<div class="pc-price">' + fmt(g.price) + '</div>' +
-          '<div class="pc-sub">+' + fmt(g.increase) + ' covers the ' + pct(fee) + ' dealer fee</div>' +
-          (pay > 0 ? '<div class="pc-sub">About ' + fmt(pay) + '/mo for ' + Math.round(n(p.months)) + ' months</div>' : '') +
-          absorb +
-          '</div>';
-      }).join('');
-      return '<div class="lender-group"><h3 class="group-title">' + esc(lenderName(li)) + '</h3><div class="cards">' + cards + '</div></div>';
-    }).join('');
-    $('plan-cards').innerHTML = html || '<p class="muted empty">No plans yet. Add your lenders in <button type="button" class="link inline-link" data-goto="lenders">My lenders</button>.</p>';
-
-    if (maxFee > 0) {
-      var nv = C.naiveMarkup(cash.price, maxFee);
-      var right = C.grossUp(cash.price, maxFee, 0);
-      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. On "' + esc(maxPlan.name) + '" (' + pct(maxFee) + '): ' +
-        fmt(cash.price) + ' + ' + pct(maxFee) + ' = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
-        ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. The right price is ' + fmt(right.price) + '.';
-    }
-  }
-
-  // ---------- tab 2: one price for all ----------
-  var SEG_COLORS = ['var(--l1)', 'var(--l2)', 'var(--l3)', 'var(--l4)'];
-
-  function renderBlend(cash) {
-    var wf = C.waterfall({
-      applyPct: val('applyPct'),
-      declinedCashPct: val('declinedCashPct'),
-      lenders: state.lenders.map(function (l) {
-        return { approvalPct: l.approval, plans: l.plans.map(function (p) { return { fee: p.fee, splitPct: p.split }; }) };
-      }),
-    });
-
-    // funnel bar + legend
-    var segs = [{ label: 'Pay cash', v: 100 - Math.min(100, Math.max(0, val('applyPct'))), color: 'var(--cash)' }];
-    wf.lenders.forEach(function (l, li) {
-      segs.push({ label: 'Financed by ' + esc(lenderName(li)), v: l.approved, color: SEG_COLORS[li % SEG_COLORS.length] });
-    });
-    segs.push({ label: 'Declined, pay cash anyway', v: wf.declinedCash, color: 'var(--cash2)' });
-    segs.push({ label: 'Declined, job lost', v: wf.lost, color: 'var(--lost)' });
-    $('funnel-bar').innerHTML = segs.map(function (s) {
-      return s.v > 0 ? '<span style="flex:' + s.v + ';background:' + s.color + '"></span>' : '';
-    }).join('');
-    $('funnel-legend').innerHTML = segs.map(function (s) {
-      return '<li><i style="background:' + s.color + '"></i>' + s.label + '<b>' + count(s.v) + '</b></li>';
-    }).join('');
-    var backup = wf.lenders.slice(1).reduce(function (t, l) { return t + l.approved; }, 0);
-
-    if (cash.error || !(cash.price > 0)) {
-      $('blend-hero').innerHTML = '<p class="muted">Enter your cash price on the <button type="button" class="link inline-link" data-goto="job">Price a job</button> tab.</p>';
-      $('breakdown-rows').innerHTML = '';
-      return;
-    }
-
-    var b = C.blendedPriceMix(cash.price, wf.mix);
-    if (b.error) {
-      $('blend-hero').innerHTML = '<p class="neg">' + esc(b.error) + '</p>';
-      return;
-    }
-
-    // lowest single-job net among plans that actually get customers
-    var lowest = null, i = 0, rows = [];
-    state.lenders.forEach(function (l, li) {
-      l.plans.forEach(function (p, pi) {
-        var share = wf.mix[i].share, net = b.perPlan[i].net;
-        if (share > 0 && (!lowest || net < lowest.net)) lowest = { net: net, label: lenderName(li) + ', ' + planName(p, pi) };
-        rows.push('<tr><td>' + esc(planName(p, pi)) + ' <small class="muted">' + esc(lenderName(li)) + '</small></td><td>' + pct(n(p.fee)) +
-          '</td><td>' + pct(share) + '</td><td>' + fmt(net) + '</td></tr>');
-        i++;
-      });
-    });
-    rows.push('<tr class="muted"><td>Pay cash</td><td>0%</td><td>' + pct(wf.closed > 0 ? wf.cashBuyers / wf.closed * 100 : 0) + '</td><td>' + fmt(b.netIfCash) + '</td></tr>');
-    $('breakdown-rows').innerHTML = rows.join('');
-
-    $('blend-hero').innerHTML =
-      '<div class="hero-label">Charge every customer</div>' +
-      '<div class="hero-price">' + fmt(b.price) + '</div>' +
-      '<div class="hero-sub">+' + fmt(b.increase) + ' (' + pct(b.increasePct) + ') over your ' + fmt(cash.price) + ' cash price</div>' +
-      '<p class="hero-note">On average you get your full cash price per job.' +
-        (lowest ? ' On a single job it can be as low as ' + fmt(lowest.net) + ' (' + esc(lowest.label) + ').' : '') +
-        (backup > 0 ? ' Your backup lender saves about ' + count(backup) + ' jobs per 100 customers.' : '') +
-      '</p>';
-  }
-
-  // ---------- tab 3: lenders ----------
-  function renderLenders() {
-    var L = state.lenders;
-    $('lenders').innerHTML = L.map(function (l, li) {
-      var rows = l.plans.map(function (p, pi) {
-        return '<div class="plan-row" data-li="' + li + '" data-pi="' + pi + '">' +
-          '<label class="f-name"><span>Plan</span><input data-k="name" type="text" value="' + esc(p.name) + '"></label>' +
-          '<label><span>Dealer fee</span><span class="pct"><input data-k="fee" type="number" inputmode="decimal" min="0" max="99" step="any" value="' + esc(p.fee) + '"></span></label>' +
-          '<label><span>APR</span><span class="pct"><input data-k="apr" type="number" inputmode="decimal" min="0" step="any" value="' + esc(p.apr) + '"></span></label>' +
-          '<label><span>Months</span><input data-k="months" type="number" inputmode="numeric" min="0" step="1" value="' + esc(p.months) + '"></label>' +
-          '<label><span>Mix</span><span class="pct"><input data-k="split" type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(p.split) + '"></span></label>' +
-          '<button type="button" class="icon" data-remove-plan aria-label="Remove ' + esc(planName(p, pi)) + '">×</button>' +
-          '</div>';
-      }).join('');
-      var splitSum = l.plans.reduce(function (t, p) { return t + Math.max(0, n(p.split)); }, 0);
-      return '<div class="card lender" data-li="' + li + '">' +
-        '<div class="lender-head">' +
-          '<span class="role">' + roleLabel(li) + '</span>' +
-          '<input class="lender-name" data-lender-name aria-label="Lender name" type="text" value="' + esc(l.name) + '" placeholder="Lender name">' +
-          '<span class="lender-tools">' +
-            (li > 0 ? '<button type="button" class="link" data-move-up>' + (li === 1 ? 'Make primary' : 'Move up') + '</button>' : '') +
-            (L.length > 1 ? '<button type="button" class="link danger" data-remove-lender>Remove</button>' : '') +
-          '</span>' +
-        '</div>' +
-        '<label class="approval">Approves <span class="pct"><input data-approval type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(l.approval) + '"></span> of the customers who apply' + (li === 0 ? '' : ' after being declined') + '</label>' +
-        '<div class="plan-rows">' + (rows || '<p class="muted">No plans yet.</p>') + '</div>' +
-        (l.plans.length > 1 ? '<p class="muted small-text" data-mix-note>' + mixNote(splitSum) + '</p>' : '') +
-        '<button type="button" class="link" data-add-plan>+ Add plan</button>' +
+  // ---------- plan editor ----------
+  function renderEditor() {
+    $('plan-editor').innerHTML = plans.map(function (p, i) {
+      return '<div class="plan-edit" data-i="' + i + '">' +
+        '<label><span>Lender</span><input data-k="lender" type="text" value="' + esc(p.lender) + '" placeholder="Lender"></label>' +
+        '<label><span>Plan</span><input data-k="name" type="text" value="' + esc(p.name) + '" placeholder="e.g. 12 mo same-as-cash"></label>' +
+        '<label><span>Dealer fee</span><span class="pct"><input data-k="fee" type="number" inputmode="decimal" min="0" max="99" step="any" value="' + esc(p.fee) + '"></span></label>' +
+        '<button type="button" class="icon" data-remove aria-label="Remove ' + esc(p.name || 'plan') + '">×</button>' +
         '</div>';
-    }).join('');
-  }
-
-  function mixNote(sum) {
-    var base = '<strong>Mix:</strong> of the customers this lender approves, about what % pick each plan.';
-    return Math.abs(sum - 100) > 0.01 ? base + ' <span class="neg">Adds up to ' + pct(sum) + ', so we scale it to 100%.</span>' : base;
+    }).join('') || '<p class="hint block">No plans yet.</p>';
   }
 
   // ---------- main update ----------
   function update() {
-    var cash = getCash();
-    renderCosts(cash);
-    renderPlanCards(cash);
-    renderBlend(cash);
+    var cost = C.jobCost({
+      materials: val('materials'), wastePct: val('wastePct'),
+      laborHours: val('laborHours'), laborRate: val('laborRate'),
+      subs: val('subs'), other: val('other'),
+    });
+    $('cost-total').textContent = fmt(cost.total);
+
+    var price = C.cashPriceFromCosts({ materials: cost.total, overheadPct: val('overheadPct'), marginPct: val('marginPct') });
+    var bad = !!price.error;
+    $('price-error').hidden = !bad;
+    if (bad) {
+      $('price-error').textContent = price.error;
+      $('cash-price').textContent = '—';
+      $('markup-line').textContent = '';
+      $('split-bar').innerHTML = '';
+      $('split-legend').innerHTML = '';
+      $('plan-list').innerHTML = '<li class="hint">Fix your overhead and profit above.</li>';
+      $('mistake').textContent = '';
+      save();
+      return;
+    }
+
+    $('cash-price').textContent = fmt(price.price);
+    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + pct(price.markupPct) + ' markup on your costs.' : 'Enter your costs above.';
+
+    // where the money goes
+    var parts = [
+      { label: 'Job cost', v: cost.total, cls: 's-cost' },
+      { label: 'Overhead', v: price.overhead, cls: 's-oh' },
+      { label: 'Profit', v: price.profit, cls: 's-profit' },
+    ];
+    $('split-bar').innerHTML = price.price > 0 ? parts.map(function (p) {
+      return p.v > 0 ? '<span class="' + p.cls + '" style="flex:' + p.v + '"></span>' : '';
+    }).join('') : '';
+    $('split-legend').innerHTML = price.price > 0 ? parts.map(function (p) {
+      return '<li><i class="' + p.cls + '"></i>' + p.label + ' <b>' + fmt(p.v) + '</b></li>';
+    }).join('') : '';
+
+    // financing
+    var fees = plans.map(function (p) { return n(p.fee); });
+    var minFee = Math.min.apply(null, fees.length ? fees : [0]);
+    var maxFee = Math.max.apply(null, fees.length ? fees : [0]);
+    $('plan-list').innerHTML = plans.length ? plans.map(function (p) {
+      var g = C.grossUp(price.price, n(p.fee), 0);
+      if (g.error) return '<li class="plan"><div class="plan-name">' + esc(p.name) + '</div><div class="neg">' + esc(g.error) + '</div></li>';
+      return '<li class="plan">' +
+        '<div class="plan-info"><div class="plan-name">' + esc(p.name || 'Plan') +
+          (fees.length > 1 && minFee !== maxFee && n(p.fee) === minFee ? ' <span class="tag">Lowest</span>' : '') + '</div>' +
+          '<div class="plan-meta">' + (p.lender ? esc(p.lender) + ' · ' : '') + pct(n(p.fee)) + ' dealer fee</div></div>' +
+        '<div class="plan-price"><strong>' + fmt(g.price) + '</strong><span>+' + fmt(g.increase) + '</span></div>' +
+        '</li>';
+    }).join('') : '<li class="hint">No plans yet. Open "Edit financing plans" to add one.</li>';
+
+    if (maxFee > 0 && price.price > 0) {
+      var top = plans[fees.indexOf(maxFee)];
+      var nv = C.naiveMarkup(price.price, maxFee);
+      var right = C.grossUp(price.price, maxFee, 0);
+      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With "' + esc(top.name) + '" (' + pct(maxFee) + '): ' +
+        fmt(price.price) + ' + ' + pct(maxFee) + ' = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
+        ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. Charge ' + fmt(right.price) + ' instead.';
+    } else {
+      $('mistake').textContent = 'Add a financing plan to see an example.';
+    }
+
     save();
   }
 
   // ---------- events ----------
   document.addEventListener('input', function (e) {
     var t = e.target;
-    var row = t.closest('.plan-row');
-    var box = t.closest('.lender');
-    if (row && t.dataset.k) {
-      var l = state.lenders[+row.dataset.li];
-      l.plans[+row.dataset.pi][t.dataset.k] = t.value;
-      if (t.dataset.k === 'split') {
-        var note = box.querySelector('[data-mix-note]');
-        if (note) note.innerHTML = mixNote(l.plans.reduce(function (s, p) { return s + Math.max(0, n(p.split)); }, 0));
-      }
-    } else if (box && t.hasAttribute('data-lender-name')) {
-      state.lenders[+box.dataset.li].name = t.value;
-    } else if (box && t.hasAttribute('data-approval')) {
-      state.lenders[+box.dataset.li].approval = t.value;
-    }
+    var row = t.closest('.plan-edit');
+    if (row && t.dataset.k) plans[+row.dataset.i][t.dataset.k] = t.value;
     update();
   });
 
-  document.addEventListener('click', function (e) {
-    var go = e.target.closest('[data-goto]');
-    if (go) { showTab(go.dataset.goto); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  $('plan-editor').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-remove]');
+    if (!b) return;
+    plans.splice(+b.closest('.plan-edit').dataset.i, 1);
+    renderEditor(); update();
   });
 
-  $('lenders').addEventListener('click', function (e) {
-    var box = e.target.closest('.lender');
-    if (!box) return;
-    var li = +box.dataset.li;
-    var l = state.lenders[li];
-    if (e.target.closest('[data-remove-plan]')) {
-      l.plans.splice(+e.target.closest('.plan-row').dataset.pi, 1);
-    } else if (e.target.closest('[data-add-plan]')) {
-      l.plans.push({ name: 'New plan', fee: 5, apr: 0, months: 12, split: l.plans.length ? 0 : 100 });
-    } else if (e.target.closest('[data-move-up]')) {
-      state.lenders.splice(li - 1, 0, state.lenders.splice(li, 1)[0]);
-    } else if (e.target.closest('[data-remove-lender]')) {
-      if (!confirm('Remove ' + lenderName(li) + ' and its plans?')) return;
-      state.lenders.splice(li, 1);
-    } else {
-      return;
-    }
-    renderLenders();
-    update();
-  });
-
-  $('add-lender').addEventListener('click', function () {
-    state.lenders.push({ name: 'Lender ' + String.fromCharCode(65 + state.lenders.length), approval: 50,
-      plans: [{ name: 'New plan', fee: 5, apr: 0, months: 12, split: 100 }] });
-    renderLenders(); update();
-    var names = $('lenders').querySelectorAll('[data-lender-name]');
-    names[names.length - 1].select();
+  $('add-plan').addEventListener('click', function () {
+    var last = plans[plans.length - 1];
+    plans.push({ lender: last ? last.lender : '', name: '', fee: 5 });
+    renderEditor(); update();
+    var names = $('plan-editor').querySelectorAll('input[data-k=name]');
+    names[names.length - 1].focus();
   });
 
   $('reset-plans').addEventListener('click', function () {
-    if (!confirm('Replace your lenders and plans with the examples?')) return;
-    state.lenders = clone(DEFAULT_LENDERS);
-    renderLenders(); update();
-  });
-
-  $('toggle-costs').addEventListener('click', function () {
-    state.costsOpen = !state.costsOpen;
-    update();
-    if (state.costsOpen) $('materials').focus();
-    else $('price').focus();
-  });
-
-  // tabs: click + arrow keys
-  TABS.forEach(function (t, i) {
-    var el = $('tab-' + t);
-    el.addEventListener('click', function () { showTab(t); });
-    el.addEventListener('keydown', function (e) {
-      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d) return;
-      var next = TABS[(i + d + TABS.length) % TABS.length];
-      showTab(next);
-      $('tab-' + next).focus();
-    });
+    if (!confirm('Replace your financing plans with the examples?')) return;
+    plans = clone(DEFAULT_PLANS);
+    renderEditor(); update();
   });
 
   $('print').addEventListener('click', function () { window.print(); });
 
+  // select the whole number when tapping a field, so it's easy to type over
+  document.addEventListener('focusin', function (e) {
+    if (e.target.matches('input[type=number]')) setTimeout(function () { e.target.select(); }, 0);
+  });
+
   // ---------- init ----------
   load();
-  renderLenders();
-  showTab(state.tab);
+  renderEditor();
   update();
 })();
 </script>
