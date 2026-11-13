@@ -4,14 +4,13 @@ A small web app that helps contractors price jobs when customers pay with consum
 
 ## What it does
 
-1. **Cash price.** Build it from job costs (materials, labor, subs, other), plus overhead and profit as a % of price. Or type in a price you already have.
-2. **Lenders & plans.** Add each lender you work with, and under each one enter its plans' dealer fees, customer APR and term from that lender's rate sheet.
-3. **Financed price per plan**, grouped by lender. The price that still nets you your full cash price after the fee, with the fee in dollars, an estimated monthly payment, and what your profit drops to if you absorb the fee instead.
-4. **One price for everyone.** Many lender agreements don't let you charge financed customers more. This gives a single price that covers the fees you expect across all your jobs, plus your lowest net on any one job. Two ways to estimate your financing mix:
-   - **Approval waterfall.** Applicants go to your primary lender first; anyone it declines goes to the backup, and so on. Enter the share of customers who apply, each lender's approval rate, how each lender's approvals split across its plans, and how many fully declined customers still buy with cash. It shows how many jobs your backup lender saves.
-   - **Manual.** Enter each plan's share of customers directly.
+Three tabs:
 
-It also shows why simply adding the fee % on top leaves you short.
+- **Price a job.** Type your cash price, or open *Work it out from my costs* (materials, labor, subs, other, overhead %, profit %). Each financing plan gets a card showing what to charge so you still get your full cash price after the dealer fee, plus a rough monthly payment. If you entered costs, it also shows what your profit drops to if you absorb the fee instead. An optional cash down payment applies the fee only to the financed part.
+- **One price for all.** Many lender agreements don't let you charge financed customers more. Enter the share of customers who apply for financing and how many fully declined customers still pay cash. It gives one price for everyone that covers expected fees, plus a picture of 100 customers: who pays cash, who each lender funds, and who's lost.
+- **My lenders.** Set up once from your rate sheets. Lenders are in waterfall order (primary, then backup); each has an approval rate and plans (dealer fee, APR, months, and *mix*: the share of that lender's approvals that pick each plan).
+
+It also explains why simply adding the fee % on top leaves you short.
 
 ## The math
 

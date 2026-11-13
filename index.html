@@ -8,121 +8,110 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="top">
-    <div class="wrap">
-      <h1>Dealer Fee Calculator</h1>
-      <p class="lede">Price jobs so financing fees come out of the customer's price, not your profit.</p>
-    </div>
+  <header class="wrap top">
+    <h1>Dealer Fee Calculator</h1>
+    <p class="lede">Know what to charge when a customer finances, so the lender's fee doesn't come out of your pocket.</p>
   </header>
 
+  <nav class="wrap">
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-job" aria-controls="panel-job" aria-selected="true">Price a job</button>
+      <button role="tab" id="tab-blend" aria-controls="panel-blend" aria-selected="false">One price for all</button>
+      <button role="tab" id="tab-lenders" aria-controls="panel-lenders" aria-selected="false">My lenders</button>
+    </div>
+  </nav>
+
   <main class="wrap">
-    <!-- STEP 1 -->
-    <section class="card" aria-labelledby="s1">
-      <h2 id="s1"><span class="step">1</span> Your cash price</h2>
-      <div class="mode" role="radiogroup" aria-label="How to set the cash price">
-        <label><input type="radio" name="mode" value="costs" checked> Build from job costs</label>
-        <label><input type="radio" name="mode" value="direct"> I already know my price</label>
+    <!-- ============ PRICE A JOB ============ -->
+    <section id="panel-job" role="tabpanel" aria-labelledby="tab-job">
+      <div class="card">
+        <label class="big-label" for="price">Your cash price for this job</label>
+        <div class="money xl"><input id="price" type="number" inputmode="decimal" min="0" step="any" value="17700"></div>
+        <button type="button" class="link" id="toggle-costs" aria-expanded="false" aria-controls="costs">Work it out from my costs</button>
+
+        <div id="costs" class="costs" hidden>
+          <div class="grid">
+            <label>Materials <span class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6500"></span></label>
+            <label>Labor <span class="money"><input id="labor" type="number" inputmode="decimal" min="0" step="any" value="4200"></span></label>
+            <label>Subcontractors <span class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
+            <label>Permits &amp; other <span class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></span></label>
+            <label>Overhead <small>% of price</small> <span class="pct"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></span></label>
+            <label>Profit <small>% of price</small> <span class="pct"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></span></label>
+          </div>
+          <p id="cost-line" class="muted small-text" aria-live="polite"></p>
+        </div>
+
+        <details class="mini">
+          <summary>Customer is putting cash down?</summary>
+          <label class="inline">Down payment <span class="money"><input id="down" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
+          <p class="muted small-text">The lender's fee only applies to the part they finance.</p>
+        </details>
       </div>
 
-      <div id="costs-fields" class="grid">
-        <label>Materials <span class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6500"></span></label>
-        <label>Labor <span class="money"><input id="labor" type="number" inputmode="decimal" min="0" step="any" value="4200"></span></label>
-        <label>Subcontractors <span class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
-        <label>Permits, disposal, other <span class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></span></label>
-        <label>Overhead <small>% of price</small> <span class="pct"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></span></label>
-        <label>Profit margin <small>% of price</small> <span class="pct"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></span></label>
-      </div>
+      <h2 class="section-title">If they finance, charge:</h2>
+      <div id="plan-cards" aria-live="polite"></div>
 
-      <div id="direct-fields" class="grid" hidden>
-        <label>Cash price <span class="money"><input id="directPrice" type="number" inputmode="decimal" min="0" step="any" value="17700"></span></label>
-        <label>Profit in that price <small>optional, $</small> <span class="money"><input id="directProfit" type="number" inputmode="decimal" min="0" step="any" value=""></span></label>
-      </div>
-
-      <div id="cash-summary" class="summary" aria-live="polite"></div>
+      <details class="card faq">
+        <summary>Why not just add the fee % on top?</summary>
+        <p id="mistake"></p>
+      </details>
     </section>
 
-    <!-- STEP 2 -->
-    <section class="card" aria-labelledby="s2">
-      <h2 id="s2"><span class="step">2</span> Your lenders &amp; plans</h2>
-      <p class="hint">Enter the dealer fees from each lender's rate sheet. The defaults are only examples — fees vary a lot by lender, plan and credit tier.</p>
+    <!-- ============ ONE PRICE FOR ALL ============ -->
+    <section id="panel-blend" role="tabpanel" aria-labelledby="tab-blend" hidden>
+      <div class="card">
+        <p class="muted top-note">Many lenders (and some states) don't let you charge financed customers more than cash customers. Instead, set one price for everyone that covers the fees you can expect over all your jobs.</p>
+        <div class="grid two">
+          <label>Customers who apply for financing <span class="pct"><input id="applyPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="45"></span></label>
+          <label>Declined by every lender but still pay cash <span class="pct"><input id="declinedCashPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="30"></span></label>
+        </div>
+        <p class="muted small-text">Approval rates and which plans customers pick are set in <button type="button" class="link inline-link" data-goto="lenders">My lenders</button>.</p>
+      </div>
+
+      <div id="blend-hero" class="card hero-card" aria-live="polite"></div>
+
+      <div class="card">
+        <h3 class="card-title">Out of 100 customers</h3>
+        <div id="funnel-bar" class="bar" aria-hidden="true"></div>
+        <ul id="funnel-legend" class="legend"></ul>
+      </div>
+
+      <details class="card faq">
+        <summary>See the breakdown by plan</summary>
+        <div class="table-scroll">
+          <table class="breakdown">
+            <thead><tr><th>Plan</th><th>Fee</th><th>Share of jobs</th><th>You net</th></tr></thead>
+            <tbody id="breakdown-rows"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ MY LENDERS ============ -->
+    <section id="panel-lenders" role="tabpanel" aria-labelledby="tab-lenders" hidden>
+      <p class="muted top-note">Set this up once from your lenders' rate sheets. It's saved on this device. <strong>The starting numbers are only examples.</strong></p>
       <div id="lenders"></div>
       <div class="row-actions">
         <button type="button" id="add-lender" class="btn ghost">+ Add lender</button>
-        <button type="button" id="reset-plans" class="btn ghost">Reset to examples</button>
+        <button type="button" id="reset-plans" class="btn ghost quiet">Reset to examples</button>
       </div>
-      <label class="inline">Customer down payment (cash) <span class="money"><input id="down" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
     </section>
 
-    <!-- STEP 3 -->
-    <section class="card" aria-labelledby="s3">
-      <h2 id="s3"><span class="step">3</span> What to charge financed customers</h2>
-      <p class="hint">Each price is set so that after the lender takes its fee, you still net your full cash price.</p>
-      <div class="table-scroll">
-        <table class="results">
-          <thead>
-            <tr>
-              <th>Plan</th><th>Charge customer</th><th>Increase</th><th>Lender keeps</th><th>You net</th><th>Est. payment</th><th>If you absorb it</th>
-            </tr>
-          </thead>
-          <tbody id="result-rows"></tbody>
-        </table>
-      </div>
-      <div id="mistake" class="callout warn"></div>
-    </section>
-
-    <!-- STEP 4 -->
-    <section class="card" aria-labelledby="s4">
-      <h2 id="s4"><span class="step">4</span> One price for everyone</h2>
-      <p class="hint">Many lender agreements (and some state laws) don't let you charge financed customers more than cash customers. Instead, build the expected fees into a single price for all customers, based on how your customers usually end up paying.</p>
-      <div class="mode" role="radiogroup" aria-label="How to estimate your financing mix">
-        <label><input type="radio" name="mixMode" value="waterfall" checked> Estimate from approval rates</label>
-        <label><input type="radio" name="mixMode" value="manual"> Enter each plan's share myself</label>
-      </div>
-
-      <div id="waterfall-panel">
-        <p class="hint">Applicants go to your lenders in the order listed in step 2. Anyone the primary lender declines is sent to the backup.</p>
-        <div class="grid">
-          <label>Customers who apply for financing <span class="pct"><input id="applyPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="45"></span></label>
-          <label>Declined by every lender but still buy with cash <span class="pct"><input id="declinedCashPct" type="number" inputmode="decimal" min="0" max="100" step="any" value="30"></span></label>
-        </div>
-        <div class="table-scroll">
-          <table class="mix wf">
-            <thead><tr><th>Plan</th><th>Dealer fee</th><th>Split of approvals</th><th>Share of closed jobs</th><th>You net on this plan</th></tr></thead>
-            <tbody id="wf-rows"></tbody>
-          </table>
-        </div>
-        <div id="funnel" class="funnel" aria-live="polite"></div>
-      </div>
-
-      <div id="manual-panel" hidden>
-        <p class="hint">Enter roughly what share of your customers ends up on each plan; everyone else pays cash.</p>
-        <div class="table-scroll">
-          <table class="mix">
-            <thead><tr><th>Plan</th><th>Dealer fee</th><th>% of customers</th><th>You net on this plan</th></tr></thead>
-            <tbody id="mix-rows"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="blend-out" class="summary" aria-live="polite"></div>
-    </section>
-
-    <section class="card notes">
-      <h2>How the math works</h2>
+    <details class="card faq how">
+      <summary>How the math works</summary>
       <ul>
-        <li><strong>Financed price = cash price ÷ (1 − dealer fee).</strong> With a 10% fee on a $10,000 job, charge $11,111 — the lender keeps $1,111 and you net $10,000.</li>
-        <li>Adding the fee on top (×1.10 = $11,000) doesn't work: the lender takes 10% of the bigger number, and you net only $9,900.</li>
+        <li><strong>Financed price = cash price ÷ (1 − dealer fee).</strong> With a 10% fee on a $10,000 job, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
         <li>With a cash down payment, the fee only applies to the financed part.</li>
-        <li>Approval waterfall: if 45% of customers apply and your primary lender approves 70%, it funds 31.5% of customers. The backup lender sees the other 13.5% and, at a 50% approval rate, funds 6.75%.</li>
-        <li>Margin here is a percentage of the selling price. A 20% margin equals a 25% markup on cost.</li>
-        <li>Monthly payments are simple amortized estimates. Deferred-interest and "same as cash" plans bill differently, so use the lender's figures when quoting payments.</li>
+        <li>Overhead and profit are a % of the selling price. A 20% profit margin is a 25% markup on cost.</li>
+        <li><strong>One price for all</strong> spreads the fees you expect across every job. Customers try your primary lender first; anyone it declines tries the backup.</li>
+        <li>Monthly payments are rough estimates. Same-as-cash and deferred-interest plans bill differently, so quote the lender's numbers.</li>
       </ul>
       <p class="fine">For estimating only. Check your lender agreement and local rules before you change how you price financed jobs.</p>
-    </section>
+    </details>
   </main>
 
   <footer class="wrap foot">
-    <button type="button" id="print" class="btn ghost">Print / save as PDF</button>
+    <button type="button" id="print" class="link">Print / save as PDF</button>
   </footer>
 
   <script src="js/calc.js"></script>

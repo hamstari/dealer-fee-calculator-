@@ -1,35 +1,35 @@
 (function () {
   'use strict';
   var C = window.DealerCalc;
-  var STORE_KEY = 'dealer-fee-calc-v2';
-  var OLD_STORE_KEY = 'dealer-fee-calc-v1';
+  var STORE_KEY = 'dealer-fee-calc-v3';
+  var OLD_STORE_KEY = 'dealer-fee-calc-v2';
 
   var DEFAULT_LENDERS = [
     {
       name: 'Lender A',
       approval: 70,
       plans: [
-        { name: '12 mo same-as-cash', fee: 6, apr: 0, months: 12, share: 20, split: 60 },
-        { name: '18 mo no interest', fee: 9, apr: 0, months: 18, share: 0, split: 30 },
-        { name: '0% APR, 60 mo', fee: 14, apr: 0, months: 60, share: 0, split: 10 },
+        { name: '12 mo same-as-cash', fee: 6, apr: 0, months: 12, split: 60 },
+        { name: '18 mo no interest', fee: 9, apr: 0, months: 18, split: 30 },
+        { name: '0% APR, 60 mo', fee: 14, apr: 0, months: 60, split: 10 },
       ],
     },
     {
       name: 'Lender B',
       approval: 50,
       plans: [
-        { name: '9.99% APR, 10 yr', fee: 3, apr: 9.99, months: 120, share: 15, split: 100 },
-        { name: '6.99% APR, 7 yr', fee: 7, apr: 6.99, months: 84, share: 0, split: 0 },
+        { name: '9.99% APR, 10 yr', fee: 3, apr: 9.99, months: 120, split: 100 },
+        { name: '6.99% APR, 7 yr', fee: 7, apr: 6.99, months: 84, split: 0 },
       ],
     },
   ];
 
+  // ---------- helpers ----------
   var $ = function (id) { return document.getElementById(id); };
   var money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-  var money2 = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  var fmt = function (n) { return isFinite(n) ? money.format(n) : '—'; };
-  var fmt2 = function (n) { return isFinite(n) ? money2.format(n) : '—'; };
-  var pct = function (n) { return isFinite(n) ? (Math.round(n * 10) / 10) + '%' : '—'; };
+  var fmt = function (x) { return isFinite(x) ? money.format(x) : '—'; };
+  var pct = function (x) { return isFinite(x) ? (Math.round(x * 10) / 10) + '%' : '—'; };
+  var count = function (x) { return String(Math.round(x * 10) / 10); };
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -39,26 +39,18 @@
   var val = function (id) { return n($(id).value); };
   var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
-  var FIELDS = ['materials', 'labor', 'subs', 'other', 'overheadPct', 'marginPct', 'directPrice', 'directProfit', 'down', 'applyPct', 'declinedCashPct'];
-  var lenders = clone(DEFAULT_LENDERS);
+  var FIELDS = ['price', 'materials', 'labor', 'subs', 'other', 'overheadPct', 'marginPct', 'down', 'applyPct', 'declinedCashPct'];
+  var TABS = ['job', 'blend', 'lenders'];
+  var state = { lenders: clone(DEFAULT_LENDERS), costsOpen: false, tab: 'job' };
 
-  function lenderLabel(l, li) { return l.name || 'Lender ' + (li + 1); }
-  function roleLabel(li) { return li === 0 ? 'Primary' : lenders.length > 2 ? 'Backup ' + li : 'Backup'; }
-  function planLabel(p, pi) { return p.name || 'Plan ' + (pi + 1); }
-
-  /** Flat list of every plan with its lender, in display order. */
-  function allPlans() {
-    var out = [];
-    lenders.forEach(function (l, li) {
-      l.plans.forEach(function (p, pi) { out.push({ lender: l, li: li, plan: p, pi: pi }); });
-    });
-    return out;
-  }
+  function lenderName(li) { return state.lenders[li].name || 'Lender ' + (li + 1); }
+  function planName(p, pi) { return p.name || 'Plan ' + (pi + 1); }
+  function roleLabel(li) { return li === 0 ? 'Primary' : state.lenders.length > 2 ? 'Backup ' + li : 'Backup'; }
 
   // ---------- persistence (per-browser convenience only) ----------
   function save() {
     try {
-      var data = { mode: mode(), mixMode: mixMode(), lenders: lenders, fields: {} };
+      var data = { lenders: state.lenders, costsOpen: state.costsOpen, tab: state.tab, fields: {} };
       FIELDS.forEach(function (f) { data.fields[f] = $(f).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) { /* storage unavailable */ }
@@ -68,317 +60,274 @@
     try {
       var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
       if (!data) {
-        // migrate the single-lender format
         var old = JSON.parse(localStorage.getItem(OLD_STORE_KEY) || 'null');
         if (old) {
-          data = { mode: old.mode, fields: old.fields || {} };
-          if (Array.isArray(old.plans) && old.plans.length) {
-            data.lenders = [{ name: 'My lender', plans: old.plans.map(function (p) { return Object.assign({ share: 0 }, p); }) }];
-          }
+          data = { lenders: old.lenders, costsOpen: old.mode === 'costs', fields: old.fields || {} };
+          if (data.fields.directPrice != null) data.fields.price = data.fields.directPrice;
         }
       }
       if (!data) return;
       if (Array.isArray(data.lenders) && data.lenders.length) {
-        lenders = data.lenders;
-        // fill in fields added by the approval waterfall
-        lenders.forEach(function (l, li) {
+        state.lenders = data.lenders;
+        state.lenders.forEach(function (l, li) {
           if (l.approval == null) l.approval = li === 0 ? 70 : 50;
-          (l.plans || []).forEach(function (p, pi) { if (p.split == null) p.split = pi === 0 ? 100 : 0; });
+          l.plans = l.plans || [];
+          l.plans.forEach(function (p, pi) { if (p.split == null) p.split = pi === 0 ? 100 : 0; });
         });
       }
-      if (data.mixMode) {
-        var mm = document.querySelector('input[name=mixMode][value="' + data.mixMode + '"]');
-        if (mm) mm.checked = true;
-      }
       if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
-      if (data.mode) {
-        var r = document.querySelector('input[name=mode][value="' + data.mode + '"]');
-        if (r) r.checked = true;
-      }
+      state.costsOpen = !!data.costsOpen;
+      if (TABS.indexOf(data.tab) >= 0) state.tab = data.tab;
     } catch (e) { /* ignore bad data */ }
   }
 
-  function mode() { return document.querySelector('input[name=mode]:checked').value; }
-  function mixMode() { return document.querySelector('input[name=mixMode]:checked').value; }
+  // ---------- tabs ----------
+  function showTab(tab) {
+    state.tab = tab;
+    TABS.forEach(function (t) {
+      $('tab-' + t).setAttribute('aria-selected', String(t === tab));
+      $('tab-' + t).tabIndex = t === tab ? 0 : -1;
+      $('panel-' + t).hidden = t !== tab;
+    });
+    save();
+  }
 
-  // ---------- lender / plan editor ----------
-  function renderLenders() {
-    $('lenders').innerHTML = lenders.map(function (l, li) {
-      var rows = l.plans.map(function (p, pi) {
-        return '<tr data-li="' + li + '" data-pi="' + pi + '">' +
-          '<td><input aria-label="Plan name" data-k="name" type="text" value="' + esc(p.name) + '"></td>' +
-          '<td><span class="pct"><input aria-label="Dealer fee percent" data-k="fee" type="number" inputmode="decimal" min="0" max="99" step="any" value="' + esc(p.fee) + '"></span></td>' +
-          '<td><span class="pct"><input aria-label="Customer APR" data-k="apr" type="number" inputmode="decimal" min="0" step="any" value="' + esc(p.apr) + '"></span></td>' +
-          '<td><input aria-label="Term in months" data-k="months" type="number" inputmode="numeric" min="0" step="1" value="' + esc(p.months) + '"></td>' +
-          '<td><button type="button" class="icon" data-remove-plan aria-label="Remove ' + esc(planLabel(p, pi)) + '">×</button></td>' +
-          '</tr>';
+  // ---------- cash price ----------
+  function getCash() {
+    if (!state.costsOpen) return { price: val('price'), profit: null };
+    return C.cashPriceFromCosts({
+      materials: val('materials'), labor: val('labor'), subs: val('subs'), other: val('other'),
+      overheadPct: val('overheadPct'), marginPct: val('marginPct'),
+    });
+  }
+
+  function renderCosts(cash) {
+    $('costs').hidden = !state.costsOpen;
+    $('toggle-costs').setAttribute('aria-expanded', String(state.costsOpen));
+    $('toggle-costs').textContent = state.costsOpen ? 'Type a price instead' : 'Work it out from my costs';
+    $('price').readOnly = state.costsOpen;
+    $('price').classList.toggle('computed', state.costsOpen);
+    if (!state.costsOpen) return;
+    if (cash.error) {
+      $('cost-line').innerHTML = '<span class="neg">' + esc(cash.error) + '</span>';
+      $('price').value = '';
+      return;
+    }
+    $('price').value = Math.round(cash.price);
+    $('cost-line').textContent = 'Costs ' + fmt(cash.cost) + ' + overhead ' + fmt(cash.overhead) +
+      ' + profit ' + fmt(cash.profit) + ' = ' + fmt(cash.price) + ' (' + pct(cash.markupPct) + ' markup on cost)';
+  }
+
+  // ---------- tab 1: plan cards ----------
+  function renderPlanCards(cash) {
+    if (cash.error || !(cash.price > 0)) {
+      $('plan-cards').innerHTML = '<p class="muted empty">Enter your cash price above.</p>';
+      $('mistake').textContent = '';
+      return;
+    }
+    var down = val('down');
+    var minFee = Infinity, maxFee = 0, maxPlan = null;
+    state.lenders.forEach(function (l) {
+      l.plans.forEach(function (p) {
+        var f = n(p.fee);
+        if (f < minFee) minFee = f;
+        if (f > maxFee) { maxFee = f; maxPlan = p; }
+      });
+    });
+    var multipleFees = minFee !== maxFee;
+
+    var html = state.lenders.map(function (l, li) {
+      if (!l.plans.length) return '';
+      var cards = l.plans.map(function (p, pi) {
+        var fee = n(p.fee);
+        var g = C.grossUp(cash.price, fee, down);
+        if (g.error) return '<div class="plan-card"><div class="pc-name">' + esc(planName(p, pi)) + '</div><p class="neg">' + esc(g.error) + '</p></div>';
+        var pay = C.monthlyPayment(g.financed, n(p.apr), n(p.months));
+        var absorb = '';
+        if (cash.profit != null) {
+          var a = C.absorbFee(cash.price, cash.profit, fee * Math.max(0, cash.price - down) / cash.price);
+          absorb = '<div class="pc-absorb">If you eat the fee instead: <span class="' + (a.profit < 0 ? 'neg' : '') + '">' + fmt(a.profit) + ' profit (' + pct(a.marginPct) + ')</span></div>';
+        }
+        return '<div class="plan-card">' +
+          '<div class="pc-top"><span class="pc-name">' + esc(planName(p, pi)) + '</span>' +
+            (multipleFees && fee === minFee ? '<span class="tag">Lowest price</span>' : '') + '</div>' +
+          '<div class="pc-price">' + fmt(g.price) + '</div>' +
+          '<div class="pc-sub">+' + fmt(g.increase) + ' covers the ' + pct(fee) + ' dealer fee</div>' +
+          (pay > 0 ? '<div class="pc-sub">About ' + fmt(pay) + '/mo for ' + Math.round(n(p.months)) + ' months</div>' : '') +
+          absorb +
+          '</div>';
       }).join('');
-      return '<div class="lender" data-li="' + li + '">' +
+      return '<div class="lender-group"><h3 class="group-title">' + esc(lenderName(li)) + '</h3><div class="cards">' + cards + '</div></div>';
+    }).join('');
+    $('plan-cards').innerHTML = html || '<p class="muted empty">No plans yet. Add your lenders in <button type="button" class="link inline-link" data-goto="lenders">My lenders</button>.</p>';
+
+    if (maxFee > 0) {
+      var nv = C.naiveMarkup(cash.price, maxFee);
+      var right = C.grossUp(cash.price, maxFee, 0);
+      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. On "' + esc(maxPlan.name) + '" (' + pct(maxFee) + '): ' +
+        fmt(cash.price) + ' + ' + pct(maxFee) + ' = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
+        ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. The right price is ' + fmt(right.price) + '.';
+    }
+  }
+
+  // ---------- tab 2: one price for all ----------
+  var SEG_COLORS = ['var(--l1)', 'var(--l2)', 'var(--l3)', 'var(--l4)'];
+
+  function renderBlend(cash) {
+    var wf = C.waterfall({
+      applyPct: val('applyPct'),
+      declinedCashPct: val('declinedCashPct'),
+      lenders: state.lenders.map(function (l) {
+        return { approvalPct: l.approval, plans: l.plans.map(function (p) { return { fee: p.fee, splitPct: p.split }; }) };
+      }),
+    });
+
+    // funnel bar + legend
+    var segs = [{ label: 'Pay cash', v: 100 - Math.min(100, Math.max(0, val('applyPct'))), color: 'var(--cash)' }];
+    wf.lenders.forEach(function (l, li) {
+      segs.push({ label: 'Financed by ' + esc(lenderName(li)), v: l.approved, color: SEG_COLORS[li % SEG_COLORS.length] });
+    });
+    segs.push({ label: 'Declined, pay cash anyway', v: wf.declinedCash, color: 'var(--cash2)' });
+    segs.push({ label: 'Declined, job lost', v: wf.lost, color: 'var(--lost)' });
+    $('funnel-bar').innerHTML = segs.map(function (s) {
+      return s.v > 0 ? '<span style="flex:' + s.v + ';background:' + s.color + '"></span>' : '';
+    }).join('');
+    $('funnel-legend').innerHTML = segs.map(function (s) {
+      return '<li><i style="background:' + s.color + '"></i>' + s.label + '<b>' + count(s.v) + '</b></li>';
+    }).join('');
+    var backup = wf.lenders.slice(1).reduce(function (t, l) { return t + l.approved; }, 0);
+
+    if (cash.error || !(cash.price > 0)) {
+      $('blend-hero').innerHTML = '<p class="muted">Enter your cash price on the <button type="button" class="link inline-link" data-goto="job">Price a job</button> tab.</p>';
+      $('breakdown-rows').innerHTML = '';
+      return;
+    }
+
+    var b = C.blendedPriceMix(cash.price, wf.mix);
+    if (b.error) {
+      $('blend-hero').innerHTML = '<p class="neg">' + esc(b.error) + '</p>';
+      return;
+    }
+
+    // lowest single-job net among plans that actually get customers
+    var lowest = null, i = 0, rows = [];
+    state.lenders.forEach(function (l, li) {
+      l.plans.forEach(function (p, pi) {
+        var share = wf.mix[i].share, net = b.perPlan[i].net;
+        if (share > 0 && (!lowest || net < lowest.net)) lowest = { net: net, label: lenderName(li) + ', ' + planName(p, pi) };
+        rows.push('<tr><td>' + esc(planName(p, pi)) + ' <small class="muted">' + esc(lenderName(li)) + '</small></td><td>' + pct(n(p.fee)) +
+          '</td><td>' + pct(share) + '</td><td>' + fmt(net) + '</td></tr>');
+        i++;
+      });
+    });
+    rows.push('<tr class="muted"><td>Pay cash</td><td>0%</td><td>' + pct(wf.closed > 0 ? wf.cashBuyers / wf.closed * 100 : 0) + '</td><td>' + fmt(b.netIfCash) + '</td></tr>');
+    $('breakdown-rows').innerHTML = rows.join('');
+
+    $('blend-hero').innerHTML =
+      '<div class="hero-label">Charge every customer</div>' +
+      '<div class="hero-price">' + fmt(b.price) + '</div>' +
+      '<div class="hero-sub">+' + fmt(b.increase) + ' (' + pct(b.increasePct) + ') over your ' + fmt(cash.price) + ' cash price</div>' +
+      '<p class="hero-note">On average you get your full cash price per job.' +
+        (lowest ? ' On a single job it can be as low as ' + fmt(lowest.net) + ' (' + esc(lowest.label) + ').' : '') +
+        (backup > 0 ? ' Your backup lender saves about ' + count(backup) + ' jobs per 100 customers.' : '') +
+      '</p>';
+  }
+
+  // ---------- tab 3: lenders ----------
+  function renderLenders() {
+    var L = state.lenders;
+    $('lenders').innerHTML = L.map(function (l, li) {
+      var rows = l.plans.map(function (p, pi) {
+        return '<div class="plan-row" data-li="' + li + '" data-pi="' + pi + '">' +
+          '<label class="f-name"><span>Plan</span><input data-k="name" type="text" value="' + esc(p.name) + '"></label>' +
+          '<label><span>Dealer fee</span><span class="pct"><input data-k="fee" type="number" inputmode="decimal" min="0" max="99" step="any" value="' + esc(p.fee) + '"></span></label>' +
+          '<label><span>APR</span><span class="pct"><input data-k="apr" type="number" inputmode="decimal" min="0" step="any" value="' + esc(p.apr) + '"></span></label>' +
+          '<label><span>Months</span><input data-k="months" type="number" inputmode="numeric" min="0" step="1" value="' + esc(p.months) + '"></label>' +
+          '<label><span>Mix</span><span class="pct"><input data-k="split" type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(p.split) + '"></span></label>' +
+          '<button type="button" class="icon" data-remove-plan aria-label="Remove ' + esc(planName(p, pi)) + '">×</button>' +
+          '</div>';
+      }).join('');
+      var splitSum = l.plans.reduce(function (t, p) { return t + Math.max(0, n(p.split)); }, 0);
+      return '<div class="card lender" data-li="' + li + '">' +
         '<div class="lender-head">' +
           '<span class="role">' + roleLabel(li) + '</span>' +
           '<input class="lender-name" data-lender-name aria-label="Lender name" type="text" value="' + esc(l.name) + '" placeholder="Lender name">' +
-          (li > 0 ? '<button type="button" class="btn ghost small" data-move-up title="Applicants are sent to lenders in this order">' + (li === 1 ? 'Make primary' : 'Move up') + '</button>' : '') +
-          (lenders.length > 1 ? '<button type="button" class="btn ghost small" data-remove-lender>Remove lender</button>' : '') +
+          '<span class="lender-tools">' +
+            (li > 0 ? '<button type="button" class="link" data-move-up>' + (li === 1 ? 'Make primary' : 'Move up') + '</button>' : '') +
+            (L.length > 1 ? '<button type="button" class="link danger" data-remove-lender>Remove</button>' : '') +
+          '</span>' +
         '</div>' +
-        '<div class="table-scroll"><table class="plans">' +
-          '<thead><tr><th>Plan name</th><th>Dealer fee</th><th>Customer APR</th><th>Term (mo)</th><th><span class="sr">Remove</span></th></tr></thead>' +
-          '<tbody>' + (rows || '<tr><td colspan="5" class="muted">No plans yet.</td></tr>') + '</tbody>' +
-        '</table></div>' +
-        '<button type="button" class="btn small" data-add-plan>+ Add plan</button>' +
+        '<label class="approval">Approves <span class="pct"><input data-approval type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(l.approval) + '"></span> of the customers who apply' + (li === 0 ? '' : ' after being declined') + '</label>' +
+        '<div class="plan-rows">' + (rows || '<p class="muted">No plans yet.</p>') + '</div>' +
+        (l.plans.length > 1 ? '<p class="muted small-text" data-mix-note>' + mixNote(splitSum) + '</p>' : '') +
+        '<button type="button" class="link" data-add-plan>+ Add plan</button>' +
         '</div>';
     }).join('');
   }
 
-  // ---------- financing mix (step 4) ----------
-  function renderMix(blend) {
-    var html = [];
-    lenders.forEach(function (l, li) {
-      if (!l.plans.length) return;
-      html.push('<tr class="group"><th colspan="4">' + esc(lenderLabel(l, li)) + '</th></tr>');
-      l.plans.forEach(function (p, pi) {
-        html.push('<tr data-li="' + li + '" data-pi="' + pi + '">' +
-          '<td data-l="Plan">' + esc(planLabel(p, pi)) + '</td>' +
-          '<td data-l="Dealer fee">' + pct(n(p.fee)) + '</td>' +
-          '<td data-l="% of customers"><span class="pct"><input aria-label="Percent of customers on ' + esc(planLabel(p, pi)) + '" data-share type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(p.share || 0) + '"></span></td>' +
-          '<td data-l="You net on this plan" data-net>—</td>' +
-          '</tr>');
-      });
-    });
-    html.push('<tr class="cash-row"><td data-l="Plan">Pay cash</td><td data-l="Dealer fee">0%</td><td data-l="% of customers" data-cash-share>—</td><td data-l="You net on this plan" data-cash-net>—</td></tr>');
-    $('mix-rows').innerHTML = html.join('');
+  function mixNote(sum) {
+    var base = '<strong>Mix:</strong> of the customers this lender approves, about what % pick each plan.';
+    return Math.abs(sum - 100) > 0.01 ? base + ' <span class="neg">Adds up to ' + pct(sum) + ', so we scale it to 100%.</span>' : base;
   }
 
-  function fillMix(blend) {
-    var netCells = $('mix-rows').querySelectorAll('[data-net]');
-    allPlans().forEach(function (x, i) {
-      if (netCells[i]) netCells[i].textContent = blend && !blend.error ? fmt(blend.perPlan[i].net) : '—';
-    });
-    var cashShare = blend && !blend.error ? Math.max(0, 100 - blend.financedShare) : NaN;
-    $('mix-rows').querySelector('[data-cash-share]').textContent = pct(cashShare);
-    $('mix-rows').querySelector('[data-cash-net]').textContent = blend && !blend.error ? fmt(blend.netIfCash) : '—';
-  }
-
-  // ---------- approval waterfall (step 4) ----------
-  function runWaterfall() {
-    return C.waterfall({
-      applyPct: val('applyPct'),
-      declinedCashPct: val('declinedCashPct'),
-      lenders: lenders.map(function (l) {
-        return { approvalPct: l.approval, plans: l.plans.map(function (p) { return { fee: p.fee, splitPct: p.split }; }) };
-      }),
-    });
-  }
-
-  function renderWaterfall() {
-    var html = [];
-    lenders.forEach(function (l, li) {
-      html.push('<tr class="group wf-lender" data-li="' + li + '"><th colspan="5">' +
-        '<span class="wf-head"><span>' + roleLabel(li) + ': ' + esc(lenderLabel(l, li)) + '</span>' +
-        '<label class="approval">approves <span class="pct"><input aria-label="' + esc(lenderLabel(l, li)) + ' approval rate" data-approval type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(l.approval) + '"></span> of applicants it sees</label>' +
-        '<span class="wf-note" data-wf-note></span></span></th></tr>');
-      l.plans.forEach(function (p, pi) {
-        html.push('<tr data-li="' + li + '" data-pi="' + pi + '">' +
-          '<td data-l="Plan">' + esc(planLabel(p, pi)) + '</td>' +
-          '<td data-l="Dealer fee">' + pct(n(p.fee)) + '</td>' +
-          '<td data-l="Split of approvals"><span class="pct"><input aria-label="Share of ' + esc(lenderLabel(l, li)) + ' approvals on ' + esc(planLabel(p, pi)) + '" data-split type="number" inputmode="decimal" min="0" max="100" step="any" value="' + esc(p.split) + '"></span></td>' +
-          '<td data-l="Share of closed jobs" data-wf-share>—</td>' +
-          '<td data-l="You net on this plan" data-net>—</td>' +
-          '</tr>');
-      });
-    });
-    html.push('<tr class="cash-row"><td data-l="Plan">Pay cash</td><td data-l="Dealer fee">0%</td><td data-l="Split of approvals"></td><td data-l="Share of closed jobs" data-cash-share>—</td><td data-l="You net on this plan" data-cash-net>—</td></tr>');
-    $('wf-rows').innerHTML = html.join('');
-  }
-
-  function fillWaterfall(wf, blend) {
-    var body = $('wf-rows');
-    var notes = body.querySelectorAll('[data-wf-note]');
-    var shareCells = body.querySelectorAll('[data-wf-share]');
-    var netCells = body.querySelectorAll('[data-net]');
-    var i = 0;
-    wf.lenders.forEach(function (l, li) {
-      var warn = l.plans.length > 1 && Math.abs(l.splitSum - 100) > 0.01 ? ' <span class="neg">Splits add to ' + pct(l.splitSum) + '; scaled to 100%.</span>' : '';
-      if (notes[li]) notes[li].innerHTML = 'Sees ' + pct(l.reached) + ' of customers, funds ' + pct(l.approved) + '.' + warn;
-      l.plans.forEach(function () {
-        if (shareCells[i]) shareCells[i].textContent = pct(wf.mix[i].share);
-        if (netCells[i]) netCells[i].textContent = blend && !blend.error ? fmt(blend.perPlan[i].net) : '—';
-        i++;
-      });
-    });
-    body.querySelector('[data-cash-share]').textContent = wf.closed > 0 ? pct(wf.cashBuyers / wf.closed * 100) : '—';
-    body.querySelector('[data-cash-net]').textContent = blend && !blend.error ? fmt(blend.netIfCash) : '—';
-
-    var parts = [fmtCount(100 - val('applyPct')) + ' pay cash'];
-    wf.lenders.forEach(function (l, li) { parts.push(fmtCount(l.approved) + ' financed by ' + esc(lenderLabel(lenders[li], li))); });
-    parts.push(fmtCount(wf.declinedCash) + ' declined but buy with cash');
-    parts.push('<span class="' + (wf.lost > 0 ? 'neg' : '') + '">' + fmtCount(wf.lost) + ' declined and lost</span>');
-    var backupFunded = wf.lenders.slice(1).reduce(function (t, l) { return t + l.approved; }, 0);
-    $('funnel').innerHTML = '<strong>Out of 100 customers:</strong> ' + parts.join(' · ') +
-      (backupFunded > 0 ? '<br><span class="muted">Your backup lender' + (wf.lenders.length > 2 ? 's save ' : ' saves ') + fmtCount(backupFunded) + ' jobs per 100 customers that would otherwise be declined.</span>' : '');
-  }
-
-  function fmtCount(x) { return (Math.round(x * 10) / 10).toString(); }
-
-  // ---------- main calculation ----------
-  function getCash() {
-    if (mode() === 'costs') {
-      return C.cashPriceFromCosts({
-        materials: val('materials'), labor: val('labor'), subs: val('subs'), other: val('other'),
-        overheadPct: val('overheadPct'), marginPct: val('marginPct'),
-      });
-    }
-    var profitRaw = $('directProfit').value.trim();
-    return { price: val('directPrice'), profit: profitRaw === '' ? null : n(profitRaw), direct: true };
-  }
-
-  function stat(label, value, hero) {
-    return '<div class="stat' + (hero ? ' hero' : '') + '"><span>' + label + '</span><strong>' + value + '</strong></div>';
-  }
-
-  function resultRow(p, cash, down) {
-    var fee = n(p.fee);
-    var g = C.grossUp(cash.price, fee, down);
-    if (g.error) return '<tr><td>' + esc(p.name) + '</td><td colspan="6" class="err">' + esc(g.error) + '</td></tr>';
-    var pay = C.monthlyPayment(g.financed, n(p.apr), n(p.months));
-    var absorbCell = '—';
-    if (cash.profit != null) {
-      // absorbing: the fee applies to whatever the customer finances at the cash price
-      var a = C.absorbFee(cash.price, cash.profit, fee * Math.max(0, cash.price - down) / (cash.price || 1));
-      absorbCell = '<span class="' + (a.profit < 0 ? 'neg' : 'muted') + '">' + fmt(a.profit) + ' profit (' + pct(a.marginPct) + ')</span>';
-    }
-    return '<tr>' +
-      '<td data-l="Plan">' + esc(p.name) + ' <small class="muted">' + pct(fee) + ' fee</small></td>' +
-      '<td data-l="Charge customer" class="big">' + fmt(g.price) + '</td>' +
-      '<td data-l="Increase">+' + fmt(g.increase) + ' <small class="muted">(' + pct(g.increasePct) + ')</small></td>' +
-      '<td data-l="Lender keeps">' + fmt(g.fee) + '</td>' +
-      '<td data-l="You net">' + fmt(g.net) + '</td>' +
-      '<td data-l="Est. payment">' + (pay > 0 ? fmt2(pay) + '/mo' : '—') + '</td>' +
-      '<td data-l="If you absorb it">' + absorbCell + '</td>' +
-      '</tr>';
-  }
-
+  // ---------- main update ----------
   function update() {
     var cash = getCash();
-    var out = $('cash-summary');
-    var useWf = mixMode() === 'waterfall';
-    if (!$('mix-rows').contains(document.activeElement)) renderMix();
-    if (!$('wf-rows').contains(document.activeElement)) renderWaterfall();
-    var wf = runWaterfall();
-
-    if (cash.error) {
-      out.innerHTML = '<p class="err">' + esc(cash.error) + '</p>';
-      $('result-rows').innerHTML = '';
-      $('mistake').hidden = true;
-      $('blend-out').innerHTML = '';
-      fillMix(null);
-      fillWaterfall(wf, null);
-      save();
-      return;
-    }
-
-    if (cash.direct) {
-      out.innerHTML = stat('Cash price', fmt(cash.price), true) +
-        (cash.profit != null ? stat('Profit', fmt(cash.profit)) + stat('Margin', pct(cash.price > 0 ? cash.profit / cash.price * 100 : 0)) : '');
-    } else {
-      out.innerHTML = stat('Job cost', fmt(cash.cost)) + stat('Overhead', fmt(cash.overhead)) +
-        stat('Profit', fmt(cash.profit)) + stat('Markup on cost', pct(cash.markupPct)) +
-        stat('Cash price', fmt(cash.price), true);
-    }
-
-    // step 3: grouped by lender
-    var down = val('down');
-    $('result-rows').innerHTML = lenders.map(function (l, li) {
-      if (!l.plans.length) return '';
-      return '<tr class="group"><th colspan="7">' + esc(lenderLabel(l, li)) + '</th></tr>' +
-        l.plans.map(function (p) { return resultRow(p, cash, down); }).join('');
-    }).join('');
-
-    // "common mistake" callout using the highest-fee plan across all lenders
-    var plans = allPlans();
-    var top = plans.reduce(function (best, x) { return !best || n(x.plan.fee) > n(best.plan.fee) ? x : best; }, null);
-    var topFee = top ? n(top.plan.fee) : 0;
-    if (topFee > 0 && cash.price > 0) {
-      var nv = C.naiveMarkup(cash.price, topFee);
-      var right = C.grossUp(cash.price, topFee, 0);
-      $('mistake').hidden = false;
-      $('mistake').innerHTML = '<strong>Don\'t just add ' + pct(topFee) + ' on top.</strong> On ' + esc(lenderLabel(top.lender, top.li)) + '\'s "' + esc(top.plan.name) +
-        '", ' + fmt(cash.price) + ' × ' + (1 + topFee / 100).toFixed(2) + ' = ' + fmt(nv.price) +
-        ', but the lender takes ' + fmt(nv.fee) + ' and you net only ' + fmt(nv.net) +
-        ': <strong>' + fmt(nv.shortfall) + ' short</strong>. Charge ' + fmt(right.price) + ' instead.';
-    } else {
-      $('mistake').hidden = true;
-    }
-
-    // step 4: blended price across the whole mix
-    var mix = useWf ? wf.mix : plans.map(function (x) { return { fee: x.plan.fee, share: x.plan.share }; });
-    var blend = C.blendedPriceMix(cash.price, mix);
-    if (useWf) fillWaterfall(wf, blend); else fillMix(blend);
-    if (blend.error) {
-      $('blend-out').innerHTML = '<p class="err">' + esc(blend.error) + '</p>';
-    } else {
-      // lowest net among plans customers actually use
-      var lowestNet = blend.perPlan.reduce(function (m, x, i) {
-        return n(mix[i].share) > 0 ? Math.min(m, x.net) : m;
-      }, blend.netIfCash);
-      $('blend-out').innerHTML =
-        stat('Price for every customer', fmt(blend.price), true) +
-        stat('Increase over cash price', '+' + fmt(blend.increase) + ' (' + pct(blend.increasePct) + ')') +
-        stat(useWf ? 'Closed jobs financed' : 'Customers who finance', pct(blend.financedShare) + (blend.financedShare > 0 ? ' <small>avg fee ' + pct(blend.avgFeePct) + '</small>' : '')) +
-        stat('Lowest net on one job', fmt(lowestNet)) +
-        stat('Average net per job', fmt(blend.expectedNet));
-    }
-
+    renderCosts(cash);
+    renderPlanCards(cash);
+    renderBlend(cash);
     save();
-  }
-
-  function setMode() {
-    var m = mode();
-    $('costs-fields').hidden = m !== 'costs';
-    $('direct-fields').hidden = m !== 'direct';
-    var wfMode = mixMode() === 'waterfall';
-    $('waterfall-panel').hidden = !wfMode;
-    $('manual-panel').hidden = wfMode;
   }
 
   // ---------- events ----------
   document.addEventListener('input', function (e) {
     var t = e.target;
-    var row = t.closest('tr[data-li]');
+    var row = t.closest('.plan-row');
     var box = t.closest('.lender');
-    if (t.dataset.k && row) lenders[+row.dataset.li].plans[+row.dataset.pi][t.dataset.k] = t.value;
-    else if (t.hasAttribute('data-share') && row) lenders[+row.dataset.li].plans[+row.dataset.pi].share = t.value;
-    else if (t.hasAttribute('data-split') && row) lenders[+row.dataset.li].plans[+row.dataset.pi].split = t.value;
-    else if (t.hasAttribute('data-approval')) lenders[+t.closest('tr').dataset.li].approval = t.value;
-    else if (t.hasAttribute('data-lender-name') && box) lenders[+box.dataset.li].name = t.value;
+    if (row && t.dataset.k) {
+      var l = state.lenders[+row.dataset.li];
+      l.plans[+row.dataset.pi][t.dataset.k] = t.value;
+      if (t.dataset.k === 'split') {
+        var note = box.querySelector('[data-mix-note]');
+        if (note) note.innerHTML = mixNote(l.plans.reduce(function (s, p) { return s + Math.max(0, n(p.split)); }, 0));
+      }
+    } else if (box && t.hasAttribute('data-lender-name')) {
+      state.lenders[+box.dataset.li].name = t.value;
+    } else if (box && t.hasAttribute('data-approval')) {
+      state.lenders[+box.dataset.li].approval = t.value;
+    }
     update();
   });
 
-  document.addEventListener('change', function (e) {
-    if (e.target.name === 'mode' || e.target.name === 'mixMode') { setMode(); update(); }
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest('[data-goto]');
+    if (go) { showTab(go.dataset.goto); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   });
 
   $('lenders').addEventListener('click', function (e) {
     var box = e.target.closest('.lender');
     if (!box) return;
-    var l = lenders[+box.dataset.li];
+    var li = +box.dataset.li;
+    var l = state.lenders[li];
     if (e.target.closest('[data-remove-plan]')) {
-      l.plans.splice(+e.target.closest('tr').dataset.pi, 1);
+      l.plans.splice(+e.target.closest('.plan-row').dataset.pi, 1);
     } else if (e.target.closest('[data-add-plan]')) {
-      l.plans.push({ name: 'New plan', fee: 5, apr: 0, months: 12, share: 0, split: l.plans.length ? 0 : 100 });
+      l.plans.push({ name: 'New plan', fee: 5, apr: 0, months: 12, split: l.plans.length ? 0 : 100 });
     } else if (e.target.closest('[data-move-up]')) {
-      var li = +box.dataset.li;
-      lenders.splice(li - 1, 0, lenders.splice(li, 1)[0]);
+      state.lenders.splice(li - 1, 0, state.lenders.splice(li, 1)[0]);
     } else if (e.target.closest('[data-remove-lender]')) {
-      if (!confirm('Remove ' + lenderLabel(l, +box.dataset.li) + ' and its plans?')) return;
-      lenders.splice(+box.dataset.li, 1);
+      if (!confirm('Remove ' + lenderName(li) + ' and its plans?')) return;
+      state.lenders.splice(li, 1);
     } else {
       return;
     }
-    renderLenders(); update();
+    renderLenders();
+    update();
   });
 
   $('add-lender').addEventListener('click', function () {
-    lenders.push({ name: 'Lender ' + String.fromCharCode(65 + lenders.length), approval: 50, plans: [{ name: 'New plan', fee: 5, apr: 0, months: 12, share: 0, split: 100 }] });
+    state.lenders.push({ name: 'Lender ' + String.fromCharCode(65 + state.lenders.length), approval: 50,
+      plans: [{ name: 'New plan', fee: 5, apr: 0, months: 12, split: 100 }] });
     renderLenders(); update();
     var names = $('lenders').querySelectorAll('[data-lender-name]');
     names[names.length - 1].select();
@@ -386,15 +335,35 @@
 
   $('reset-plans').addEventListener('click', function () {
     if (!confirm('Replace your lenders and plans with the examples?')) return;
-    lenders = clone(DEFAULT_LENDERS);
+    state.lenders = clone(DEFAULT_LENDERS);
     renderLenders(); update();
+  });
+
+  $('toggle-costs').addEventListener('click', function () {
+    state.costsOpen = !state.costsOpen;
+    update();
+    if (state.costsOpen) $('materials').focus();
+    else $('price').focus();
+  });
+
+  // tabs: click + arrow keys
+  TABS.forEach(function (t, i) {
+    var el = $('tab-' + t);
+    el.addEventListener('click', function () { showTab(t); });
+    el.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      var next = TABS[(i + d + TABS.length) % TABS.length];
+      showTab(next);
+      $('tab-' + next).focus();
+    });
   });
 
   $('print').addEventListener('click', function () { window.print(); });
 
   // ---------- init ----------
   load();
-  setMode();
   renderLenders();
+  showTab(state.tab);
   update();
 })();
