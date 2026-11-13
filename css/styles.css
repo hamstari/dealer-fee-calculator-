@@ -102,6 +102,22 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1p
 .icon:hover { color: var(--neg); background: var(--field); }
 .row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 
+/* lenders */
+.lender { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; background: var(--field); }
+.lender .plans input { background: var(--card); }
+.lender-head { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+.lender-name { font-weight: 700; font-size: 1.05rem; background: var(--card); max-width: 320px; }
+.btn.small { padding: 5px 10px; font-size: 0.88rem; margin-top: 8px; }
+.lender-head .btn.small { margin-top: 0; white-space: nowrap; }
+tr.group th {
+  padding: 14px 8px 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--accent); border-bottom: 1px solid var(--line);
+}
+tbody tr.group:first-child th { padding-top: 6px; }
+.mix td:nth-child(3) { width: 140px; }
+.mix .cash-row td { color: var(--muted); }
+.stat small { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+
 /* summaries */
 .summary { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 .stat {
@@ -136,13 +152,21 @@ td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: middle;
 
 /* phone: results become stacked cards */
 @media (max-width: 720px) {
-  .results thead { display: none; }
-  .results, .results tbody, .results tr, .results td { display: block; width: 100%; }
-  .results tr { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; padding: 4px 0; }
-  .results td { border: none; display: flex; justify-content: space-between; gap: 12px; padding: 5px 12px; text-align: right; }
-  .results td::before { content: attr(data-l); color: var(--muted); font-size: 0.85rem; text-align: left; }
-  .results td:first-child { font-weight: 700; justify-content: flex-start; text-align: left; }
-  .results td:first-child::before { content: none; }
+  .results thead, .mix thead { display: none; }
+  .results, .results tbody, .results tr, .results td, .results th,
+  .mix, .mix tbody, .mix tr, .mix td, .mix th { display: block; width: 100% !important; }
+  .results tr, .mix tr { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; padding: 4px 0; }
+  .results tr.group, .mix tr.group { border: none; margin: 0; padding: 0; }
+  tr.group th { border: none; padding: 10px 2px 4px; }
+  .results td, .mix td { border: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 12px; text-align: right; }
+  .results td::before, .mix td::before { content: attr(data-l); color: var(--muted); font-size: 0.85rem; text-align: left; }
+  .results td:first-child, .mix td:first-child { font-weight: 700; justify-content: flex-start; text-align: left; }
+  .results td:first-child::before, .mix td:first-child::before { content: none; }
+  .mix td .pct { width: 110px; }
+  .lender { padding: 10px; }
+  .plans input { padding-left: 8px; }
+  .plans .pct input { padding-right: 20px; }
+  .plans .pct::after { right: 7px; }
   .plans thead { display: none; }
   .plans tr { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 6px; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .plans td { border: none; padding: 0; width: auto !important; }

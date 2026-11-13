@@ -62,3 +62,21 @@ test('monthly payment', () => {
   close(C.monthlyPayment(10000, 9.99, 120), 132.10, 0.01);
   assert.equal(C.monthlyPayment(10000, 5, 0), 0);
 });
+
+test('blended mix across two lenders covers expected fees', () => {
+  const r = C.blendedPriceMix(10000, [{ fee: 6, share: 20 }, { fee: 3, share: 20 }]);
+  // weighted fee = 0.2*0.06 + 0.2*0.03 = 0.018
+  close(r.price, 10183.30);
+  close(r.expectedNet, 10000);
+  close(r.financedShare, 40);
+  close(r.avgFeePct, 4.5);
+  close(r.perPlan[0].net, 10183.30 * 0.94);
+});
+
+test('blended mix rejects shares over 100%', () => {
+  assert.ok(C.blendedPriceMix(10000, [{ fee: 6, share: 70 }, { fee: 3, share: 40 }]).error);
+});
+
+test('blended mix with no financing is the cash price', () => {
+  close(C.blendedPriceMix(10000, []).price, 10000);
+});

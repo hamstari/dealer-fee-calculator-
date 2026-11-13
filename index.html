@@ -43,18 +43,11 @@
 
     <!-- STEP 2 -->
     <section class="card" aria-labelledby="s2">
-      <h2 id="s2"><span class="step">2</span> Your financing plans</h2>
-      <p class="hint">Enter the dealer fees from your lender's rate sheet. The defaults are only examples — fees vary a lot by lender, plan and credit tier.</p>
-      <div class="table-scroll">
-        <table class="plans">
-          <thead>
-            <tr><th>Plan name</th><th>Dealer fee</th><th>Customer APR</th><th>Term (mo)</th><th><span class="sr">Remove</span></th></tr>
-          </thead>
-          <tbody id="plan-rows"></tbody>
-        </table>
-      </div>
+      <h2 id="s2"><span class="step">2</span> Your lenders &amp; plans</h2>
+      <p class="hint">Enter the dealer fees from each lender's rate sheet. The defaults are only examples — fees vary a lot by lender, plan and credit tier.</p>
+      <div id="lenders"></div>
       <div class="row-actions">
-        <button type="button" id="add-plan" class="btn">+ Add plan</button>
+        <button type="button" id="add-lender" class="btn ghost">+ Add lender</button>
         <button type="button" id="reset-plans" class="btn ghost">Reset to examples</button>
       </div>
       <label class="inline">Customer down payment (cash) <span class="money"><input id="down" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
@@ -80,10 +73,12 @@
     <!-- STEP 4 -->
     <section class="card" aria-labelledby="s4">
       <h2 id="s4"><span class="step">4</span> One price for everyone</h2>
-      <p class="hint">Many lender agreements (and some state laws) don't let you charge financed customers more than cash customers. Instead, build the expected fees into a single price for all customers.</p>
-      <div class="grid">
-        <label>Plan you usually offer <select id="blend-plan"></select></label>
-        <label>Share of customers who finance <span class="pct"><input id="share" type="number" inputmode="decimal" min="0" max="100" step="any" value="40"></span></label>
+      <p class="hint">Many lender agreements (and some state laws) don't let you charge financed customers more than cash customers. Instead, build the expected fees into a single price for all customers. Enter roughly what share of your customers ends up on each plan; everyone else pays cash.</p>
+      <div class="table-scroll">
+        <table class="mix">
+          <thead><tr><th>Plan</th><th>Dealer fee</th><th>% of customers</th><th>You net on this plan</th></tr></thead>
+          <tbody id="mix-rows"></tbody>
+        </table>
       </div>
       <div id="blend-out" class="summary" aria-live="polite"></div>
     </section>

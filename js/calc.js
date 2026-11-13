@@ -97,6 +97,37 @@
     };
   }
 
+  /**
+   * Blended price across a mix of plans (e.g. several lenders).
+   * mix: [{ fee: pct, share: pct of all customers }]. Remaining share pays cash.
+   *   net = price * (1 - sum(share_i * fee_i))
+   */
+  function blendedPriceMix(net, mix) {
+    var totalShare = 0, weighted = 0;
+    (mix || []).forEach(function (m) {
+      var s = Math.max(0, num(m.share)) / 100;
+      totalShare += s;
+      weighted += s * (num(m.fee) / 100);
+    });
+    if (totalShare > 1.0000001) return { error: 'Shares add up to more than 100% of customers.' };
+    var denom = 1 - weighted;
+    if (denom <= 0) return { error: 'Invalid fee / share combination.' };
+    var price = net / denom;
+    return {
+      price: price,
+      increase: price - net,
+      increasePct: net > 0 ? ((price - net) / net) * 100 : 0,
+      financedShare: totalShare * 100,
+      avgFeePct: totalShare > 0 ? (weighted / totalShare) * 100 : 0,
+      netIfCash: price,
+      expectedNet: price * denom,
+      perPlan: (mix || []).map(function (m) {
+        var fee = price * (num(m.fee) / 100);
+        return { fee: fee, net: price - fee };
+      }),
+    };
+  }
+
   /** What happens to your margin if you absorb the fee instead of passing it on. */
   function absorbFee(cashPrice, profit, feePct) {
     var fee = num(cashPrice) * (num(feePct) / 100);
@@ -123,6 +154,7 @@
     grossUp: grossUp,
     naiveMarkup: naiveMarkup,
     blendedPrice: blendedPrice,
+    blendedPriceMix: blendedPriceMix,
     absorbFee: absorbFee,
     monthlyPayment: monthlyPayment,
     round2: round2,
