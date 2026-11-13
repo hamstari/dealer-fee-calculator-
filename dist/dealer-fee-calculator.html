@@ -3,49 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dealer Fee Calculator</title>
+  <title>Dealer Fee Calculator | America Home Financial</title>
   <meta name="description" content="Price jobs for customer financing so dealer fees don't eat your margin.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:wght@400;600;700&display=swap">
   <style>
 :root {
-  --bg: #f4f3ef;
+  /* America Home Financial brand */
+  --navy: #1b2a57;
+  --blue: #2b5fae;
+  --red: #c8283a;
+
+  --bg: #f3f5f9;
   --card: #ffffff;
-  --ink: #1b1d1a;
-  --muted: #696d65;
-  --line: #e2e0d8;
-  --field: #faf9f6;
-  --accent: #1f6b4f;
+  --ink: #1b2a57;
+  --muted: #5d6680;
+  --line: #dde2ec;
+  --field: #f7f9fc;
+  --accent: #2b5fae;
   --accent-ink: #ffffff;
-  --accent-soft: #e5f1eb;
-  --neg: #b3261e;
-  --cash: #c9c6bb;
-  --cash2: #dedbd1;
-  --lost: #d9776f;
-  --l1: #1f6b4f;
-  --l2: #4f9bc4;
-  --l3: #c49a3a;
-  --l4: #8a6fb8;
+  --accent-soft: #e8eff9;
+  --neg: #c8283a;
+  --cash: #c9d1df;
+  --cash2: #e1e6ef;
+  --lost: #c8283a;
+  --l1: #2b5fae;
+  --l2: #1b2a57;
+  --l3: #8eaedc;
+  --l4: #5d6680;
   --radius: 14px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #131513;
-    --card: #1c1f1c;
-    --ink: #ecebe6;
-    --muted: #a3a79e;
-    --line: #313631;
-    --field: #232723;
-    --accent: #5cc49a;
-    --accent-ink: #0d1f17;
-    --accent-soft: #1d362b;
-    --neg: #ff8a80;
-    --cash: #5a5e57;
-    --cash2: #41453f;
-    --lost: #c4605a;
-    --l1: #5cc49a;
-    --l2: #6fb3dc;
-    --l3: #d9b25a;
-    --l4: #a68ed6;
-  }
+  --display: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -54,11 +42,15 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16px/1.5 "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
 .top { padding: 28px 16px 6px; }
-h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -0.02em; }
+.eyebrow { margin: 0 0 6px; font-family: var(--display); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); }
+.eyebrow .star { color: var(--red); margin-right: 4px; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800; letter-spacing: -0.01em; color: var(--navy); line-height: 1.15; }
+h1 .light { font-weight: 400; color: #4a5470; }
+.top::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 2px; background: var(--red); margin-top: 14px; }
 .lede { margin: 4px 0 0; color: var(--muted); }
 .muted { color: var(--muted); }
 .neg { color: var(--neg); }
@@ -70,11 +62,11 @@ h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -0.02em; }
   background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 4px;
 }
 .tabs button {
-  flex: 1; font: inherit; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  flex: 1; font: inherit; font-family: var(--display); font-weight: 700; font-size: 0.95rem; cursor: pointer;
   background: none; border: none; color: var(--muted);
   padding: 10px 8px; border-radius: 9px; white-space: nowrap;
 }
-.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tabs button[aria-selected="true"] { background: var(--navy); color: #fff; }
 .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* cards */
@@ -85,7 +77,7 @@ h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -0.02em; }
   padding: 20px;
   margin: 14px 0;
 }
-.section-title { font-size: 1.05rem; margin: 26px 0 4px; }
+.section-title { font-family: var(--display); font-weight: 800; color: var(--navy); font-size: 1.15rem; margin: 26px 0 4px; }
 .card-title { font-size: 1rem; margin: 0 0 12px; }
 .top-note { margin: 0 0 14px; }
 section > .top-note { margin: 18px 0 4px; }
@@ -114,7 +106,7 @@ input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-colo
 .big-label { display: block; font-size: 1rem; margin-bottom: 6px; }
 .money.xl { max-width: 360px; }
 .money.xl::before { font-size: 1.6rem; left: 14px; }
-.money.xl input { font-size: 2rem; font-weight: 700; padding: 8px 14px 8px 36px; font-variant-numeric: tabular-nums; }
+.money.xl input { font-family: var(--display); color: var(--navy); font-size: 2rem; font-weight: 800; padding: 8px 14px 8px 36px; font-variant-numeric: tabular-nums; }
 input.computed { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px 14px; }
@@ -167,23 +159,26 @@ details.mini p { margin: 6px 0 0; }
 .group-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin: 14px 0 8px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .plan-card {
-  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: var(--radius);
   padding: 16px;
 }
 .pc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .pc-name { font-weight: 600; }
-.tag { font-size: 0.72rem; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
-.pc-price { font-size: 2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; margin: 2px 0 4px; font-variant-numeric: tabular-nums; }
+.tag { font-size: 0.72rem; font-weight: 700; color: #fff; background: var(--red); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.pc-price { font-family: var(--display); font-size: 2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; margin: 2px 0 4px; font-variant-numeric: tabular-nums; }
 .pc-sub { font-size: 0.9rem; color: var(--muted); }
 .pc-absorb { font-size: 0.85rem; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); }
 .empty { padding: 8px 0; }
 
 /* one price for all */
-.hero-card { background: var(--accent-soft); border-color: transparent; text-align: center; padding: 26px 20px; }
-.hero-label { font-weight: 600; color: var(--accent); }
-.hero-price { font-size: clamp(2.4rem, 9vw, 3.2rem); font-weight: 800; color: var(--accent); letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hero-card { background: var(--navy); border-color: transparent; color: #fff; text-align: center; padding: 26px 20px; }
+.hero-label { font-weight: 600; color: #c9d6ee; }
+.hero-price { font-family: var(--display); font-size: clamp(2.4rem, 9vw, 3.2rem); font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .hero-sub { font-weight: 600; margin-top: 4px; }
-.hero-note { margin: 12px auto 0; max-width: 520px; color: var(--muted); font-size: 0.92rem; }
+.hero-card .link { color: #fff; }
+.hero-card .neg { color: #ffb3ba; }
+.hero-card .muted { color: #c9d6ee; }
+.hero-note { margin: 12px auto 0; max-width: 520px; color: #c9d6ee; font-size: 0.92rem; }
 .bar { display: flex; height: 22px; border-radius: 999px; overflow: hidden; gap: 2px; background: var(--field); }
 .bar span { min-width: 3px; }
 .legend { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 20px; }
@@ -197,7 +192,7 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 
 /* lenders */
 .lender-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
-.role { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 3px 10px; }
+.role { font-family: var(--display); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #fff; background: var(--navy); border-radius: 999px; padding: 3px 10px; }
 .lender-name { flex: 1 1 180px; max-width: 320px; font-weight: 700; font-size: 1.05rem; }
 .lender-tools { display: flex; gap: 14px; margin-left: auto; }
 .approval { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 6px; font-weight: 400; }
@@ -241,7 +236,8 @@ td { padding: 8px; border-bottom: 1px solid var(--line); }
 </head>
 <body>
   <header class="wrap top">
-    <h1>Dealer Fee Calculator</h1>
+    <p class="eyebrow"><span class="star">★</span>America Home Financial</p>
+    <h1>Dealer Fee <span class="light">Calculator</span></h1>
     <p class="lede">Know what to charge when a customer finances, so the lender's fee doesn't come out of your pocket.</p>
   </header>
 
