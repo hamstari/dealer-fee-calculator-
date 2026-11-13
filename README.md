@@ -1,5 +1,7 @@
 # Dealer Fee Calculator
 
+By America Home Financial.
+
 A small web app that helps contractors price jobs when customers pay with consumer financing, so lender dealer fees don't come out of your profit.
 
 ## What it does
@@ -20,6 +22,12 @@ It also explains why simply adding the fee % on top leaves you short.
 | Financed price | `(cash − fee × down) ÷ (1 − fee)` |
 | Blended price | `cash ÷ (1 − Σ share × fee)` across every plan (shares of closed jobs) |
 | Waterfall | lender *n* funds `applicants still undeclined × approval rate`; the rest move to lender *n+1* |
+
+## Live site
+
+Once GitHub Pages is on, the calculator is at **https://hamstari.github.io/dealer-fee-calculator-/** (single-file version at `/embed.html`). Every push to `main` tests and redeploys it.
+
+To turn Pages on (one time): repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ## Run it
 
