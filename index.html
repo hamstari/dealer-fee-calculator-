@@ -80,18 +80,34 @@
 
     <!-- 3. FINANCING -->
     <section class="card" aria-labelledby="h-fin">
-      <h2 id="h-fin"><span class="num">3</span> If the customer finances, charge:</h2>
-      <p class="hint block">The lender keeps a dealer fee. These prices cover it, so you still get your full price.</p>
-      <ul id="plan-list" class="plan-list"></ul>
+      <h2 id="h-fin"><span class="num">3</span> Find the best financing</h2>
+      <p id="example-note" class="example-note" hidden>Example rates for demonstration only. These are not real lender terms.</p>
 
-      <details class="edit-plans">
-        <summary>Edit financing plans</summary>
-        <p class="hint block">Use the dealer fees from your lenders' rate sheets. The starting ones are only examples.</p>
-        <div id="plan-editor"></div>
-        <div class="editor-actions">
-          <button type="button" id="add-plan" class="btn">+ Add plan</button>
-          <button type="button" id="reset-plans" class="link quiet">Reset to examples</button>
+      <fieldset class="choice">
+        <legend>Customer's credit score</legend>
+        <div class="chips" role="radiogroup">
+          <label><input type="radio" name="score" value="720" checked><span>720+</span></label>
+          <label><input type="radio" name="score" value="680"><span>680–719</span></label>
+          <label><input type="radio" name="score" value="640"><span>640–679</span></label>
+          <label><input type="radio" name="score" value="600"><span>600–639</span></label>
+          <label><input type="radio" name="score" value="300"><span>Under 600</span></label>
         </div>
+      </fieldset>
+
+      <fieldset class="choice">
+        <legend>What matters most to the customer?</legend>
+        <div class="chips" role="radiogroup">
+          <label><input type="radio" name="goal" value="price" checked><span>Lowest price</span></label>
+          <label><input type="radio" name="goal" value="promo"><span>No interest for a while</span></label>
+          <label><input type="radio" name="goal" value="payment"><span>Lowest monthly payment</span></label>
+        </div>
+      </fieldset>
+
+      <div id="rec" aria-live="polite"></div>
+      <div id="others"></div>
+      <details id="excluded-wrap" class="excluded" hidden>
+        <summary id="excluded-summary"></summary>
+        <ul id="excluded"></ul>
       </details>
     </section>
 
@@ -104,6 +120,8 @@
       <ul>
         <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
         <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
+        <li>The recommended plan is the one this customer qualifies for (by credit score and loan amount) with the lowest dealer fee, or the lowest monthly payment if that's what the customer wants. The loan amount is the financed price.</li>
+        <li>Monthly payments are estimates. Final approval and terms come from the lender.</li>
         <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
       </ul>
       <p class="fine">For estimating only.</p>
@@ -115,6 +133,7 @@
   </footer>
 
   <script src="js/calc.js"></script>
+  <script src="js/lenders.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

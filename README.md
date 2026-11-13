@@ -9,7 +9,13 @@ A simple one-page calculator that helps contractors estimate a job and price it,
 1. **What will the job cost you?** Materials (plus an allowance for waste), labor as hours × rate, subcontractors, and permits/dumpster/other. Shows the total job cost.
 2. **What do you need on top?** Overhead % and profit %, with plain-English hints.
 3. **Your price.** The cash price, its markup on cost, and a bar showing how it splits into job cost, overhead and profit.
-4. **If the customer finances, charge:** a list of financing plans with the price that covers each plan's dealer fee, so you still get your full price. Plans (lender, plan name, dealer fee) are edited under *Edit financing plans*.
+4. **Find the best financing.** Pick the customer's credit score range and what matters most to them (lowest price, no interest for a while, or lowest monthly payment). The calculator recommends a lender and plan, shows what to charge so the dealer fee is covered, and lists the other plans the customer qualifies for and why the rest don't fit (credit score, loan limits, no promo period).
+
+## Updating lender rates
+
+All lender terms live in **`js/lenders.js`**: each lender's name and loan limits, and for each plan the dealer fee, APR, term, minimum credit score and whether it's a no-interest promo. Contractors can't change them on the page.
+
+**The rates in that file are examples.** Replace them with the real rate sheets and set `EXAMPLE_RATES = false` to remove the notice on the page. Then run `npm run build` and push to `main`; the live site updates automatically.
 
 Fold-outs explain why simply adding the fee % on top leaves you short, and how the math works.
 
@@ -20,6 +26,7 @@ Fold-outs explain why simply adding the fee % on top leaves you short, and how t
 | Job cost | `materials × (1 + waste%) + hours × rate + subs + other` |
 | Price | `job cost ÷ (1 − overhead% − profit%)` |
 | Financed price | `price ÷ (1 − dealer fee)` |
+| Recommendation | plans the customer qualifies for (credit score, loan limits on the financed price), sorted by dealer fee, or by monthly payment |
 
 ## Live site
 
@@ -49,13 +56,14 @@ Inputs are saved in your browser (localStorage), so they're still there next tim
 5. Switch to the mobile view and make the box taller there too (about 2,200 px).
 6. **Publish**.
 
-Wix runs embedded code in a sandboxed frame, so some browsers may not remember saved lenders between visits. Set your real plans as the defaults (`DEFAULT_PLANS` in `js/app.js`), then rebuild, so every visitor starts with them.
+Wix runs embedded code in a sandboxed frame, so some browsers may not remember a visitor's last inputs. Lender rates come from `js/lenders.js`, so every visitor sees the same rates.
 
 ## Files
 
 - `index.html`: page layout
 - `css/styles.css`: styles (light/dark, mobile, print)
 - `js/calc.js`: pure pricing functions (shared by the app and the tests)
+- `js/lenders.js`: lender rate sheet (edit this when rates change)
 - `js/app.js`: UI wiring
 - `tests/calc.test.js`: tests
 - `scripts/build-embed.js`: builds the single-file `dist/` version

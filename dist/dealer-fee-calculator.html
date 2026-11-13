@@ -144,26 +144,49 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 .plan-price span { font-size: 0.82rem; color: var(--muted); }
 .tag { font-size: 0.68rem; font-weight: 700; color: #fff; background: var(--red); border-radius: 999px; padding: 2px 7px; vertical-align: 2px; margin-left: 4px; }
 
+/* financing */
+.example-note { margin: -4px 0 14px; padding: 8px 12px; border-radius: 8px; background: #fff4dc; border: 1px solid #e8c774; color: #6b4e0b; font-size: 0.85rem; font-weight: 600; }
+.choice { border: none; padding: 0; margin: 0 0 16px; min-width: 0; }
+.choice legend { font-weight: 600; padding: 0; margin-bottom: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips label { position: relative; cursor: pointer; }
+.chips input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chips span {
+  display: inline-block; padding: 8px 14px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--field); font-weight: 600; font-size: 0.92rem; color: var(--ink);
+}
+.chips input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
+.chips input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.rec-card { border: 2px solid var(--blue); border-radius: var(--radius); padding: 16px 18px; background: var(--soft); margin-top: 4px; }
+.rec-top { display: flex; align-items: center; gap: 10px; }
+.rec-badge { font-family: var(--display); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--red); border-radius: 999px; padding: 3px 10px; }
+.rec-lender { font-family: var(--display); font-weight: 800; font-size: 1.1rem; }
+.rec-plan { font-weight: 600; margin-top: 4px; }
+.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.rec-grid div { display: flex; flex-direction: column; }
+.rec-grid span { font-size: 0.8rem; color: var(--muted); }
+.rec-grid strong { font-variant-numeric: tabular-nums; }
+.rec-price { font-family: var(--display); font-size: 1.6rem; color: var(--blue); line-height: 1.2; }
+.rec-why { margin: 12px 0 0; font-size: 0.9rem; }
+.rec-note { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); }
+.no-rec { padding: 14px 16px; border-radius: var(--radius); background: #fdecee; border: 1px solid #f0b8bf; font-size: 0.93rem; }
+.sub-title { font-size: 0.95rem; margin: 20px 0 2px; }
+.excluded { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.9rem; }
+.excluded summary { font-size: 0.92rem; }
+.excluded ul { list-style: none; padding: 0; margin: 10px 0 0; }
+.excluded li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.excluded em { font-style: normal; color: var(--muted); text-align: right; }
+
 /* fold-outs */
 details summary { cursor: pointer; font-weight: 600; color: var(--blue); list-style: none; }
 details summary::-webkit-details-marker { display: none; }
 details summary::before { content: "+"; display: inline-block; width: 1.1em; font-weight: 700; }
 details[open] summary::before { content: "−"; }
-.edit-plans { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
-.edit-plans[open] summary { margin-bottom: 14px; }
 .faq p, .faq ul { margin: 12px 0 0; }
 .faq ul { padding-left: 20px; }
 .faq li { margin: 6px 0; }
 .fine { color: var(--muted); font-size: 0.85rem; }
-
-.plan-edit {
-  display: grid; grid-template-columns: 1fr 1.6fr 96px auto; gap: 8px; align-items: end;
-  padding: 8px 0;
-}
-.plan-edit label { display: flex; flex-direction: column; gap: 3px; }
-.plan-edit label > span:first-child { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
-.plan-edit + .plan-edit label > span:first-child { display: none; }
-.editor-actions { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
 
 /* buttons */
 .btn {
@@ -183,19 +206,19 @@ details[open] summary::before { content: "−"; }
 .foot { padding: 0 16px 40px; }
 
 @media (max-width: 520px) {
+  .rec-grid { grid-template-columns: 1fr 1fr; }
+  .rec-grid div:first-child { grid-column: 1 / -1; }
+  .excluded li { flex-direction: column; gap: 0; }
+  .excluded em { text-align: left; }
   .card { padding: 16px; }
   .field-row > .money, .field-row > .pct { width: 140px; }
   .field-row > .labor { width: 100%; }
   .field-row:has(.labor) { flex-wrap: wrap; }
   .field-row > .short { width: 96px; }
-  .plan-edit { grid-template-columns: 1fr 96px auto; padding: 10px 0; border-bottom: 1px solid var(--line); }
-  .plan-edit label:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
-  .plan-edit + .plan-edit label > span:first-child { display: block; }
-}
-
+    
 @media print {
   body { background: #fff; }
-  .foot, .edit-plans, .faq { display: none !important; }
+  .foot, .faq, .excluded { display: none !important; }
   .card { break-inside: avoid; }
   .result { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
@@ -271,18 +294,34 @@ details[open] summary::before { content: "−"; }
 
     <!-- 3. FINANCING -->
     <section class="card" aria-labelledby="h-fin">
-      <h2 id="h-fin"><span class="num">3</span> If the customer finances, charge:</h2>
-      <p class="hint block">The lender keeps a dealer fee. These prices cover it, so you still get your full price.</p>
-      <ul id="plan-list" class="plan-list"></ul>
+      <h2 id="h-fin"><span class="num">3</span> Find the best financing</h2>
+      <p id="example-note" class="example-note" hidden>Example rates for demonstration only. These are not real lender terms.</p>
 
-      <details class="edit-plans">
-        <summary>Edit financing plans</summary>
-        <p class="hint block">Use the dealer fees from your lenders' rate sheets. The starting ones are only examples.</p>
-        <div id="plan-editor"></div>
-        <div class="editor-actions">
-          <button type="button" id="add-plan" class="btn">+ Add plan</button>
-          <button type="button" id="reset-plans" class="link quiet">Reset to examples</button>
+      <fieldset class="choice">
+        <legend>Customer's credit score</legend>
+        <div class="chips" role="radiogroup">
+          <label><input type="radio" name="score" value="720" checked><span>720+</span></label>
+          <label><input type="radio" name="score" value="680"><span>680–719</span></label>
+          <label><input type="radio" name="score" value="640"><span>640–679</span></label>
+          <label><input type="radio" name="score" value="600"><span>600–639</span></label>
+          <label><input type="radio" name="score" value="300"><span>Under 600</span></label>
         </div>
+      </fieldset>
+
+      <fieldset class="choice">
+        <legend>What matters most to the customer?</legend>
+        <div class="chips" role="radiogroup">
+          <label><input type="radio" name="goal" value="price" checked><span>Lowest price</span></label>
+          <label><input type="radio" name="goal" value="promo"><span>No interest for a while</span></label>
+          <label><input type="radio" name="goal" value="payment"><span>Lowest monthly payment</span></label>
+        </div>
+      </fieldset>
+
+      <div id="rec" aria-live="polite"></div>
+      <div id="others"></div>
+      <details id="excluded-wrap" class="excluded" hidden>
+        <summary id="excluded-summary"></summary>
+        <ul id="excluded"></ul>
       </details>
     </section>
 
@@ -295,6 +334,8 @@ details[open] summary::before { content: "−"; }
       <ul>
         <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
         <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
+        <li>The recommended plan is the one this customer qualifies for (by credit score and loan amount) with the lowest dealer fee, or the lowest monthly payment if that's what the customer wants. The loan amount is the financed price.</li>
+        <li>Monthly payments are estimates. Final approval and terms come from the lender.</li>
         <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
       </ul>
       <p class="fine">For estimating only.</p>
@@ -505,6 +546,43 @@ details[open] summary::before { content: "−"; }
     };
   }
 
+  /**
+   * Recommend a financing plan for a job.
+   *   price   contractor's cash price
+   *   lenders [{ name, minLoan, maxLoan, plans: [{ name, fee, apr, months, minScore, promo }] }]
+   *   opts.score  low end of the customer's credit range (e.g. 680 for "680-719")
+   *   opts.goal   'price' (lowest dealer fee), 'promo' (no interest for a while), 'payment' (lowest monthly)
+   * Each plan's loan amount is the financed price (cash price grossed up for its fee).
+   * Returns { options: [...fits, best first], excluded: [...with reason] }.
+   */
+  function recommend(price, lenders, opts) {
+    var score = num(opts && opts.score);
+    var goal = (opts && opts.goal) || 'price';
+    var options = [], excluded = [];
+    (lenders || []).forEach(function (l) {
+      (l.plans || []).forEach(function (p) {
+        var g = grossUp(price, p.fee, 0);
+        var item = {
+          lender: l.name, plan: p.name, fee: num(p.fee), promo: !!p.promo,
+          apr: num(p.apr), months: num(p.months), note: p.note || '',
+          price: g.price, increase: g.increase, lenderFee: g.fee,
+          payment: monthlyPayment(g.price, p.apr, p.months),
+        };
+        var minLoan = num(l.minLoan), maxLoan = l.maxLoan == null ? Infinity : num(l.maxLoan);
+        if (g.error) item.reason = g.error;
+        else if (num(p.minScore) > score) item.reason = 'Needs a ' + num(p.minScore) + '+ credit score';
+        else if (g.price < minLoan || g.price > maxLoan) item.reason = 'Loan must be ' + (maxLoan === Infinity ? 'at least $' + minLoan.toLocaleString('en-US') : '$' + minLoan.toLocaleString('en-US') + ' to $' + maxLoan.toLocaleString('en-US'));
+        else if (goal === 'promo' && !item.promo) item.reason = 'No interest-free period';
+        (item.reason ? excluded : options).push(item);
+      });
+    });
+    options.sort(function (a, b) {
+      if (goal === 'payment') return a.payment - b.payment || a.fee - b.fee;
+      return a.fee - b.fee || a.payment - b.payment;
+    });
+    return { options: options, excluded: excluded };
+  }
+
   /** What happens to your margin if you absorb the fee instead of passing it on. */
   function absorbFee(cashPrice, profit, feePct) {
     var fee = num(cashPrice) * (num(feePct) / 100);
@@ -527,6 +605,7 @@ details[open] summary::before { content: "−"; }
   }
 
   var api = {
+    recommend: recommend,
     jobCost: jobCost,
     cashPriceFromCosts: cashPriceFromCosts,
     grossUp: grossUp,
@@ -544,25 +623,72 @@ details[open] summary::before { content: "−"; }
 })(typeof window !== 'undefined' ? window : this);
 </script>
   <script>
+/*
+ * LENDER RATE SHEET — the only file to edit when rates change.
+ *
+ * !!! THESE ARE EXAMPLE NUMBERS, NOT REAL LENDER TERMS !!!
+ * Replace them with the real rate sheets, then set EXAMPLE_RATES to false
+ * (that removes the "example rates" notice on the page).
+ *
+ * Lender fields:
+ *   name      shown to contractors
+ *   minLoan   smallest loan amount the lender will do ($)
+ *   maxLoan   largest loan amount ($)
+ *   plans     the lender's financing plans
+ *
+ * Plan fields:
+ *   name      shown to contractors, e.g. "12 months same-as-cash"
+ *   fee       dealer fee the contractor pays, % of the loan amount
+ *   apr       customer's interest rate (0 for no-interest plans)
+ *   months    loan term in months
+ *   minScore  lowest credit score the plan approves
+ *   promo     true if the customer pays no interest for a while
+ *   note      optional short note shown under the plan, e.g. what happens after the promo
+ */
+window.EXAMPLE_RATES = true;
+
+window.LENDERS = [
+  {
+    name: 'Lender A',
+    minLoan: 2500,
+    maxLoan: 75000,
+    plans: [
+      { name: '12 months same-as-cash', fee: 6, apr: 0, months: 12, minScore: 680, promo: true, note: 'Interest applies if not paid off in 12 months.' },
+      { name: '18 months no interest', fee: 9, apr: 0, months: 18, minScore: 700, promo: true, note: 'Interest applies if not paid off in 18 months.' },
+      { name: '0% APR for 60 months', fee: 14, apr: 0, months: 60, minScore: 720, promo: true },
+    ],
+  },
+  {
+    name: 'Lender B',
+    minLoan: 1000,
+    maxLoan: 100000,
+    plans: [
+      { name: '9.99% APR, 10 years', fee: 3, apr: 9.99, months: 120, minScore: 640 },
+      { name: '6.99% APR, 7 years', fee: 7, apr: 6.99, months: 84, minScore: 700 },
+      { name: '17.99% APR, 5 years', fee: 8, apr: 17.99, months: 60, minScore: 580 },
+    ],
+  },
+];
+</script>
+  <script>
 (function () {
   'use strict';
   var C = window.DealerCalc;
-  var STORE_KEY = 'job-price-calc-v4';
-  var OLD_KEYS = ['dealer-fee-calc-v3', 'dealer-fee-calc-v2'];
+  var LENDERS = window.LENDERS || [];
+  var STORE_KEY = 'job-price-calc-v5';
+  var OLD_KEY = 'job-price-calc-v4';
 
-  var DEFAULT_PLANS = [
-    { lender: 'Lender A', name: '12 mo same-as-cash', fee: 6 },
-    { lender: 'Lender A', name: '18 mo no interest', fee: 9 },
-    { lender: 'Lender A', name: '0% APR, 60 mo', fee: 14 },
-    { lender: 'Lender B', name: '9.99% APR, 10 yr', fee: 3 },
-    { lender: 'Lender B', name: '6.99% APR, 7 yr', fee: 7 },
-  ];
+  var GOAL_WHY = {
+    price: 'lowest dealer fee, so the lowest price for your customer',
+    promo: 'lowest dealer fee among the plans with no interest for a while',
+    payment: 'lowest monthly payment for your customer',
+  };
 
   // ---------- helpers ----------
   var $ = function (id) { return document.getElementById(id); };
   var money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   var fmt = function (x) { return isFinite(x) ? money.format(x) : '—'; };
-  var pct = function (x) { return isFinite(x) ? (Math.round(x * 10) / 10) + '%' : '—'; };
+  var pct = function (x) { return isFinite(x) ? (Math.round(x * 100) / 100) + '%' : '—'; };
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -570,15 +696,15 @@ details[open] summary::before { content: "−"; }
   };
   var n = function (v) { var x = parseFloat(v); return isFinite(x) ? x : 0; };
   var val = function (id) { return n($(id).value); };
-  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+  var radio = function (name) { var r = document.querySelector('input[name=' + name + ']:checked'); return r ? r.value : ''; };
+  var setRadio = function (name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; };
 
   var FIELDS = ['materials', 'wastePct', 'laborHours', 'laborRate', 'subs', 'other', 'overheadPct', 'marginPct'];
-  var plans = clone(DEFAULT_PLANS);
 
   // ---------- persistence (per-browser convenience only) ----------
   function save() {
     try {
-      var data = { plans: plans, fields: {} };
+      var data = { score: radio('score'), goal: radio('goal'), fields: {} };
       FIELDS.forEach(function (f) { data.fields[f] = $(f).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) { /* storage unavailable */ }
@@ -586,39 +712,57 @@ details[open] summary::before { content: "−"; }
 
   function load() {
     try {
-      var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-      if (data) {
-        if (Array.isArray(data.plans)) plans = data.plans;
-        if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
-        return;
-      }
-      // carry lenders/plans over from the earlier versions
-      for (var i = 0; i < OLD_KEYS.length; i++) {
-        var old = JSON.parse(localStorage.getItem(OLD_KEYS[i]) || 'null');
-        if (old && Array.isArray(old.lenders)) {
-          var flat = [];
-          old.lenders.forEach(function (l) {
-            (l.plans || []).forEach(function (p) { flat.push({ lender: l.name || '', name: p.name || '', fee: p.fee }); });
-          });
-          if (flat.length) plans = flat;
-          var f = old.fields || {};
-          ['materials', 'subs', 'other', 'overheadPct', 'marginPct'].forEach(function (k) { if (f[k] != null) $(k).value = f[k]; });
-          return;
-        }
-      }
+      var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
+      if (!data) return;
+      if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
+      if (data.score) setRadio('score', data.score);
+      if (data.goal) setRadio('goal', data.goal);
     } catch (e) { /* ignore bad data */ }
   }
 
-  // ---------- plan editor ----------
-  function renderEditor() {
-    $('plan-editor').innerHTML = plans.map(function (p, i) {
-      return '<div class="plan-edit" data-i="' + i + '">' +
-        '<label><span>Lender</span><input data-k="lender" type="text" value="' + esc(p.lender) + '" placeholder="Lender"></label>' +
-        '<label><span>Plan</span><input data-k="name" type="text" value="' + esc(p.name) + '" placeholder="e.g. 12 mo same-as-cash"></label>' +
-        '<label><span>Dealer fee</span><span class="pct"><input data-k="fee" type="number" inputmode="decimal" min="0" max="99" step="any" value="' + esc(p.fee) + '"></span></label>' +
-        '<button type="button" class="icon" data-remove aria-label="Remove ' + esc(p.name || 'plan') + '">×</button>' +
+  // ---------- financing ----------
+  function renderFinancing(cashPrice) {
+    if (!(cashPrice > 0)) {
+      $('rec').innerHTML = '<p class="hint">Enter your costs above to see financing options.</p>';
+      $('others').innerHTML = '';
+      $('excluded-wrap').hidden = true;
+      return;
+    }
+    var goal = radio('goal');
+    var r = C.recommend(cashPrice, LENDERS, { score: n(radio('score')), goal: goal });
+
+    if (!r.options.length) {
+      $('rec').innerHTML = '<div class="no-rec"><strong>No plan fits this customer.</strong> ' +
+        (goal === 'promo' ? 'Try "Lowest price" instead of "No interest for a while", or check the reasons below.' : 'See the reasons below. A co-signer or a bigger down payment may help.') + '</div>';
+    } else {
+      var best = r.options[0];
+      $('rec').innerHTML =
+        '<div class="rec-card">' +
+          '<div class="rec-top"><span class="rec-badge">Recommended</span><span class="rec-lender">' + esc(best.lender) + '</span></div>' +
+          '<div class="rec-plan">' + esc(best.plan) + '</div>' +
+          '<div class="rec-grid">' +
+            '<div><span>Charge the customer</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
+            '<div><span>About</span><strong>' + fmt(best.payment) + '/mo</strong></div>' +
+            '<div><span>Dealer fee</span><strong>' + pct(best.fee) + ' (' + fmt(best.lenderFee) + ')</strong></div>' +
+          '</div>' +
+          '<p class="rec-why">Why: ' + GOAL_WHY[goal] + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
+          (best.note ? '<p class="rec-note">' + esc(best.note) + '</p>' : '') +
         '</div>';
-    }).join('') || '<p class="hint block">No plans yet.</p>';
+    }
+
+    var rest = r.options.slice(1);
+    $('others').innerHTML = rest.length ?
+      '<h3 class="sub-title">Other plans this customer qualifies for</h3><ul class="plan-list">' + rest.map(function (o) {
+        return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
+          '<div class="plan-meta">' + esc(o.lender) + ' · ' + pct(o.fee) + ' fee · about ' + fmt(o.payment) + '/mo</div></div>' +
+          '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
+      }).join('') + '</ul>' : '';
+
+    $('excluded-wrap').hidden = !r.excluded.length;
+    $('excluded-summary').textContent = r.excluded.length + (r.excluded.length === 1 ? ' plan doesn\'t' : ' plans don\'t') + ' fit this customer';
+    $('excluded').innerHTML = r.excluded.map(function (o) {
+      return '<li><span>' + esc(o.lender) + ', ' + esc(o.plan) + '</span><em>' + esc(o.reason) + '</em></li>';
+    }).join('');
   }
 
   // ---------- main update ----------
@@ -639,86 +783,45 @@ details[open] summary::before { content: "−"; }
       $('markup-line').textContent = '';
       $('split-bar').innerHTML = '';
       $('split-legend').innerHTML = '';
-      $('plan-list').innerHTML = '<li class="hint">Fix your overhead and profit above.</li>';
       $('mistake').textContent = '';
+      renderFinancing(0);
       save();
       return;
     }
 
     $('cash-price').textContent = fmt(price.price);
-    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + pct(price.markupPct) + ' markup on your costs.' : 'Enter your costs above.';
+    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + (Math.round(price.markupPct * 10) / 10) + '% markup on your costs.' : 'Enter your costs above.';
 
-    // where the money goes
     var parts = [
       { label: 'Job cost', v: cost.total, cls: 's-cost' },
       { label: 'Overhead', v: price.overhead, cls: 's-oh' },
       { label: 'Profit', v: price.profit, cls: 's-profit' },
     ];
-    $('split-bar').innerHTML = price.price > 0 ? parts.map(function (p) {
+    var show = price.price > 0;
+    $('split-bar').innerHTML = show ? parts.map(function (p) {
       return p.v > 0 ? '<span class="' + p.cls + '" style="flex:' + p.v + '"></span>' : '';
     }).join('') : '';
-    $('split-legend').innerHTML = price.price > 0 ? parts.map(function (p) {
+    $('split-legend').innerHTML = show ? parts.map(function (p) {
       return '<li><i class="' + p.cls + '"></i>' + p.label + ' <b>' + fmt(p.v) + '</b></li>';
     }).join('') : '';
 
-    // financing
-    var fees = plans.map(function (p) { return n(p.fee); });
-    var minFee = Math.min.apply(null, fees.length ? fees : [0]);
-    var maxFee = Math.max.apply(null, fees.length ? fees : [0]);
-    $('plan-list').innerHTML = plans.length ? plans.map(function (p) {
-      var g = C.grossUp(price.price, n(p.fee), 0);
-      if (g.error) return '<li class="plan"><div class="plan-name">' + esc(p.name) + '</div><div class="neg">' + esc(g.error) + '</div></li>';
-      return '<li class="plan">' +
-        '<div class="plan-info"><div class="plan-name">' + esc(p.name || 'Plan') +
-          (fees.length > 1 && minFee !== maxFee && n(p.fee) === minFee ? ' <span class="tag">Lowest</span>' : '') + '</div>' +
-          '<div class="plan-meta">' + (p.lender ? esc(p.lender) + ' · ' : '') + pct(n(p.fee)) + ' dealer fee</div></div>' +
-        '<div class="plan-price"><strong>' + fmt(g.price) + '</strong><span>+' + fmt(g.increase) + '</span></div>' +
-        '</li>';
-    }).join('') : '<li class="hint">No plans yet. Open "Edit financing plans" to add one.</li>';
+    renderFinancing(price.price);
 
-    if (maxFee > 0 && price.price > 0) {
-      var top = plans[fees.indexOf(maxFee)];
-      var nv = C.naiveMarkup(price.price, maxFee);
-      var right = C.grossUp(price.price, maxFee, 0);
-      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With "' + esc(top.name) + '" (' + pct(maxFee) + '): ' +
-        fmt(price.price) + ' + ' + pct(maxFee) + ' = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
+    // "why not add the fee on top" example, using a typical 10% fee
+    if (show) {
+      var nv = C.naiveMarkup(price.price, 10);
+      var right = C.grossUp(price.price, 10, 0);
+      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With a 10% fee: ' +
+        fmt(price.price) + ' + 10% = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
         ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. Charge ' + fmt(right.price) + ' instead.';
-    } else {
-      $('mistake').textContent = 'Add a financing plan to see an example.';
     }
 
     save();
   }
 
   // ---------- events ----------
-  document.addEventListener('input', function (e) {
-    var t = e.target;
-    var row = t.closest('.plan-edit');
-    if (row && t.dataset.k) plans[+row.dataset.i][t.dataset.k] = t.value;
-    update();
-  });
-
-  $('plan-editor').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-remove]');
-    if (!b) return;
-    plans.splice(+b.closest('.plan-edit').dataset.i, 1);
-    renderEditor(); update();
-  });
-
-  $('add-plan').addEventListener('click', function () {
-    var last = plans[plans.length - 1];
-    plans.push({ lender: last ? last.lender : '', name: '', fee: 5 });
-    renderEditor(); update();
-    var names = $('plan-editor').querySelectorAll('input[data-k=name]');
-    names[names.length - 1].focus();
-  });
-
-  $('reset-plans').addEventListener('click', function () {
-    if (!confirm('Replace your financing plans with the examples?')) return;
-    plans = clone(DEFAULT_PLANS);
-    renderEditor(); update();
-  });
-
+  document.addEventListener('input', update);
+  document.addEventListener('change', function (e) { if (e.target.type === 'radio') update(); });
   $('print').addEventListener('click', function () { window.print(); });
 
   // select the whole number when tapping a field, so it's easy to type over
@@ -727,8 +830,8 @@ details[open] summary::before { content: "−"; }
   });
 
   // ---------- init ----------
+  $('example-note').hidden = !window.EXAMPLE_RATES;
   load();
-  renderEditor();
   update();
 })();
 </script>

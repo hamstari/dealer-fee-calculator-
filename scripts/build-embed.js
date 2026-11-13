@@ -13,6 +13,7 @@ const js = (p) => read(p).replace(/<\/script/gi, '<\\/script');
 html = html
   .replace('<link rel="stylesheet" href="css/styles.css">', () => '<style>\n' + css + '</style>')
   .replace('<script src="js/calc.js"></script>', () => '<script>\n' + js('js/calc.js') + '</script>')
+  .replace('<script src="js/lenders.js"></script>', () => '<script>\n' + js('js/lenders.js') + '</script>')
   .replace('<script src="js/app.js"></script>', () => '<script>\n' + js('js/app.js') + '</script>');
 
 if (/href="css\/|src="js\//.test(html)) throw new Error('Unbundled asset reference left in output');

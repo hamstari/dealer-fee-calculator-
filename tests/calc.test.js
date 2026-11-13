@@ -133,3 +133,43 @@ test('job cost ignores blanks and negatives', () => {
   const r = C.jobCost({ materials: '', wastePct: -5, laborHours: 10, laborRate: '', other: -100 });
   assert.equal(r.total, 0);
 });
+
+const LENDERS = [
+  { name: 'A', minLoan: 2500, maxLoan: 50000, plans: [
+    { name: 'A promo', fee: 6, apr: 0, months: 12, minScore: 680, promo: true },
+    { name: 'A long', fee: 4, apr: 12, months: 120, minScore: 700 },
+  ] },
+  { name: 'B', minLoan: 1000, maxLoan: 100000, plans: [
+    { name: 'B fixed', fee: 3, apr: 9.99, months: 60, minScore: 640 },
+    { name: 'B subprime', fee: 10, apr: 18, months: 60, minScore: 580 },
+  ] },
+];
+
+test('recommend picks the lowest dealer fee the customer qualifies for', () => {
+  const r = C.recommend(10000, LENDERS, { score: 720, goal: 'price' });
+  assert.equal(r.options[0].plan, 'B fixed');
+  assert.equal(r.options.length, 4);
+});
+
+test('recommend filters by credit score', () => {
+  const r = C.recommend(10000, LENDERS, { score: 600, goal: 'price' });
+  assert.deepEqual(r.options.map(o => o.plan), ['B subprime']);
+  assert.match(r.excluded.find(e => e.plan === 'B fixed').reason, /640\+/);
+});
+
+test('recommend filters to interest-free plans when that is the goal', () => {
+  const r = C.recommend(10000, LENDERS, { score: 720, goal: 'promo' });
+  assert.deepEqual(r.options.map(o => o.plan), ['A promo']);
+});
+
+test('recommend sorts by monthly payment when that is the goal', () => {
+  const r = C.recommend(10000, LENDERS, { score: 720, goal: 'payment' });
+  assert.equal(r.options[0].plan, 'A long');
+});
+
+test('recommend checks loan limits against the financed price', () => {
+  // 48,000 cash -> A promo financed price 51,064 > A max 50,000
+  const r = C.recommend(48000, LENDERS, { score: 720, goal: 'price' });
+  assert.ok(r.excluded.find(e => e.plan === 'A promo').reason.startsWith('Loan must be'));
+  assert.ok(r.options.find(o => o.plan === 'B fixed'));
+});

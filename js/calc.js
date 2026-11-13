@@ -197,6 +197,43 @@
     };
   }
 
+  /**
+   * Recommend a financing plan for a job.
+   *   price   contractor's cash price
+   *   lenders [{ name, minLoan, maxLoan, plans: [{ name, fee, apr, months, minScore, promo }] }]
+   *   opts.score  low end of the customer's credit range (e.g. 680 for "680-719")
+   *   opts.goal   'price' (lowest dealer fee), 'promo' (no interest for a while), 'payment' (lowest monthly)
+   * Each plan's loan amount is the financed price (cash price grossed up for its fee).
+   * Returns { options: [...fits, best first], excluded: [...with reason] }.
+   */
+  function recommend(price, lenders, opts) {
+    var score = num(opts && opts.score);
+    var goal = (opts && opts.goal) || 'price';
+    var options = [], excluded = [];
+    (lenders || []).forEach(function (l) {
+      (l.plans || []).forEach(function (p) {
+        var g = grossUp(price, p.fee, 0);
+        var item = {
+          lender: l.name, plan: p.name, fee: num(p.fee), promo: !!p.promo,
+          apr: num(p.apr), months: num(p.months), note: p.note || '',
+          price: g.price, increase: g.increase, lenderFee: g.fee,
+          payment: monthlyPayment(g.price, p.apr, p.months),
+        };
+        var minLoan = num(l.minLoan), maxLoan = l.maxLoan == null ? Infinity : num(l.maxLoan);
+        if (g.error) item.reason = g.error;
+        else if (num(p.minScore) > score) item.reason = 'Needs a ' + num(p.minScore) + '+ credit score';
+        else if (g.price < minLoan || g.price > maxLoan) item.reason = 'Loan must be ' + (maxLoan === Infinity ? 'at least $' + minLoan.toLocaleString('en-US') : '$' + minLoan.toLocaleString('en-US') + ' to $' + maxLoan.toLocaleString('en-US'));
+        else if (goal === 'promo' && !item.promo) item.reason = 'No interest-free period';
+        (item.reason ? excluded : options).push(item);
+      });
+    });
+    options.sort(function (a, b) {
+      if (goal === 'payment') return a.payment - b.payment || a.fee - b.fee;
+      return a.fee - b.fee || a.payment - b.payment;
+    });
+    return { options: options, excluded: excluded };
+  }
+
   /** What happens to your margin if you absorb the fee instead of passing it on. */
   function absorbFee(cashPrice, profit, feePct) {
     var fee = num(cashPrice) * (num(feePct) / 100);
@@ -219,6 +256,7 @@
   }
 
   var api = {
+    recommend: recommend,
     jobCost: jobCost,
     cashPriceFromCosts: cashPriceFromCosts,
     grossUp: grossUp,

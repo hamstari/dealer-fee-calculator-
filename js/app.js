@@ -1,22 +1,21 @@
 (function () {
   'use strict';
   var C = window.DealerCalc;
-  var STORE_KEY = 'job-price-calc-v4';
-  var OLD_KEYS = ['dealer-fee-calc-v3', 'dealer-fee-calc-v2'];
+  var LENDERS = window.LENDERS || [];
+  var STORE_KEY = 'job-price-calc-v5';
+  var OLD_KEY = 'job-price-calc-v4';
 
-  var DEFAULT_PLANS = [
-    { lender: 'Lender A', name: '12 mo same-as-cash', fee: 6 },
-    { lender: 'Lender A', name: '18 mo no interest', fee: 9 },
-    { lender: 'Lender A', name: '0% APR, 60 mo', fee: 14 },
-    { lender: 'Lender B', name: '9.99% APR, 10 yr', fee: 3 },
-    { lender: 'Lender B', name: '6.99% APR, 7 yr', fee: 7 },
-  ];
+  var GOAL_WHY = {
+    price: 'lowest dealer fee, so the lowest price for your customer',
+    promo: 'lowest dealer fee among the plans with no interest for a while',
+    payment: 'lowest monthly payment for your customer',
+  };
 
   // ---------- helpers ----------
   var $ = function (id) { return document.getElementById(id); };
   var money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   var fmt = function (x) { return isFinite(x) ? money.format(x) : '—'; };
-  var pct = function (x) { return isFinite(x) ? (Math.round(x * 10) / 10) + '%' : '—'; };
+  var pct = function (x) { return isFinite(x) ? (Math.round(x * 100) / 100) + '%' : '—'; };
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -24,15 +23,15 @@
   };
   var n = function (v) { var x = parseFloat(v); return isFinite(x) ? x : 0; };
   var val = function (id) { return n($(id).value); };
-  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+  var radio = function (name) { var r = document.querySelector('input[name=' + name + ']:checked'); return r ? r.value : ''; };
+  var setRadio = function (name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; };
 
   var FIELDS = ['materials', 'wastePct', 'laborHours', 'laborRate', 'subs', 'other', 'overheadPct', 'marginPct'];
-  var plans = clone(DEFAULT_PLANS);
 
   // ---------- persistence (per-browser convenience only) ----------
   function save() {
     try {
-      var data = { plans: plans, fields: {} };
+      var data = { score: radio('score'), goal: radio('goal'), fields: {} };
       FIELDS.forEach(function (f) { data.fields[f] = $(f).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) { /* storage unavailable */ }
@@ -40,39 +39,57 @@
 
   function load() {
     try {
-      var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-      if (data) {
-        if (Array.isArray(data.plans)) plans = data.plans;
-        if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
-        return;
-      }
-      // carry lenders/plans over from the earlier versions
-      for (var i = 0; i < OLD_KEYS.length; i++) {
-        var old = JSON.parse(localStorage.getItem(OLD_KEYS[i]) || 'null');
-        if (old && Array.isArray(old.lenders)) {
-          var flat = [];
-          old.lenders.forEach(function (l) {
-            (l.plans || []).forEach(function (p) { flat.push({ lender: l.name || '', name: p.name || '', fee: p.fee }); });
-          });
-          if (flat.length) plans = flat;
-          var f = old.fields || {};
-          ['materials', 'subs', 'other', 'overheadPct', 'marginPct'].forEach(function (k) { if (f[k] != null) $(k).value = f[k]; });
-          return;
-        }
-      }
+      var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
+      if (!data) return;
+      if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
+      if (data.score) setRadio('score', data.score);
+      if (data.goal) setRadio('goal', data.goal);
     } catch (e) { /* ignore bad data */ }
   }
 
-  // ---------- plan editor ----------
-  function renderEditor() {
-    $('plan-editor').innerHTML = plans.map(function (p, i) {
-      return '<div class="plan-edit" data-i="' + i + '">' +
-        '<label><span>Lender</span><input data-k="lender" type="text" value="' + esc(p.lender) + '" placeholder="Lender"></label>' +
-        '<label><span>Plan</span><input data-k="name" type="text" value="' + esc(p.name) + '" placeholder="e.g. 12 mo same-as-cash"></label>' +
-        '<label><span>Dealer fee</span><span class="pct"><input data-k="fee" type="number" inputmode="decimal" min="0" max="99" step="any" value="' + esc(p.fee) + '"></span></label>' +
-        '<button type="button" class="icon" data-remove aria-label="Remove ' + esc(p.name || 'plan') + '">×</button>' +
+  // ---------- financing ----------
+  function renderFinancing(cashPrice) {
+    if (!(cashPrice > 0)) {
+      $('rec').innerHTML = '<p class="hint">Enter your costs above to see financing options.</p>';
+      $('others').innerHTML = '';
+      $('excluded-wrap').hidden = true;
+      return;
+    }
+    var goal = radio('goal');
+    var r = C.recommend(cashPrice, LENDERS, { score: n(radio('score')), goal: goal });
+
+    if (!r.options.length) {
+      $('rec').innerHTML = '<div class="no-rec"><strong>No plan fits this customer.</strong> ' +
+        (goal === 'promo' ? 'Try "Lowest price" instead of "No interest for a while", or check the reasons below.' : 'See the reasons below. A co-signer or a bigger down payment may help.') + '</div>';
+    } else {
+      var best = r.options[0];
+      $('rec').innerHTML =
+        '<div class="rec-card">' +
+          '<div class="rec-top"><span class="rec-badge">Recommended</span><span class="rec-lender">' + esc(best.lender) + '</span></div>' +
+          '<div class="rec-plan">' + esc(best.plan) + '</div>' +
+          '<div class="rec-grid">' +
+            '<div><span>Charge the customer</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
+            '<div><span>About</span><strong>' + fmt(best.payment) + '/mo</strong></div>' +
+            '<div><span>Dealer fee</span><strong>' + pct(best.fee) + ' (' + fmt(best.lenderFee) + ')</strong></div>' +
+          '</div>' +
+          '<p class="rec-why">Why: ' + GOAL_WHY[goal] + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
+          (best.note ? '<p class="rec-note">' + esc(best.note) + '</p>' : '') +
         '</div>';
-    }).join('') || '<p class="hint block">No plans yet.</p>';
+    }
+
+    var rest = r.options.slice(1);
+    $('others').innerHTML = rest.length ?
+      '<h3 class="sub-title">Other plans this customer qualifies for</h3><ul class="plan-list">' + rest.map(function (o) {
+        return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
+          '<div class="plan-meta">' + esc(o.lender) + ' · ' + pct(o.fee) + ' fee · about ' + fmt(o.payment) + '/mo</div></div>' +
+          '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
+      }).join('') + '</ul>' : '';
+
+    $('excluded-wrap').hidden = !r.excluded.length;
+    $('excluded-summary').textContent = r.excluded.length + (r.excluded.length === 1 ? ' plan doesn\'t' : ' plans don\'t') + ' fit this customer';
+    $('excluded').innerHTML = r.excluded.map(function (o) {
+      return '<li><span>' + esc(o.lender) + ', ' + esc(o.plan) + '</span><em>' + esc(o.reason) + '</em></li>';
+    }).join('');
   }
 
   // ---------- main update ----------
@@ -93,86 +110,45 @@
       $('markup-line').textContent = '';
       $('split-bar').innerHTML = '';
       $('split-legend').innerHTML = '';
-      $('plan-list').innerHTML = '<li class="hint">Fix your overhead and profit above.</li>';
       $('mistake').textContent = '';
+      renderFinancing(0);
       save();
       return;
     }
 
     $('cash-price').textContent = fmt(price.price);
-    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + pct(price.markupPct) + ' markup on your costs.' : 'Enter your costs above.';
+    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + (Math.round(price.markupPct * 10) / 10) + '% markup on your costs.' : 'Enter your costs above.';
 
-    // where the money goes
     var parts = [
       { label: 'Job cost', v: cost.total, cls: 's-cost' },
       { label: 'Overhead', v: price.overhead, cls: 's-oh' },
       { label: 'Profit', v: price.profit, cls: 's-profit' },
     ];
-    $('split-bar').innerHTML = price.price > 0 ? parts.map(function (p) {
+    var show = price.price > 0;
+    $('split-bar').innerHTML = show ? parts.map(function (p) {
       return p.v > 0 ? '<span class="' + p.cls + '" style="flex:' + p.v + '"></span>' : '';
     }).join('') : '';
-    $('split-legend').innerHTML = price.price > 0 ? parts.map(function (p) {
+    $('split-legend').innerHTML = show ? parts.map(function (p) {
       return '<li><i class="' + p.cls + '"></i>' + p.label + ' <b>' + fmt(p.v) + '</b></li>';
     }).join('') : '';
 
-    // financing
-    var fees = plans.map(function (p) { return n(p.fee); });
-    var minFee = Math.min.apply(null, fees.length ? fees : [0]);
-    var maxFee = Math.max.apply(null, fees.length ? fees : [0]);
-    $('plan-list').innerHTML = plans.length ? plans.map(function (p) {
-      var g = C.grossUp(price.price, n(p.fee), 0);
-      if (g.error) return '<li class="plan"><div class="plan-name">' + esc(p.name) + '</div><div class="neg">' + esc(g.error) + '</div></li>';
-      return '<li class="plan">' +
-        '<div class="plan-info"><div class="plan-name">' + esc(p.name || 'Plan') +
-          (fees.length > 1 && minFee !== maxFee && n(p.fee) === minFee ? ' <span class="tag">Lowest</span>' : '') + '</div>' +
-          '<div class="plan-meta">' + (p.lender ? esc(p.lender) + ' · ' : '') + pct(n(p.fee)) + ' dealer fee</div></div>' +
-        '<div class="plan-price"><strong>' + fmt(g.price) + '</strong><span>+' + fmt(g.increase) + '</span></div>' +
-        '</li>';
-    }).join('') : '<li class="hint">No plans yet. Open "Edit financing plans" to add one.</li>';
+    renderFinancing(price.price);
 
-    if (maxFee > 0 && price.price > 0) {
-      var top = plans[fees.indexOf(maxFee)];
-      var nv = C.naiveMarkup(price.price, maxFee);
-      var right = C.grossUp(price.price, maxFee, 0);
-      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With "' + esc(top.name) + '" (' + pct(maxFee) + '): ' +
-        fmt(price.price) + ' + ' + pct(maxFee) + ' = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
+    // "why not add the fee on top" example, using a typical 10% fee
+    if (show) {
+      var nv = C.naiveMarkup(price.price, 10);
+      var right = C.grossUp(price.price, 10, 0);
+      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With a 10% fee: ' +
+        fmt(price.price) + ' + 10% = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
         ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. Charge ' + fmt(right.price) + ' instead.';
-    } else {
-      $('mistake').textContent = 'Add a financing plan to see an example.';
     }
 
     save();
   }
 
   // ---------- events ----------
-  document.addEventListener('input', function (e) {
-    var t = e.target;
-    var row = t.closest('.plan-edit');
-    if (row && t.dataset.k) plans[+row.dataset.i][t.dataset.k] = t.value;
-    update();
-  });
-
-  $('plan-editor').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-remove]');
-    if (!b) return;
-    plans.splice(+b.closest('.plan-edit').dataset.i, 1);
-    renderEditor(); update();
-  });
-
-  $('add-plan').addEventListener('click', function () {
-    var last = plans[plans.length - 1];
-    plans.push({ lender: last ? last.lender : '', name: '', fee: 5 });
-    renderEditor(); update();
-    var names = $('plan-editor').querySelectorAll('input[data-k=name]');
-    names[names.length - 1].focus();
-  });
-
-  $('reset-plans').addEventListener('click', function () {
-    if (!confirm('Replace your financing plans with the examples?')) return;
-    plans = clone(DEFAULT_PLANS);
-    renderEditor(); update();
-  });
-
+  document.addEventListener('input', update);
+  document.addEventListener('change', function (e) { if (e.target.type === 'radio') update(); });
   $('print').addEventListener('click', function () { window.print(); });
 
   // select the whole number when tapping a field, so it's easy to type over
@@ -181,7 +157,7 @@
   });
 
   // ---------- init ----------
+  $('example-note').hidden = !window.EXAMPLE_RATES;
   load();
-  renderEditor();
   update();
 })();
