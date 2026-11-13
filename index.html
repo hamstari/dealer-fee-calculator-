@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dealer Fee Calculator</title>
+  <meta name="description" content="Price jobs for customer financing so dealer fees don't eat your margin.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <h1>Dealer Fee Calculator</h1>
+      <p class="lede">Price jobs so financing fees come out of the customer's price, not your profit.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- STEP 1 -->
+    <section class="card" aria-labelledby="s1">
+      <h2 id="s1"><span class="step">1</span> Your cash price</h2>
+      <div class="mode" role="radiogroup" aria-label="How to set the cash price">
+        <label><input type="radio" name="mode" value="costs" checked> Build from job costs</label>
+        <label><input type="radio" name="mode" value="direct"> I already know my price</label>
+      </div>
+
+      <div id="costs-fields" class="grid">
+        <label>Materials <span class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6500"></span></label>
+        <label>Labor <span class="money"><input id="labor" type="number" inputmode="decimal" min="0" step="any" value="4200"></span></label>
+        <label>Subcontractors <span class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
+        <label>Permits, disposal, other <span class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></span></label>
+        <label>Overhead <small>% of price</small> <span class="pct"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></span></label>
+        <label>Profit margin <small>% of price</small> <span class="pct"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></span></label>
+      </div>
+
+      <div id="direct-fields" class="grid" hidden>
+        <label>Cash price <span class="money"><input id="directPrice" type="number" inputmode="decimal" min="0" step="any" value="17700"></span></label>
+        <label>Profit in that price <small>optional, $</small> <span class="money"><input id="directProfit" type="number" inputmode="decimal" min="0" step="any" value=""></span></label>
+      </div>
+
+      <div id="cash-summary" class="summary" aria-live="polite"></div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="card" aria-labelledby="s2">
+      <h2 id="s2"><span class="step">2</span> Your financing plans</h2>
+      <p class="hint">Enter the dealer fees from your lender's rate sheet. The defaults are only examples — fees vary a lot by lender, plan and credit tier.</p>
+      <div class="table-scroll">
+        <table class="plans">
+          <thead>
+            <tr><th>Plan name</th><th>Dealer fee</th><th>Customer APR</th><th>Term (mo)</th><th><span class="sr">Remove</span></th></tr>
+          </thead>
+          <tbody id="plan-rows"></tbody>
+        </table>
+      </div>
+      <div class="row-actions">
+        <button type="button" id="add-plan" class="btn">+ Add plan</button>
+        <button type="button" id="reset-plans" class="btn ghost">Reset to examples</button>
+      </div>
+      <label class="inline">Customer down payment (cash) <span class="money"><input id="down" type="number" inputmode="decimal" min="0" step="any" value="0"></span></label>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="card" aria-labelledby="s3">
+      <h2 id="s3"><span class="step">3</span> What to charge financed customers</h2>
+      <p class="hint">Each price is set so that after the lender takes its fee, you still net your full cash price.</p>
+      <div class="table-scroll">
+        <table class="results">
+          <thead>
+            <tr>
+              <th>Plan</th><th>Charge customer</th><th>Increase</th><th>Lender keeps</th><th>You net</th><th>Est. payment</th><th>If you absorb it</th>
+            </tr>
+          </thead>
+          <tbody id="result-rows"></tbody>
+        </table>
+      </div>
+      <div id="mistake" class="callout warn"></div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="card" aria-labelledby="s4">
+      <h2 id="s4"><span class="step">4</span> One price for everyone</h2>
+      <p class="hint">Many lender agreements (and some state laws) don't let you charge financed customers more than cash customers. Instead, build the expected fees into a single price for all customers.</p>
+      <div class="grid">
+        <label>Plan you usually offer <select id="blend-plan"></select></label>
+        <label>Share of customers who finance <span class="pct"><input id="share" type="number" inputmode="decimal" min="0" max="100" step="any" value="40"></span></label>
+      </div>
+      <div id="blend-out" class="summary" aria-live="polite"></div>
+    </section>
+
+    <section class="card notes">
+      <h2>How the math works</h2>
+      <ul>
+        <li><strong>Financed price = cash price ÷ (1 − dealer fee).</strong> With a 10% fee on a $10,000 job, charge $11,111 — the lender keeps $1,111 and you net $10,000.</li>
+        <li>Adding the fee on top (×1.10 = $11,000) doesn't work: the lender takes 10% of the bigger number, and you net only $9,900.</li>
+        <li>With a cash down payment, the fee only applies to the financed part.</li>
+        <li>Margin here is a percentage of the selling price. A 20% margin equals a 25% markup on cost.</li>
+        <li>Monthly payments are simple amortized estimates. Deferred-interest and "same as cash" plans bill differently, so use the lender's figures when quoting payments.</li>
+      </ul>
+      <p class="fine">For estimating only. Check your lender agreement and local rules before you change how you price financed jobs.</p>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <button type="button" id="print" class="btn ghost">Print / save as PDF</button>
+  </footer>
+
+  <script src="js/calc.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
