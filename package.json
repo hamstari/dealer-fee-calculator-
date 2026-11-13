@@ -5,6 +5,7 @@
   "description": "Help contractors price financed jobs so dealer fees don't eat their margin.",
   "scripts": {
     "test": "node --test tests/calc.test.js",
-    "start": "npx --yes serve ."
+    "start": "npx --yes serve .",
+    "build": "node scripts/build-embed.js"
   }
 }

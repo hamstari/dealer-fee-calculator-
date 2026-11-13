@@ -32,6 +32,19 @@ npm test       # unit tests for the pricing math (Node 18+)
 
 Inputs are saved in your browser (localStorage), so they're still there next time.
 
+## Put it on a Wix site
+
+`dist/dealer-fee-calculator.html` is the whole app in one file (rebuild it with `npm run build` after changes).
+
+1. Open your site in the Wix Editor and go to the page you want.
+2. Click **Add Elements (+)** → **Embed Code** → **Embed HTML**.
+3. Click **Enter Code**, pick **Code**, paste in the full contents of `dist/dealer-fee-calculator.html`, and click **Update**.
+4. Drag the box to the width you want and make it tall (about 1,500 px). Anything taller scrolls inside the box.
+5. Switch to the mobile view and make the box taller there too (about 2,200 px).
+6. **Publish**.
+
+Wix runs embedded code in a sandboxed frame, so some browsers may not remember saved lenders between visits. Set your real lenders as the defaults (`DEFAULT_LENDERS` in `js/app.js`), then rebuild, so every visitor starts with them.
+
 ## Files
 
 - `index.html`: page layout
@@ -39,5 +52,6 @@ Inputs are saved in your browser (localStorage), so they're still there next tim
 - `js/calc.js`: pure pricing functions (shared by the app and the tests)
 - `js/app.js`: UI wiring
 - `tests/calc.test.js`: tests
+- `scripts/build-embed.js`: builds the single-file `dist/` version
 
 For estimating only. Check your lender agreement and local rules before you change how you price financed jobs.
