@@ -13,9 +13,9 @@ A simple one-page calculator that helps contractors estimate a job and price it,
 
 ## Updating lender rates
 
-All lender terms live in **`js/lenders.js`**: each lender's name and loan limits, and for each plan the dealer fee, APR, term, minimum credit score and whether it's a no-interest promo. Contractors can't change them on the page.
+All lender terms live in **`js/lenders.js`**: for each lender, the same-as-cash and zero-interest fees by term, and the installment-loan table (contractor fee for each term and customer APR), plus loan minimums and credit requirements. Contractors can't change them on the page.
 
-**The rates in that file are examples.** Replace them with the real rate sheets and set `EXAMPLE_RATES = false` to remove the notice on the page. Then run `npm run build` and push to `main`; the live site updates automatically.
+It currently holds the Foundation Finance (07/16/2026) and Regions Bank (02/27/2026) rate sheets. When a new sheet comes out, update the numbers and `RATES_AS_OF`, run `npm run build`, and push to `main`; the live site updates automatically. Lines marked `CHECK` still need confirming with the lender.
 
 Fold-outs explain why simply adding the fee % on top leaves you short, and how the math works.
 
