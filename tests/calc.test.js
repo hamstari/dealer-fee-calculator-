@@ -170,6 +170,35 @@ test('recommend sorts by monthly payment when that is the goal', () => {
 test('recommend checks loan limits against the financed price', () => {
   // 48,000 cash -> A promo financed price 51,064 > A max 50,000
   const r = C.recommend(48000, LENDERS, { score: 720, goal: 'price' });
-  assert.ok(r.excluded.find(e => e.plan === 'A promo').reason.startsWith('Loan must be'));
+  assert.ok(r.excluded.find(e => e.plan === 'A promo').reason.startsWith("Loan can't be over"));
   assert.ok(r.options.find(o => o.plan === 'B fixed'));
+});
+
+test('expandSheets builds promo and installment plans', () => {
+  const [l] = C.expandSheets([{
+    name: 'X', minScore: 600,
+    sac: { 12: 6 }, zil: { 24: 13.5 },
+    installment: { aprs: [11.9, 5.9], terms: [
+      { years: 5, fees: [0, 14] },
+      { years: 20, fees: [0, null], minLoan: 35000, minScore: 680 },
+    ] },
+  }]);
+  assert.equal(l.plans.length, 5);
+  const sac = l.plans.find(p => p.kind === 'sac');
+  assert.equal(sac.fee, 6); assert.equal(sac.months, 12); assert.ok(sac.promo);
+  const twenty = l.plans.find(p => p.months === 240);
+  assert.equal(twenty.minLoan, 35000); assert.equal(twenty.minScore, 680); assert.equal(twenty.apr, 11.9);
+});
+
+test('plan-level loan minimum and credit requirement override the lender', () => {
+  const lenders = C.expandSheets([{
+    name: 'X', minScore: 550,
+    installment: { aprs: [11.9], terms: [{ years: 5, fees: [0] }, { years: 20, fees: [0], minLoan: 35000, minScore: 680 }] },
+  }]);
+  let r = C.recommend(20000, lenders, { score: 725, goal: 'payment' });
+  assert.match(r.excluded[0].reason, /over \$35,000/);
+  r = C.recommend(40000, lenders, { score: 650, goal: 'payment' });
+  assert.match(r.excluded[0].reason, /680\+/);
+  r = C.recommend(40000, lenders, { score: 725, goal: 'payment' });
+  assert.equal(r.options[0].months, 240);
 });

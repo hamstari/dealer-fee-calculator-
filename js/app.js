@@ -1,9 +1,9 @@
 (function () {
   'use strict';
   var C = window.DealerCalc;
-  var LENDERS = window.LENDERS || [];
-  var STORE_KEY = 'job-price-calc-v5';
-  var OLD_KEY = 'job-price-calc-v4';
+  var LENDERS = C.expandSheets(window.LENDER_SHEETS || []);
+  var STORE_KEY = 'job-price-calc-v6';
+  var OLD_KEY = 'job-price-calc-v5';
 
   var GOAL_WHY = {
     price: 'lowest dealer fee, so the lowest price for your customer',
@@ -31,7 +31,7 @@
   // ---------- persistence (per-browser convenience only) ----------
   function save() {
     try {
-      var data = { score: radio('score'), goal: radio('goal'), fields: {} };
+      var data = { v: 6, score: radio('score'), goal: radio('goal'), fields: {} };
       FIELDS.forEach(function (f) { data.fields[f] = $(f).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) { /* storage unavailable */ }
@@ -42,16 +42,22 @@
       var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
       if (!data) return;
       if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
-      if (data.score) setRadio('score', data.score);
+      if (data.score && data.v === 6) setRadio('score', data.score);
       if (data.goal) setRadio('goal', data.goal);
     } catch (e) { /* ignore bad data */ }
   }
 
   // ---------- financing ----------
+  function payText(o) {
+    if (o.kind === 'sac') return '$0 for ' + o.months + ' mo';
+    return 'about ' + fmt(o.payment) + '/mo';
+  }
+
   function renderFinancing(cashPrice) {
     if (!(cashPrice > 0)) {
       $('rec').innerHTML = '<p class="hint">Enter your costs above to see financing options.</p>';
       $('others').innerHTML = '';
+      $('more-wrap').hidden = true;
       $('excluded-wrap').hidden = true;
       return;
     }
@@ -63,27 +69,35 @@
         (goal === 'promo' ? 'Try "Lowest price" instead of "No interest for a while", or check the reasons below.' : 'See the reasons below. A co-signer or a bigger down payment may help.') + '</div>';
     } else {
       var best = r.options[0];
+      var why = best.fee === 0 ? 'no dealer fee for you, so the customer pays your cash price' : GOAL_WHY[goal];
       $('rec').innerHTML =
         '<div class="rec-card">' +
           '<div class="rec-top"><span class="rec-badge">Recommended</span><span class="rec-lender">' + esc(best.lender) + '</span></div>' +
           '<div class="rec-plan">' + esc(best.plan) + '</div>' +
           '<div class="rec-grid">' +
             '<div><span>Charge the customer</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
-            '<div><span>About</span><strong>' + fmt(best.payment) + '/mo</strong></div>' +
-            '<div><span>Dealer fee</span><strong>' + pct(best.fee) + ' (' + fmt(best.lenderFee) + ')</strong></div>' +
+            '<div><span>Monthly payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
+            '<div><span>Your dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
           '</div>' +
-          '<p class="rec-why">Why: ' + GOAL_WHY[goal] + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
-          (best.note ? '<p class="rec-note">' + esc(best.note) + '</p>' : '') +
+          '<p class="rec-why">Why: ' + why + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
+          (best.note ? '<p class="rec-note">' + esc(best.note) + (best.kind === 'sac' ? ' To pay it off in time: about ' + fmt(best.payment) + '/mo.' : '') + '</p>' : '') +
+          (best.lenderNote ? '<p class="rec-note">' + esc(best.lenderNote) + '</p>' : '') +
         '</div>';
     }
 
     var rest = r.options.slice(1);
+    var row = function (o) {
+      return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
+        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o) + '</div></div>' +
+        '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
+    };
+    var SHOW = 4;
     $('others').innerHTML = rest.length ?
-      '<h3 class="sub-title">Other plans this customer qualifies for</h3><ul class="plan-list">' + rest.map(function (o) {
-        return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
-          '<div class="plan-meta">' + esc(o.lender) + ' · ' + pct(o.fee) + ' fee · about ' + fmt(o.payment) + '/mo</div></div>' +
-          '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
-      }).join('') + '</ul>' : '';
+      '<h3 class="sub-title">Next best options</h3><ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
+    var more = rest.slice(SHOW);
+    $('more-wrap').hidden = !more.length;
+    $('more-summary').textContent = 'Show ' + more.length + ' more plan' + (more.length === 1 ? '' : 's') + ' this customer qualifies for';
+    $('more').innerHTML = more.map(row).join('');
 
     $('excluded-wrap').hidden = !r.excluded.length;
     $('excluded-summary').textContent = r.excluded.length + (r.excluded.length === 1 ? ' plan doesn\'t' : ' plans don\'t') + ' fit this customer';
@@ -158,6 +172,7 @@
 
   // ---------- init ----------
   $('example-note').hidden = !window.EXAMPLE_RATES;
+  $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of: ' + window.RATES_AS_OF + '. Final approval and terms come from the lender.' : '';
   load();
   update();
 })();

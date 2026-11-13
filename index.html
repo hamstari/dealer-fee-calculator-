@@ -86,11 +86,12 @@
       <fieldset class="choice">
         <legend>Customer's credit score</legend>
         <div class="chips" role="radiogroup">
-          <label><input type="radio" name="score" value="720" checked><span>720+</span></label>
-          <label><input type="radio" name="score" value="680"><span>680–719</span></label>
-          <label><input type="radio" name="score" value="640"><span>640–679</span></label>
-          <label><input type="radio" name="score" value="600"><span>600–639</span></label>
-          <label><input type="radio" name="score" value="300"><span>Under 600</span></label>
+          <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
+          <label><input type="radio" name="score" value="680"><span>680–724</span></label>
+          <label><input type="radio" name="score" value="650"><span>650–679</span></label>
+          <label><input type="radio" name="score" value="600"><span>600–649</span></label>
+          <label><input type="radio" name="score" value="550"><span>550–599</span></label>
+          <label><input type="radio" name="score" value="300"><span>Under 550</span></label>
         </div>
       </fieldset>
 
@@ -105,10 +106,15 @@
 
       <div id="rec" aria-live="polite"></div>
       <div id="others"></div>
+      <details id="more-wrap" class="more" hidden>
+        <summary id="more-summary"></summary>
+        <ul id="more" class="plan-list"></ul>
+      </details>
       <details id="excluded-wrap" class="excluded" hidden>
         <summary id="excluded-summary"></summary>
         <ul id="excluded"></ul>
       </details>
+      <p id="rates-as-of" class="rates-as-of"></p>
     </section>
 
     <details class="card faq">
@@ -121,7 +127,8 @@
         <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
         <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
         <li>The recommended plan is the one this customer qualifies for (by credit score and loan amount) with the lowest dealer fee, or the lowest monthly payment if that's what the customer wants. The loan amount is the financed price.</li>
-        <li>Monthly payments are estimates. Final approval and terms come from the lender.</li>
+        <li><strong>Same-as-cash:</strong> $0 payments and no interest if the customer pays it off before the promo ends. <strong>Zero-interest loan:</strong> equal monthly payments at 0%. <strong>Installment loan:</strong> a regular loan; the more dealer fee you pay, the lower the customer's APR.</li>
+        <li>Monthly payments are estimates. Final approval, rates and terms come from the lender at the time of application.</li>
         <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
       </ul>
       <p class="fine">For estimating only.</p>

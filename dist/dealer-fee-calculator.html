@@ -172,6 +172,9 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 .rec-note { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); }
 .no-rec { padding: 14px 16px; border-radius: var(--radius); background: #fdecee; border: 1px solid #f0b8bf; font-size: 0.93rem; }
 .sub-title { font-size: 0.95rem; margin: 20px 0 2px; }
+.more { margin-top: 10px; font-size: 0.92rem; }
+.more[open] summary { margin-bottom: 4px; }
+.rates-as-of { margin: 16px 0 0; font-size: 0.78rem; color: var(--muted); }
 .excluded { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.9rem; }
 .excluded summary { font-size: 0.92rem; }
 .excluded ul { list-style: none; padding: 0; margin: 10px 0 0; }
@@ -300,11 +303,12 @@ details[open] summary::before { content: "−"; }
       <fieldset class="choice">
         <legend>Customer's credit score</legend>
         <div class="chips" role="radiogroup">
-          <label><input type="radio" name="score" value="720" checked><span>720+</span></label>
-          <label><input type="radio" name="score" value="680"><span>680–719</span></label>
-          <label><input type="radio" name="score" value="640"><span>640–679</span></label>
-          <label><input type="radio" name="score" value="600"><span>600–639</span></label>
-          <label><input type="radio" name="score" value="300"><span>Under 600</span></label>
+          <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
+          <label><input type="radio" name="score" value="680"><span>680–724</span></label>
+          <label><input type="radio" name="score" value="650"><span>650–679</span></label>
+          <label><input type="radio" name="score" value="600"><span>600–649</span></label>
+          <label><input type="radio" name="score" value="550"><span>550–599</span></label>
+          <label><input type="radio" name="score" value="300"><span>Under 550</span></label>
         </div>
       </fieldset>
 
@@ -319,10 +323,15 @@ details[open] summary::before { content: "−"; }
 
       <div id="rec" aria-live="polite"></div>
       <div id="others"></div>
+      <details id="more-wrap" class="more" hidden>
+        <summary id="more-summary"></summary>
+        <ul id="more" class="plan-list"></ul>
+      </details>
       <details id="excluded-wrap" class="excluded" hidden>
         <summary id="excluded-summary"></summary>
         <ul id="excluded"></ul>
       </details>
+      <p id="rates-as-of" class="rates-as-of"></p>
     </section>
 
     <details class="card faq">
@@ -335,7 +344,8 @@ details[open] summary::before { content: "−"; }
         <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
         <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
         <li>The recommended plan is the one this customer qualifies for (by credit score and loan amount) with the lowest dealer fee, or the lowest monthly payment if that's what the customer wants. The loan amount is the financed price.</li>
-        <li>Monthly payments are estimates. Final approval and terms come from the lender.</li>
+        <li><strong>Same-as-cash:</strong> $0 payments and no interest if the customer pays it off before the promo ends. <strong>Zero-interest loan:</strong> equal monthly payments at 0%. <strong>Installment loan:</strong> a regular loan; the more dealer fee you pay, the lower the customer's APR.</li>
+        <li>Monthly payments are estimates. Final approval, rates and terms come from the lender at the time of application.</li>
         <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
       </ul>
       <p class="fine">For estimating only.</p>
@@ -547,10 +557,50 @@ details[open] summary::before { content: "−"; }
   }
 
   /**
+   * Turn compact lender rate sheets into a flat list of plans.
+   * sheet: {
+   *   name, minScore, maxLoan, note,
+   *   sac: { months: fee%, ... }            same-as-cash: $0 payments, no interest if paid off in time
+   *   zil: { months: fee%, ... }            zero-interest loan: equal payments, no interest
+   *   installment: { aprs: [apr per row], minScore?, terms: [{ years, fees: [fee per row, null = n/a], minLoan?, minScore? }] }
+   * }
+   */
+  function expandSheets(sheets) {
+    return (sheets || []).map(function (sh) {
+      var plans = [];
+      Object.keys(sh.sac || {}).forEach(function (m) {
+        plans.push({ kind: 'sac', promo: true, months: +m, apr: 0, fee: sh.sac[m],
+          name: 'Same-as-cash, ' + m + ' months', minScore: sh.promoMinScore,
+          note: '$0 payments. No interest if paid off within ' + m + ' months.' });
+      });
+      Object.keys(sh.zil || {}).forEach(function (m) {
+        plans.push({ kind: 'zil', promo: true, months: +m, apr: 0, fee: sh.zil[m],
+          name: 'Zero-interest loan, ' + m + ' months', minScore: sh.promoMinScore,
+          note: 'Equal monthly payments, 0% interest.' });
+      });
+      var inst = sh.installment;
+      if (inst) {
+        inst.terms.forEach(function (t) {
+          t.fees.forEach(function (fee, row) {
+            if (fee == null) return;
+            var apr = inst.aprs[row];
+            plans.push({ kind: 'installment', promo: false, months: t.years * 12, apr: apr, fee: fee,
+              name: t.years + '-year loan at ' + apr + '% APR', minLoan: t.minLoan,
+              minScore: t.minScore != null ? t.minScore : inst.minScore,
+              note: inst.note || '' });
+          });
+        });
+      }
+      return { name: sh.name, minScore: sh.minScore, minLoan: sh.minLoan, maxLoan: sh.maxLoan, note: sh.note, plans: plans };
+    });
+  }
+
+  /**
    * Recommend a financing plan for a job.
    *   price   contractor's cash price
-   *   lenders [{ name, minLoan, maxLoan, plans: [{ name, fee, apr, months, minScore, promo }] }]
-   *   opts.score  low end of the customer's credit range (e.g. 680 for "680-719")
+   *   lenders [{ name, minScore, minLoan, maxLoan, plans: [{ name, kind, fee, apr, months, minScore, minLoan, maxLoan, promo }] }]
+   *           plan-level minScore/minLoan/maxLoan override the lender's
+   *   opts.score  low end of the customer's credit range (e.g. 680 for "680-724")
    *   opts.goal   'price' (lowest dealer fee), 'promo' (no interest for a while), 'payment' (lowest monthly)
    * Each plan's loan amount is the financed price (cash price grossed up for its fee).
    * Returns { options: [...fits, best first], excluded: [...with reason] }.
@@ -558,21 +608,27 @@ details[open] summary::before { content: "−"; }
   function recommend(price, lenders, opts) {
     var score = num(opts && opts.score);
     var goal = (opts && opts.goal) || 'price';
+    var pick = function (a, b) { return a != null ? a : b; };
+    var usd = function (x) { return '$' + Math.round(x).toLocaleString('en-US'); };
     var options = [], excluded = [];
     (lenders || []).forEach(function (l) {
       (l.plans || []).forEach(function (p) {
         var g = grossUp(price, p.fee, 0);
         var item = {
-          lender: l.name, plan: p.name, fee: num(p.fee), promo: !!p.promo,
+          lender: l.name, lenderNote: l.note || '', plan: p.name, kind: p.kind || '', fee: num(p.fee), promo: !!p.promo,
           apr: num(p.apr), months: num(p.months), note: p.note || '',
           price: g.price, increase: g.increase, lenderFee: g.fee,
           payment: monthlyPayment(g.price, p.apr, p.months),
         };
-        var minLoan = num(l.minLoan), maxLoan = l.maxLoan == null ? Infinity : num(l.maxLoan);
+        var minScore = num(pick(p.minScore, l.minScore));
+        var minLoan = num(pick(p.minLoan, l.minLoan));
+        var maxRaw = pick(p.maxLoan, l.maxLoan);
+        var maxLoan = maxRaw == null ? Infinity : num(maxRaw);
         if (g.error) item.reason = g.error;
-        else if (num(p.minScore) > score) item.reason = 'Needs a ' + num(p.minScore) + '+ credit score';
-        else if (g.price < minLoan || g.price > maxLoan) item.reason = 'Loan must be ' + (maxLoan === Infinity ? 'at least $' + minLoan.toLocaleString('en-US') : '$' + minLoan.toLocaleString('en-US') + ' to $' + maxLoan.toLocaleString('en-US'));
-        else if (goal === 'promo' && !item.promo) item.reason = 'No interest-free period';
+        else if (minScore > score) item.reason = 'Needs a ' + minScore + '+ credit score';
+        else if (g.price < minLoan) item.reason = 'Loan must be over ' + usd(minLoan);
+        else if (g.price > maxLoan) item.reason = 'Loan can\'t be over ' + usd(maxLoan);
+        else if (goal === 'promo' && !item.promo) item.reason = 'Not a no-interest plan';
         (item.reason ? excluded : options).push(item);
       });
     });
@@ -605,6 +661,7 @@ details[open] summary::before { content: "−"; }
   }
 
   var api = {
+    expandSheets: expandSheets,
     recommend: recommend,
     jobCost: jobCost,
     cashPriceFromCosts: cashPriceFromCosts,
@@ -624,49 +681,68 @@ details[open] summary::before { content: "−"; }
 </script>
   <script>
 /*
- * LENDER RATE SHEET — the only file to edit when rates change.
+ * LENDER RATE SHEETS — the only file to edit when rates change.
  *
- * !!! THESE ARE EXAMPLE NUMBERS, NOT REAL LENDER TERMS !!!
- * Replace them with the real rate sheets, then set EXAMPLE_RATES to false
- * (that removes the "example rates" notice on the page).
+ * Source: America Home Financial "Financing Options" contractor rate sheets
+ *   Foundation Finance (07/16/2026) and Regions Bank (2/27/26).
  *
- * Lender fields:
- *   name      shown to contractors
- *   minLoan   smallest loan amount the lender will do ($)
- *   maxLoan   largest loan amount ($)
- *   plans     the lender's financing plans
+ * Per lender:
+ *   name           shown to contractors
+ *   minScore       lowest credit score the lender approves
+ *   promoMinScore  lowest credit score for same-as-cash / zero-interest plans (defaults to minScore)
+ *   minLoan/maxLoan  loan amount limits for every plan (optional)
+ *   note           shown with the recommendation
+ *   sac            same-as-cash: { months: contractor fee % }
+ *   zil            zero-interest loan, equal payments: { months: contractor fee % }
+ *   installment    standard loans. `aprs` lists the customer APR for each row of the sheet;
+ *                  each term lists the contractor fee for each row (null = not offered).
  *
- * Plan fields:
- *   name      shown to contractors, e.g. "12 months same-as-cash"
- *   fee       dealer fee the contractor pays, % of the loan amount
- *   apr       customer's interest rate (0 for no-interest plans)
- *   months    loan term in months
- *   minScore  lowest credit score the plan approves
- *   promo     true if the customer pays no interest for a while
- *   note      optional short note shown under the plan, e.g. what happens after the promo
+ * Items marked CHECK are read from the sheet but look like typos or weren't stated.
  */
-window.EXAMPLE_RATES = true;
+window.EXAMPLE_RATES = false;
+window.RATES_AS_OF = 'Foundation Finance 07/16/2026 · Regions Bank 02/27/2026';
 
-window.LENDERS = [
+window.LENDER_SHEETS = [
   {
-    name: 'Lender A',
-    minLoan: 2500,
-    maxLoan: 75000,
-    plans: [
-      { name: '12 months same-as-cash', fee: 6, apr: 0, months: 12, minScore: 680, promo: true, note: 'Interest applies if not paid off in 12 months.' },
-      { name: '18 months no interest', fee: 9, apr: 0, months: 18, minScore: 700, promo: true, note: 'Interest applies if not paid off in 18 months.' },
-      { name: '0% APR for 60 months', fee: 14, apr: 0, months: 60, minScore: 720, promo: true },
-    ],
+    name: 'Foundation Finance',
+    // Tiers: 1 = 725+, 2 = 680–724, 3 = 650–679, 4 = 600–649, 5 = 550–599
+    // CHECK: sheet prints Tier 5 as "550 – 559"; read as 550–599.
+    minScore: 550,
+    // CHECK: sheet doesn't say which tiers get promo plans; assumed the same as the lender minimum.
+    note: '',
+    sac: { 6: 3, 12: 6, 18: 9, 24: 14 },
+    zil: { 12: 8.5, 24: 13.5, 36: 18, 48: 22, 60: 25 },
+    installment: {
+      // CHECK: sheet prints the 5th rate as "69%"; read as 6.9%.
+      aprs: [11.9, 9.9, 8.9, 7.9, 6.9, 5.9],
+      note: 'Lowest APRs are for well-qualified customers.',
+      terms: [
+        { years: 5, fees: [0, 4, 7, 9.5, 12, 14] },
+        { years: 10, fees: [0, 4, 7, 9.5, 12, 14], minLoan: 7500 },
+        { years: 12, fees: [0, 4, 7, 9.5, 12, 14], minLoan: 7500 },
+        { years: 15, fees: [0, 4, 7, 9.5, 12, 14], minLoan: 25000, minScore: 680 },
+        { years: 20, fees: [0, 5.5, 8.5, 11, 13.5, 15.5], minLoan: 35000, minScore: 680 },
+      ],
+    },
   },
   {
-    name: 'Lender B',
-    minLoan: 1000,
-    maxLoan: 100000,
-    plans: [
-      { name: '9.99% APR, 10 years', fee: 3, apr: 9.99, months: 120, minScore: 640 },
-      { name: '6.99% APR, 7 years', fee: 7, apr: 6.99, months: 84, minScore: 700 },
-      { name: '17.99% APR, 5 years', fee: 8, apr: 17.99, months: 60, minScore: 580 },
-    ],
+    name: 'Regions Bank',
+    // Tier 1 = 680+. 620–679 may get a counter-offer from the bank.
+    minScore: 680,
+    note: 'Customers with 620–679 credit may get a counter-offer from Regions.',
+    sac: { 6: 4.25, 9: 4.5, 12: 6, 18: 11.95, 24: 15.55 },
+    zil: { 12: 10, 24: 12.75, 36: 14.75, 48: 18 },
+    installment: {
+      // CHECK: sheet prints the 2nd rate as 9.99%, higher than the 0%-fee rate of 8.99%.
+      aprs: [8.99, 9.99, 7.99, 6.99, 4.99, 2.99],
+      note: 'Lowest APRs are for well-qualified customers.',
+      terms: [
+        { years: 5, fees: [0, 3.5, 6.5, 7.5, 12, 20.5], minLoan: 3500 },
+        { years: 7, fees: [0, 3.75, 8, 10.5, 14, null], minLoan: 3500 },
+        { years: 10, fees: [0, 4.75, 10, 12.5, 17.65, null], minLoan: 7500 },
+        { years: 12, fees: [0, 5, 10.75, 13.25, 19.3, null], minLoan: 10000 },
+      ],
+    },
   },
 ];
 </script>
@@ -674,9 +750,9 @@ window.LENDERS = [
 (function () {
   'use strict';
   var C = window.DealerCalc;
-  var LENDERS = window.LENDERS || [];
-  var STORE_KEY = 'job-price-calc-v5';
-  var OLD_KEY = 'job-price-calc-v4';
+  var LENDERS = C.expandSheets(window.LENDER_SHEETS || []);
+  var STORE_KEY = 'job-price-calc-v6';
+  var OLD_KEY = 'job-price-calc-v5';
 
   var GOAL_WHY = {
     price: 'lowest dealer fee, so the lowest price for your customer',
@@ -704,7 +780,7 @@ window.LENDERS = [
   // ---------- persistence (per-browser convenience only) ----------
   function save() {
     try {
-      var data = { score: radio('score'), goal: radio('goal'), fields: {} };
+      var data = { v: 6, score: radio('score'), goal: radio('goal'), fields: {} };
       FIELDS.forEach(function (f) { data.fields[f] = $(f).value; });
       localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) { /* storage unavailable */ }
@@ -715,16 +791,22 @@ window.LENDERS = [
       var data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
       if (!data) return;
       if (data.fields) FIELDS.forEach(function (f) { if (data.fields[f] != null) $(f).value = data.fields[f]; });
-      if (data.score) setRadio('score', data.score);
+      if (data.score && data.v === 6) setRadio('score', data.score);
       if (data.goal) setRadio('goal', data.goal);
     } catch (e) { /* ignore bad data */ }
   }
 
   // ---------- financing ----------
+  function payText(o) {
+    if (o.kind === 'sac') return '$0 for ' + o.months + ' mo';
+    return 'about ' + fmt(o.payment) + '/mo';
+  }
+
   function renderFinancing(cashPrice) {
     if (!(cashPrice > 0)) {
       $('rec').innerHTML = '<p class="hint">Enter your costs above to see financing options.</p>';
       $('others').innerHTML = '';
+      $('more-wrap').hidden = true;
       $('excluded-wrap').hidden = true;
       return;
     }
@@ -736,27 +818,35 @@ window.LENDERS = [
         (goal === 'promo' ? 'Try "Lowest price" instead of "No interest for a while", or check the reasons below.' : 'See the reasons below. A co-signer or a bigger down payment may help.') + '</div>';
     } else {
       var best = r.options[0];
+      var why = best.fee === 0 ? 'no dealer fee for you, so the customer pays your cash price' : GOAL_WHY[goal];
       $('rec').innerHTML =
         '<div class="rec-card">' +
           '<div class="rec-top"><span class="rec-badge">Recommended</span><span class="rec-lender">' + esc(best.lender) + '</span></div>' +
           '<div class="rec-plan">' + esc(best.plan) + '</div>' +
           '<div class="rec-grid">' +
             '<div><span>Charge the customer</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
-            '<div><span>About</span><strong>' + fmt(best.payment) + '/mo</strong></div>' +
-            '<div><span>Dealer fee</span><strong>' + pct(best.fee) + ' (' + fmt(best.lenderFee) + ')</strong></div>' +
+            '<div><span>Monthly payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
+            '<div><span>Your dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
           '</div>' +
-          '<p class="rec-why">Why: ' + GOAL_WHY[goal] + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
-          (best.note ? '<p class="rec-note">' + esc(best.note) + '</p>' : '') +
+          '<p class="rec-why">Why: ' + why + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
+          (best.note ? '<p class="rec-note">' + esc(best.note) + (best.kind === 'sac' ? ' To pay it off in time: about ' + fmt(best.payment) + '/mo.' : '') + '</p>' : '') +
+          (best.lenderNote ? '<p class="rec-note">' + esc(best.lenderNote) + '</p>' : '') +
         '</div>';
     }
 
     var rest = r.options.slice(1);
+    var row = function (o) {
+      return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
+        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o) + '</div></div>' +
+        '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
+    };
+    var SHOW = 4;
     $('others').innerHTML = rest.length ?
-      '<h3 class="sub-title">Other plans this customer qualifies for</h3><ul class="plan-list">' + rest.map(function (o) {
-        return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
-          '<div class="plan-meta">' + esc(o.lender) + ' · ' + pct(o.fee) + ' fee · about ' + fmt(o.payment) + '/mo</div></div>' +
-          '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
-      }).join('') + '</ul>' : '';
+      '<h3 class="sub-title">Next best options</h3><ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
+    var more = rest.slice(SHOW);
+    $('more-wrap').hidden = !more.length;
+    $('more-summary').textContent = 'Show ' + more.length + ' more plan' + (more.length === 1 ? '' : 's') + ' this customer qualifies for';
+    $('more').innerHTML = more.map(row).join('');
 
     $('excluded-wrap').hidden = !r.excluded.length;
     $('excluded-summary').textContent = r.excluded.length + (r.excluded.length === 1 ? ' plan doesn\'t' : ' plans don\'t') + ' fit this customer';
@@ -831,6 +921,7 @@ window.LENDERS = [
 
   // ---------- init ----------
   $('example-note').hidden = !window.EXAMPLE_RATES;
+  $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of: ' + window.RATES_AS_OF + '. Final approval and terms come from the lender.' : '';
   load();
   update();
 })();

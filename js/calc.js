@@ -198,10 +198,50 @@
   }
 
   /**
+   * Turn compact lender rate sheets into a flat list of plans.
+   * sheet: {
+   *   name, minScore, maxLoan, note,
+   *   sac: { months: fee%, ... }            same-as-cash: $0 payments, no interest if paid off in time
+   *   zil: { months: fee%, ... }            zero-interest loan: equal payments, no interest
+   *   installment: { aprs: [apr per row], minScore?, terms: [{ years, fees: [fee per row, null = n/a], minLoan?, minScore? }] }
+   * }
+   */
+  function expandSheets(sheets) {
+    return (sheets || []).map(function (sh) {
+      var plans = [];
+      Object.keys(sh.sac || {}).forEach(function (m) {
+        plans.push({ kind: 'sac', promo: true, months: +m, apr: 0, fee: sh.sac[m],
+          name: 'Same-as-cash, ' + m + ' months', minScore: sh.promoMinScore,
+          note: '$0 payments. No interest if paid off within ' + m + ' months.' });
+      });
+      Object.keys(sh.zil || {}).forEach(function (m) {
+        plans.push({ kind: 'zil', promo: true, months: +m, apr: 0, fee: sh.zil[m],
+          name: 'Zero-interest loan, ' + m + ' months', minScore: sh.promoMinScore,
+          note: 'Equal monthly payments, 0% interest.' });
+      });
+      var inst = sh.installment;
+      if (inst) {
+        inst.terms.forEach(function (t) {
+          t.fees.forEach(function (fee, row) {
+            if (fee == null) return;
+            var apr = inst.aprs[row];
+            plans.push({ kind: 'installment', promo: false, months: t.years * 12, apr: apr, fee: fee,
+              name: t.years + '-year loan at ' + apr + '% APR', minLoan: t.minLoan,
+              minScore: t.minScore != null ? t.minScore : inst.minScore,
+              note: inst.note || '' });
+          });
+        });
+      }
+      return { name: sh.name, minScore: sh.minScore, minLoan: sh.minLoan, maxLoan: sh.maxLoan, note: sh.note, plans: plans };
+    });
+  }
+
+  /**
    * Recommend a financing plan for a job.
    *   price   contractor's cash price
-   *   lenders [{ name, minLoan, maxLoan, plans: [{ name, fee, apr, months, minScore, promo }] }]
-   *   opts.score  low end of the customer's credit range (e.g. 680 for "680-719")
+   *   lenders [{ name, minScore, minLoan, maxLoan, plans: [{ name, kind, fee, apr, months, minScore, minLoan, maxLoan, promo }] }]
+   *           plan-level minScore/minLoan/maxLoan override the lender's
+   *   opts.score  low end of the customer's credit range (e.g. 680 for "680-724")
    *   opts.goal   'price' (lowest dealer fee), 'promo' (no interest for a while), 'payment' (lowest monthly)
    * Each plan's loan amount is the financed price (cash price grossed up for its fee).
    * Returns { options: [...fits, best first], excluded: [...with reason] }.
@@ -209,21 +249,27 @@
   function recommend(price, lenders, opts) {
     var score = num(opts && opts.score);
     var goal = (opts && opts.goal) || 'price';
+    var pick = function (a, b) { return a != null ? a : b; };
+    var usd = function (x) { return '$' + Math.round(x).toLocaleString('en-US'); };
     var options = [], excluded = [];
     (lenders || []).forEach(function (l) {
       (l.plans || []).forEach(function (p) {
         var g = grossUp(price, p.fee, 0);
         var item = {
-          lender: l.name, plan: p.name, fee: num(p.fee), promo: !!p.promo,
+          lender: l.name, lenderNote: l.note || '', plan: p.name, kind: p.kind || '', fee: num(p.fee), promo: !!p.promo,
           apr: num(p.apr), months: num(p.months), note: p.note || '',
           price: g.price, increase: g.increase, lenderFee: g.fee,
           payment: monthlyPayment(g.price, p.apr, p.months),
         };
-        var minLoan = num(l.minLoan), maxLoan = l.maxLoan == null ? Infinity : num(l.maxLoan);
+        var minScore = num(pick(p.minScore, l.minScore));
+        var minLoan = num(pick(p.minLoan, l.minLoan));
+        var maxRaw = pick(p.maxLoan, l.maxLoan);
+        var maxLoan = maxRaw == null ? Infinity : num(maxRaw);
         if (g.error) item.reason = g.error;
-        else if (num(p.minScore) > score) item.reason = 'Needs a ' + num(p.minScore) + '+ credit score';
-        else if (g.price < minLoan || g.price > maxLoan) item.reason = 'Loan must be ' + (maxLoan === Infinity ? 'at least $' + minLoan.toLocaleString('en-US') : '$' + minLoan.toLocaleString('en-US') + ' to $' + maxLoan.toLocaleString('en-US'));
-        else if (goal === 'promo' && !item.promo) item.reason = 'No interest-free period';
+        else if (minScore > score) item.reason = 'Needs a ' + minScore + '+ credit score';
+        else if (g.price < minLoan) item.reason = 'Loan must be over ' + usd(minLoan);
+        else if (g.price > maxLoan) item.reason = 'Loan can\'t be over ' + usd(maxLoan);
+        else if (goal === 'promo' && !item.promo) item.reason = 'Not a no-interest plan';
         (item.reason ? excluded : options).push(item);
       });
     });
@@ -256,6 +302,7 @@
   }
 
   var api = {
+    expandSheets: expandSheets,
     recommend: recommend,
     jobCost: jobCost,
     cashPriceFromCosts: cashPriceFromCosts,

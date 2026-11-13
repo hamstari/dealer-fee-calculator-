@@ -161,6 +161,9 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 .rec-note { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); }
 .no-rec { padding: 14px 16px; border-radius: var(--radius); background: #fdecee; border: 1px solid #f0b8bf; font-size: 0.93rem; }
 .sub-title { font-size: 0.95rem; margin: 20px 0 2px; }
+.more { margin-top: 10px; font-size: 0.92rem; }
+.more[open] summary { margin-bottom: 4px; }
+.rates-as-of { margin: 16px 0 0; font-size: 0.78rem; color: var(--muted); }
 .excluded { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.9rem; }
 .excluded summary { font-size: 0.92rem; }
 .excluded ul { list-style: none; padding: 0; margin: 10px 0 0; }
