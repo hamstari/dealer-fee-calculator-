@@ -66,18 +66,33 @@ h2 {
 .hint.block { margin: -6px 0 12px; }
 .neg { color: var(--red); }
 
-/* fields: label on the left, input on the right */
-.field-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 7px 0; border-bottom: 1px solid var(--line);
+/* slider rows: label | slider | value (one line); stacks on narrow screens */
+.slide-row {
+  display: grid; grid-template-columns: 150px 1fr 104px; align-items: center; gap: 4px 12px;
+  padding: 5px 0;
 }
-.field-row:first-of-type { padding-top: 0; }
-.field-row > label { font-weight: 600; flex: 1 1 auto; }
-.field-row > .money, .field-row > .pct, .field-row > .labor { flex: none; width: 140px; }
-.field-row > .short { width: 90px; }
-.field-row > .labor { width: 230px; }
-.field-row.sub { padding-left: 14px; border-left: 3px solid var(--soft); }
-.field-row.sub > label { font-weight: 400; font-size: 0.93rem; }
+.slide-row > label { font-weight: 600; line-height: 1.25; }
+.slide-row .hint { font-size: 0.78rem; margin-top: 0; }
+.slide-row.sub > label { font-weight: 400; padding-left: 10px; border-left: 3px solid var(--soft); }
+.val input { padding-top: 5px; padding-bottom: 5px; }
+.slider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0;
+  background: transparent; cursor: pointer; padding: 0; border: none;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 5px; border-radius: 3px;
+  background: linear-gradient(to right, var(--blue) var(--fill, 0%), var(--line) var(--fill, 0%));
+}
+.slider::-moz-range-track { height: 5px; border-radius: 3px; background: var(--line); }
+.slider::-moz-range-progress { height: 5px; border-radius: 3px; background: var(--blue); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6.5px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--blue); box-shadow: 0 1px 3px rgba(27, 42, 87, 0.25);
+}
+.slider::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--blue); }
+.slider:focus { outline: none; }
+.slider:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--blue); outline-offset: 2px; }
+
 
 input {
   font: inherit; font-weight: 600; color: var(--ink);
@@ -102,15 +117,12 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 .pct input { padding-right: 28px; }
 .hrs::after { content: "hrs"; right: 10px; font-size: 0.85rem; }
 .hrs input { padding-right: 36px; }
-.labor { display: flex; align-items: center; gap: 6px; }
-.labor .unit { flex: 1; }
 .rate::after { content: "/hr"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
 .rate input { padding-right: 34px; }
-.times { color: var(--muted); }
 
 .total-row {
   display: flex; justify-content: space-between; align-items: baseline;
-  margin-top: 14px; font-weight: 700;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-weight: 700;
 }
 .total-row strong { font-family: var(--display); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 
@@ -209,15 +221,15 @@ details[open] summary::before { content: "−"; }
 .foot { padding: 0 16px 40px; }
 
 @media (max-width: 520px) {
+  .slide-row { grid-template-columns: 1fr 104px; padding: 4px 0 2px; }
+  .slide-row > label { grid-column: 1; grid-row: 1; }
+  .slide-row > .val { grid-column: 2; grid-row: 1; }
+  .slide-row > .slider { grid-column: 1 / -1; grid-row: 2; }
   .rec-grid { grid-template-columns: 1fr 1fr; }
   .rec-grid div:first-child { grid-column: 1 / -1; }
   .excluded li { flex-direction: column; gap: 0; }
   .excluded em { text-align: left; }
   .card { padding: 16px; }
-  .field-row > .money, .field-row > .pct { width: 140px; }
-  .field-row > .labor { width: 100%; }
-  .field-row:has(.labor) { flex-wrap: wrap; }
-  .field-row > .short { width: 96px; }
     
 /* Phones viewing the page directly: inputs at 16px so iOS doesn't zoom on tap */
 @media (min-width: 360px) and (max-width: 520px) {
@@ -232,9 +244,7 @@ details[open] summary::before { content: "−"; }
   .wrap { padding: 0 8px; }
   .top { padding: 12px 8px 2px; }
   .card { padding: 10px; margin: 8px 0; border-radius: 10px; }
-  .field-row { gap: 8px; padding: 5px 0; }
-  .field-row > .money, .field-row > .pct { width: 42%; }
-  .field-row > .short { width: 30%; }
+  .slide-row { grid-template-columns: 1fr 34%; gap: 2px 8px; }
   .chips { gap: 5px; }
   .chips span { padding: 4px 8px; }
   .rec-card { padding: 9px 10px; }
@@ -267,34 +277,36 @@ details[open] summary::before { content: "−"; }
     <!-- 1. COSTS -->
     <section class="card" aria-labelledby="h-costs">
       <h2 id="h-costs"><span class="num">1</span> What will the job cost you?</h2>
-
-      <div class="field-row">
+      <div class="slide-row">
         <label for="materials">Materials</label>
-        <div class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6000"></div>
+        <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
+        <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
       </div>
-      <div class="field-row sub">
-        <label for="wastePct">Extra for waste &amp; mistakes <span class="hint">Cuts, scraps, returns. 10% is common.</span></label>
-        <div class="pct short"><input id="wastePct" type="number" inputmode="decimal" min="0" max="100" step="any" value="10"></div>
+      <div class="slide-row sub">
+        <label for="wastePct">Waste &amp; extra <span class="hint">10% is common</span></label>
+        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste and extra" tabindex="-1">
+        <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
       </div>
-
-      <div class="field-row">
-        <label>Labor <span class="hint">Count your own time too, not just your crew's.</span></label>
-        <div class="labor">
-          <div class="unit hrs"><input id="laborHours" type="number" inputmode="decimal" min="0" step="any" value="80" aria-label="Labor hours"></div>
-          <span class="times">×</span>
-          <div class="money unit rate"><input id="laborRate" type="number" inputmode="decimal" min="0" step="any" value="55" aria-label="Cost per labor hour"></div>
-        </div>
+      <div class="slide-row">
+        <label for="laborHours">Labor hours <span class="hint">Include your own time</span></label>
+        <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
+        <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
       </div>
-
-      <div class="field-row">
+      <div class="slide-row">
+        <label for="laborRate">Labor cost per hour</label>
+        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor cost per hour" tabindex="-1">
+        <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
+      </div>
+      <div class="slide-row">
         <label for="subs">Subcontractors</label>
-        <div class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+        <input type="range" class="slider" data-for="subs" min="0" max="100000" step="100" value="0" aria-label="Subcontractors" tabindex="-1">
+        <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
       </div>
-      <div class="field-row">
-        <label for="other">Permits, dumpster, equipment &amp; other</label>
-        <div class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></div>
+      <div class="slide-row">
+        <label for="other">Permits, dumpster &amp; other</label>
+        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits, dumpster and other" tabindex="-1">
+        <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
       </div>
-
       <div class="total-row" aria-live="polite">
         <span>Total job cost</span>
         <strong id="cost-total">—</strong>
@@ -304,13 +316,15 @@ details[open] summary::before { content: "−"; }
     <!-- 2. MARKUP -->
     <section class="card" aria-labelledby="h-markup">
       <h2 id="h-markup"><span class="num">2</span> What do you need on top?</h2>
-      <div class="field-row">
-        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, phone, office, ads: what it costs to run your business, as a % of the price.</span></label>
-        <div class="pct short"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></div>
+      <div class="slide-row">
+        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, office, ads</span></label>
+        <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
+        <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
       </div>
-      <div class="field-row">
-        <label for="marginPct">Profit <span class="hint">What you keep after every bill is paid.</span></label>
-        <div class="pct short"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></div>
+      <div class="slide-row">
+        <label for="marginPct">Profit <span class="hint">What you keep after all bills</span></label>
+        <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
+        <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
       </div>
     </section>
 
@@ -800,7 +814,7 @@ window.LENDER_SHEETS = [
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   };
-  var n = function (v) { var x = parseFloat(v); return isFinite(x) ? x : 0; };
+  var n = function (v) { var x = parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return isFinite(x) ? x : 0; };
   var val = function (id) { return n($(id).value); };
   var radio = function (name) { var r = document.querySelector('input[name=' + name + ']:checked'); return r ? r.value : ''; };
   var setRadio = function (name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; };
@@ -870,7 +884,7 @@ window.LENDER_SHEETS = [
         '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o) + '</div></div>' +
         '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
     };
-    var SHOW = 4;
+    var SHOW = 3;
     $('others').innerHTML = rest.length ?
       '<h3 class="sub-title">Next best options</h3><ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
     var more = rest.slice(SHOW);
@@ -939,20 +953,52 @@ window.LENDER_SHEETS = [
     save();
   }
 
+  // ---------- sliders ----------
+  var MONEY = ['materials', 'laborRate', 'subs', 'other'];
+  var grouped = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+  function showValue(id, x) {
+    $(id).value = MONEY.indexOf(id) >= 0 ? grouped.format(x) : String(Math.round(x * 100) / 100);
+  }
+  function syncSlider(id) {
+    var r = document.querySelector('.slider[data-for="' + id + '"]');
+    if (r) r.value = Math.min(n(r.max), Math.max(n(r.min), val(id)));
+    if (r) r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min) * 100) + '%');
+  }
+
   // ---------- events ----------
-  document.addEventListener('input', update);
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.classList.contains('slider')) { showValue(t.dataset.for, n(t.value)); syncSlider(t.dataset.for); }
+    else if (FIELDS.indexOf(t.id) >= 0) syncSlider(t.id);
+    update();
+  });
+  // tidy the typed number (commas, no stray characters) when leaving a box
+  document.addEventListener('focusout', function (e) {
+    if (FIELDS.indexOf(e.target.id) >= 0) { showValue(e.target.id, val(e.target.id)); save(); }
+  });
   document.addEventListener('change', function (e) { if (e.target.type === 'radio') update(); });
   $('print').addEventListener('click', function () { window.print(); });
 
   // select the whole number when tapping a field, so it's easy to type over
+  var justFocused = null;
   document.addEventListener('focusin', function (e) {
-    if (e.target.matches('input[type=number]')) setTimeout(function () { e.target.select(); }, 0);
+    if (FIELDS.indexOf(e.target.id) < 0) return;
+    e.target.select();
+    justFocused = e.target;
+    setTimeout(function () { if (document.activeElement === e.target && justFocused === e.target) e.target.select(); }, 0);
   });
+  // keep the selection when the focusing click/tap ends
+  document.addEventListener('mouseup', function (e) {
+    if (e.target === justFocused) e.preventDefault();
+    justFocused = null;
+  });
+  document.addEventListener('keydown', function () { justFocused = null; });
 
   // ---------- init ----------
   $('example-note').hidden = !window.EXAMPLE_RATES;
   $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of: ' + window.RATES_AS_OF + '. Final approval and terms come from the lender.' : '';
   load();
+  FIELDS.forEach(function (f) { showValue(f, val(f)); syncSlider(f); });
   update();
 })();
 </script>

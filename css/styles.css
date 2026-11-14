@@ -55,18 +55,33 @@ h2 {
 .hint.block { margin: -6px 0 12px; }
 .neg { color: var(--red); }
 
-/* fields: label on the left, input on the right */
-.field-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 7px 0; border-bottom: 1px solid var(--line);
+/* slider rows: label | slider | value (one line); stacks on narrow screens */
+.slide-row {
+  display: grid; grid-template-columns: 150px 1fr 104px; align-items: center; gap: 4px 12px;
+  padding: 5px 0;
 }
-.field-row:first-of-type { padding-top: 0; }
-.field-row > label { font-weight: 600; flex: 1 1 auto; }
-.field-row > .money, .field-row > .pct, .field-row > .labor { flex: none; width: 140px; }
-.field-row > .short { width: 90px; }
-.field-row > .labor { width: 230px; }
-.field-row.sub { padding-left: 14px; border-left: 3px solid var(--soft); }
-.field-row.sub > label { font-weight: 400; font-size: 0.93rem; }
+.slide-row > label { font-weight: 600; line-height: 1.25; }
+.slide-row .hint { font-size: 0.78rem; margin-top: 0; }
+.slide-row.sub > label { font-weight: 400; padding-left: 10px; border-left: 3px solid var(--soft); }
+.val input { padding-top: 5px; padding-bottom: 5px; }
+.slider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0;
+  background: transparent; cursor: pointer; padding: 0; border: none;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 5px; border-radius: 3px;
+  background: linear-gradient(to right, var(--blue) var(--fill, 0%), var(--line) var(--fill, 0%));
+}
+.slider::-moz-range-track { height: 5px; border-radius: 3px; background: var(--line); }
+.slider::-moz-range-progress { height: 5px; border-radius: 3px; background: var(--blue); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6.5px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--blue); box-shadow: 0 1px 3px rgba(27, 42, 87, 0.25);
+}
+.slider::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--blue); }
+.slider:focus { outline: none; }
+.slider:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--blue); outline-offset: 2px; }
+
 
 input {
   font: inherit; font-weight: 600; color: var(--ink);
@@ -91,15 +106,12 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 .pct input { padding-right: 28px; }
 .hrs::after { content: "hrs"; right: 10px; font-size: 0.85rem; }
 .hrs input { padding-right: 36px; }
-.labor { display: flex; align-items: center; gap: 6px; }
-.labor .unit { flex: 1; }
 .rate::after { content: "/hr"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
 .rate input { padding-right: 34px; }
-.times { color: var(--muted); }
 
 .total-row {
   display: flex; justify-content: space-between; align-items: baseline;
-  margin-top: 14px; font-weight: 700;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-weight: 700;
 }
 .total-row strong { font-family: var(--display); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 
@@ -198,15 +210,15 @@ details[open] summary::before { content: "−"; }
 .foot { padding: 0 16px 40px; }
 
 @media (max-width: 520px) {
+  .slide-row { grid-template-columns: 1fr 104px; padding: 4px 0 2px; }
+  .slide-row > label { grid-column: 1; grid-row: 1; }
+  .slide-row > .val { grid-column: 2; grid-row: 1; }
+  .slide-row > .slider { grid-column: 1 / -1; grid-row: 2; }
   .rec-grid { grid-template-columns: 1fr 1fr; }
   .rec-grid div:first-child { grid-column: 1 / -1; }
   .excluded li { flex-direction: column; gap: 0; }
   .excluded em { text-align: left; }
   .card { padding: 16px; }
-  .field-row > .money, .field-row > .pct { width: 140px; }
-  .field-row > .labor { width: 100%; }
-  .field-row:has(.labor) { flex-wrap: wrap; }
-  .field-row > .short { width: 96px; }
     
 /* Phones viewing the page directly: inputs at 16px so iOS doesn't zoom on tap */
 @media (min-width: 360px) and (max-width: 520px) {
@@ -221,9 +233,7 @@ details[open] summary::before { content: "−"; }
   .wrap { padding: 0 8px; }
   .top { padding: 12px 8px 2px; }
   .card { padding: 10px; margin: 8px 0; border-radius: 10px; }
-  .field-row { gap: 8px; padding: 5px 0; }
-  .field-row > .money, .field-row > .pct { width: 42%; }
-  .field-row > .short { width: 30%; }
+  .slide-row { grid-template-columns: 1fr 34%; gap: 2px 8px; }
   .chips { gap: 5px; }
   .chips span { padding: 4px 8px; }
   .rec-card { padding: 9px 10px; }

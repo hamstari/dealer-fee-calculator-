@@ -21,7 +21,7 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   };
-  var n = function (v) { var x = parseFloat(v); return isFinite(x) ? x : 0; };
+  var n = function (v) { var x = parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return isFinite(x) ? x : 0; };
   var val = function (id) { return n($(id).value); };
   var radio = function (name) { var r = document.querySelector('input[name=' + name + ']:checked'); return r ? r.value : ''; };
   var setRadio = function (name, v) { var r = document.querySelector('input[name=' + name + '][value="' + v + '"]'); if (r) r.checked = true; };
@@ -91,7 +91,7 @@
         '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o) + '</div></div>' +
         '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
     };
-    var SHOW = 4;
+    var SHOW = 3;
     $('others').innerHTML = rest.length ?
       '<h3 class="sub-title">Next best options</h3><ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
     var more = rest.slice(SHOW);
@@ -160,19 +160,51 @@
     save();
   }
 
+  // ---------- sliders ----------
+  var MONEY = ['materials', 'laborRate', 'subs', 'other'];
+  var grouped = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+  function showValue(id, x) {
+    $(id).value = MONEY.indexOf(id) >= 0 ? grouped.format(x) : String(Math.round(x * 100) / 100);
+  }
+  function syncSlider(id) {
+    var r = document.querySelector('.slider[data-for="' + id + '"]');
+    if (r) r.value = Math.min(n(r.max), Math.max(n(r.min), val(id)));
+    if (r) r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min) * 100) + '%');
+  }
+
   // ---------- events ----------
-  document.addEventListener('input', update);
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.classList.contains('slider')) { showValue(t.dataset.for, n(t.value)); syncSlider(t.dataset.for); }
+    else if (FIELDS.indexOf(t.id) >= 0) syncSlider(t.id);
+    update();
+  });
+  // tidy the typed number (commas, no stray characters) when leaving a box
+  document.addEventListener('focusout', function (e) {
+    if (FIELDS.indexOf(e.target.id) >= 0) { showValue(e.target.id, val(e.target.id)); save(); }
+  });
   document.addEventListener('change', function (e) { if (e.target.type === 'radio') update(); });
   $('print').addEventListener('click', function () { window.print(); });
 
   // select the whole number when tapping a field, so it's easy to type over
+  var justFocused = null;
   document.addEventListener('focusin', function (e) {
-    if (e.target.matches('input[type=number]')) setTimeout(function () { e.target.select(); }, 0);
+    if (FIELDS.indexOf(e.target.id) < 0) return;
+    e.target.select();
+    justFocused = e.target;
+    setTimeout(function () { if (document.activeElement === e.target && justFocused === e.target) e.target.select(); }, 0);
   });
+  // keep the selection when the focusing click/tap ends
+  document.addEventListener('mouseup', function (e) {
+    if (e.target === justFocused) e.preventDefault();
+    justFocused = null;
+  });
+  document.addEventListener('keydown', function () { justFocused = null; });
 
   // ---------- init ----------
   $('example-note').hidden = !window.EXAMPLE_RATES;
   $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of: ' + window.RATES_AS_OF + '. Final approval and terms come from the lender.' : '';
   load();
+  FIELDS.forEach(function (f) { showValue(f, val(f)); syncSlider(f); });
   update();
 })();

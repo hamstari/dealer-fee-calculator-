@@ -6,8 +6,8 @@ A simple one-page calculator that helps contractors estimate a job and price it,
 
 ## What it does
 
-1. **What will the job cost you?** Materials (plus an allowance for waste), labor as hours × rate, subcontractors, and permits/dumpster/other. Shows the total job cost.
-2. **What do you need on top?** Overhead % and profit %, with plain-English hints.
+1. **What will the job cost you?** Materials (plus an allowance for waste), labor hours and cost per hour, subcontractors, and permits/dumpster/other. Each has a slider and a box for typing an exact amount. Shows the total job cost.
+2. **What do you need on top?** Overhead % and profit % (sliders too), with short plain-English hints.
 3. **Your price.** The cash price, its markup on cost, and a bar showing how it splits into job cost, overhead and profit.
 4. **Find the best financing.** Pick the customer's credit score range and what matters most to them (lowest price, no interest for a while, or lowest monthly payment). The calculator recommends a lender and plan, shows what to charge so the dealer fee is covered, and lists the other plans the customer qualifies for and why the rest don't fit (credit score, loan limits, no promo period).
 

@@ -21,34 +21,36 @@
     <!-- 1. COSTS -->
     <section class="card" aria-labelledby="h-costs">
       <h2 id="h-costs"><span class="num">1</span> What will the job cost you?</h2>
-
-      <div class="field-row">
+      <div class="slide-row">
         <label for="materials">Materials</label>
-        <div class="money"><input id="materials" type="number" inputmode="decimal" min="0" step="any" value="6000"></div>
+        <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
+        <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
       </div>
-      <div class="field-row sub">
-        <label for="wastePct">Extra for waste &amp; mistakes <span class="hint">Cuts, scraps, returns. 10% is common.</span></label>
-        <div class="pct short"><input id="wastePct" type="number" inputmode="decimal" min="0" max="100" step="any" value="10"></div>
+      <div class="slide-row sub">
+        <label for="wastePct">Waste &amp; extra <span class="hint">10% is common</span></label>
+        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste and extra" tabindex="-1">
+        <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
       </div>
-
-      <div class="field-row">
-        <label>Labor <span class="hint">Count your own time too, not just your crew's.</span></label>
-        <div class="labor">
-          <div class="unit hrs"><input id="laborHours" type="number" inputmode="decimal" min="0" step="any" value="80" aria-label="Labor hours"></div>
-          <span class="times">×</span>
-          <div class="money unit rate"><input id="laborRate" type="number" inputmode="decimal" min="0" step="any" value="55" aria-label="Cost per labor hour"></div>
-        </div>
+      <div class="slide-row">
+        <label for="laborHours">Labor hours <span class="hint">Include your own time</span></label>
+        <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
+        <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
       </div>
-
-      <div class="field-row">
+      <div class="slide-row">
+        <label for="laborRate">Labor cost per hour</label>
+        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor cost per hour" tabindex="-1">
+        <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
+      </div>
+      <div class="slide-row">
         <label for="subs">Subcontractors</label>
-        <div class="money"><input id="subs" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+        <input type="range" class="slider" data-for="subs" min="0" max="100000" step="100" value="0" aria-label="Subcontractors" tabindex="-1">
+        <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
       </div>
-      <div class="field-row">
-        <label for="other">Permits, dumpster, equipment &amp; other</label>
-        <div class="money"><input id="other" type="number" inputmode="decimal" min="0" step="any" value="800"></div>
+      <div class="slide-row">
+        <label for="other">Permits, dumpster &amp; other</label>
+        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits, dumpster and other" tabindex="-1">
+        <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
       </div>
-
       <div class="total-row" aria-live="polite">
         <span>Total job cost</span>
         <strong id="cost-total">—</strong>
@@ -58,13 +60,15 @@
     <!-- 2. MARKUP -->
     <section class="card" aria-labelledby="h-markup">
       <h2 id="h-markup"><span class="num">2</span> What do you need on top?</h2>
-      <div class="field-row">
-        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, phone, office, ads: what it costs to run your business, as a % of the price.</span></label>
-        <div class="pct short"><input id="overheadPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="15"></div>
+      <div class="slide-row">
+        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, office, ads</span></label>
+        <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
+        <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
       </div>
-      <div class="field-row">
-        <label for="marginPct">Profit <span class="hint">What you keep after every bill is paid.</span></label>
-        <div class="pct short"><input id="marginPct" type="number" inputmode="decimal" min="0" max="99" step="any" value="20"></div>
+      <div class="slide-row">
+        <label for="marginPct">Profit <span class="hint">What you keep after all bills</span></label>
+        <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
+        <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
       </div>
     </section>
 
