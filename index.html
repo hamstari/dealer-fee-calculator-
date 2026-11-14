@@ -12,33 +12,32 @@
 </head>
 <body>
   <header class="wrap top">
-    <p class="eyebrow"><span class="star">★</span>America Home Financial</p>
-    <h1>Job Price <span class="light">Calculator</span></h1>
-    <p class="lede">Add up your costs, set your markup, and see exactly what to charge, including when the customer finances.</p>
+    <p class="eyebrow">America Home Financial</p>
+    <h1>Job Price Calculator</h1>
   </header>
 
   <main class="wrap">
     <!-- 1. COSTS -->
     <section class="card" aria-labelledby="h-costs">
-      <h2 id="h-costs"><span class="num">1</span> What will the job cost you?</h2>
+      <h2 id="h-costs">Job costs</h2>
       <div class="slide-row">
         <label for="materials">Materials</label>
         <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
         <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
       </div>
       <div class="slide-row sub">
-        <label for="wastePct">Waste &amp; extra <span class="hint">10% is common</span></label>
-        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste and extra" tabindex="-1">
+        <label for="wastePct">Waste</label>
+        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste" tabindex="-1">
         <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
       </div>
       <div class="slide-row">
-        <label for="laborHours">Labor hours <span class="hint">Include your own time</span></label>
+        <label for="laborHours">Labor hours</label>
         <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
         <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
       </div>
       <div class="slide-row">
-        <label for="laborRate">Labor cost per hour</label>
-        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor cost per hour" tabindex="-1">
+        <label for="laborRate">Labor rate</label>
+        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor rate" tabindex="-1">
         <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
       </div>
       <div class="slide-row">
@@ -47,8 +46,8 @@
         <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
       </div>
       <div class="slide-row">
-        <label for="other">Permits, dumpster &amp; other</label>
-        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits, dumpster and other" tabindex="-1">
+        <label for="other">Permits &amp; other</label>
+        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits and other" tabindex="-1">
         <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
       </div>
       <div class="total-row" aria-live="polite">
@@ -59,14 +58,14 @@
 
     <!-- 2. MARKUP -->
     <section class="card" aria-labelledby="h-markup">
-      <h2 id="h-markup"><span class="num">2</span> What do you need on top?</h2>
+      <h2 id="h-markup">Markup</h2>
       <div class="slide-row">
-        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, office, ads</span></label>
+        <label for="overheadPct">Overhead</label>
         <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
         <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
       </div>
       <div class="slide-row">
-        <label for="marginPct">Profit <span class="hint">What you keep after all bills</span></label>
+        <label for="marginPct">Profit</label>
         <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
         <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
       </div>
@@ -74,9 +73,8 @@
 
     <!-- RESULT -->
     <section class="card result" aria-labelledby="h-price" aria-live="polite">
-      <h2 id="h-price" class="result-label">Your price (cash or check)</h2>
+      <h2 id="h-price" class="result-label">Cash price</h2>
       <div id="cash-price" class="result-price">—</div>
-      <div id="markup-line" class="result-sub"></div>
       <div id="split-bar" class="split" aria-hidden="true"></div>
       <ul id="split-legend" class="split-legend"></ul>
       <p id="price-error" class="result-error" hidden></p>
@@ -84,11 +82,10 @@
 
     <!-- 3. FINANCING -->
     <section class="card" aria-labelledby="h-fin">
-      <h2 id="h-fin"><span class="num">3</span> Find the best financing</h2>
-      <p id="example-note" class="example-note" hidden>Example rates for demonstration only. These are not real lender terms.</p>
+      <h2 id="h-fin">Financing</h2>
 
       <fieldset class="choice">
-        <legend>Customer's credit score</legend>
+        <legend>Credit score</legend>
         <div class="chips" role="radiogroup">
           <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
           <label><input type="radio" name="score" value="680"><span>680–724</span></label>
@@ -100,11 +97,11 @@
       </fieldset>
 
       <fieldset class="choice">
-        <legend>What matters most to the customer?</legend>
+        <legend>Priority</legend>
         <div class="chips" role="radiogroup">
           <label><input type="radio" name="goal" value="price" checked><span>Lowest price</span></label>
-          <label><input type="radio" name="goal" value="promo"><span>No interest for a while</span></label>
-          <label><input type="radio" name="goal" value="payment"><span>Lowest monthly payment</span></label>
+          <label><input type="radio" name="goal" value="promo"><span>0% promo</span></label>
+          <label><input type="radio" name="goal" value="payment"><span>Lowest payment</span></label>
         </div>
       </fieldset>
 
@@ -121,27 +118,7 @@
       <p id="rates-as-of" class="rates-as-of"></p>
     </section>
 
-    <details class="card faq">
-      <summary>Why not just add the fee % on top?</summary>
-      <p id="mistake"></p>
-    </details>
-    <details class="card faq">
-      <summary>How the math works</summary>
-      <ul>
-        <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
-        <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
-        <li>The recommended plan is the one this customer qualifies for (by credit score and loan amount) with the lowest dealer fee, or the lowest monthly payment if that's what the customer wants. The loan amount is the financed price.</li>
-        <li><strong>Same-as-cash:</strong> $0 payments and no interest if the customer pays it off before the promo ends. <strong>Zero-interest loan:</strong> equal monthly payments at 0%. <strong>Installment loan:</strong> a regular loan; the more dealer fee you pay, the lower the customer's APR.</li>
-        <li>Monthly payments are estimates. Final approval, rates and terms come from the lender at the time of application.</li>
-        <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
-      </ul>
-      <p class="fine">For estimating only.</p>
-    </details>
   </main>
-
-  <footer class="wrap foot">
-    <button type="button" id="print" class="link">Print / save as PDF</button>
-  </footer>
 
   <script src="js/calc.js"></script>
   <script src="js/lenders.js"></script>

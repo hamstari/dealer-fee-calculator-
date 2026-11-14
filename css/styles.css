@@ -11,7 +11,7 @@
   --line: #dde2ec;
   --field: #f7f9fc;
   --soft: #e8eff9;
-  --radius: 14px;
+  --radius: 8px;
   --display: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -27,12 +27,11 @@ body {
 
 /* header */
 .top { padding: 18px 16px 2px; }
-.eyebrow { margin: 0 0 6px; font-family: var(--display); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); }
+.eyebrow { margin: 0 0 2px; font-family: var(--display); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); }
 .eyebrow .star { color: var(--red); margin-right: 4px; }
-h1 { margin: 0; font-family: var(--display); font-size: clamp(1.35rem, 4.5vw, 1.6rem); font-weight: 800; color: var(--navy); line-height: 1.15; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(1.3rem, 4.5vw, 1.5rem); font-weight: 700; color: var(--navy); line-height: 1.15; }
 h1 .light { font-weight: 400; color: #4a5470; }
 .lede { margin: 8px 0 0; color: var(--muted); }
-.top::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 2px; background: var(--red); margin-top: 14px; }
 
 /* cards */
 .card {
@@ -44,7 +43,7 @@ h1 .light { font-weight: 400; color: #4a5470; }
 }
 h2 {
   display: flex; align-items: center; gap: 10px;
-  margin: 0 0 14px; font-family: var(--display); font-weight: 800; font-size: 1.1rem; color: var(--navy);
+  margin: 0 0 8px; font-family: var(--display); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
 }
 .num {
   display: inline-grid; place-items: center; flex: none;
@@ -62,7 +61,6 @@ h2 {
 }
 .slide-row > label { font-weight: 600; line-height: 1.25; }
 .slide-row .hint { font-size: 0.78rem; margin-top: 0; }
-.slide-row.sub > label { font-weight: 400; padding-left: 10px; border-left: 3px solid var(--soft); }
 .val input { padding-top: 5px; padding-bottom: 5px; }
 .slider {
   -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0;
@@ -117,11 +115,11 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 
 /* result */
 .result { background: var(--navy); border-color: var(--navy); color: #fff; text-align: center; padding: 18px 14px 16px; }
-.result-label { justify-content: center; margin: 0; color: #c9d6ee; font-family: inherit; font-weight: 600; font-size: 1rem; }
+.result-label { justify-content: center; margin: 0; color: #c9d6ee; }
 .result-price { font-family: var(--display); font-weight: 800; font-size: clamp(1.9rem, 8vw, 2.3rem); line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .result-sub { color: #c9d6ee; margin-top: 4px; font-size: 0.95rem; }
 .result-error { color: #ffb3ba; margin: 8px 0 0; }
-.split { display: flex; gap: 2px; height: 12px; border-radius: 999px; overflow: hidden; margin: 18px auto 0; max-width: 460px; }
+.split { display: flex; gap: 2px; height: 8px; border-radius: 3px; overflow: hidden; margin: 18px auto 0; max-width: 460px; }
 .split span { min-width: 3px; }
 .s-cost { background: #8eaedc; }
 .s-oh { background: #4f80c9; }
@@ -147,32 +145,33 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 
 /* financing */
 .example-note { margin: -4px 0 14px; padding: 8px 12px; border-radius: 8px; background: #fff4dc; border: 1px solid #e8c774; color: #6b4e0b; font-size: 0.85rem; font-weight: 600; }
-.choice { border: none; padding: 0; margin: 0 0 16px; min-width: 0; }
-.choice legend { font-weight: 600; padding: 0; margin-bottom: 8px; }
+.choice { border: none; padding: 0; margin: 0 0 12px; min-width: 0; }
+.choice legend { font-size: 0.85rem; color: var(--muted); padding: 0; margin-bottom: 5px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips label { position: relative; cursor: pointer; }
 .chips input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .chips span {
-  display: inline-block; padding: 5px 11px; border-radius: 999px;
+  display: inline-block; padding: 5px 10px; border-radius: 5px;
   border: 1px solid var(--line); background: var(--field); font-weight: 600; font-size: 0.92rem; color: var(--ink);
 }
 .chips input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
 .chips input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
 
 .rec-card { border: 2px solid var(--blue); border-radius: var(--radius); padding: 12px 14px; background: var(--soft); margin-top: 4px; }
-.rec-top { display: flex; align-items: center; gap: 10px; }
+.rec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
 .rec-badge { font-family: var(--display); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--red); border-radius: 999px; padding: 3px 10px; }
-.rec-lender { font-family: var(--display); font-weight: 800; font-size: 1.1rem; }
-.rec-plan { font-weight: 600; margin-top: 4px; }
-.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.rec-lender { font-family: var(--display); font-weight: 700; font-size: 1.05rem; }
+.rec-plan { color: var(--muted); }
+.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
 .rec-grid div { display: flex; flex-direction: column; }
 .rec-grid span { font-size: 0.8rem; color: var(--muted); }
 .rec-grid strong { font-variant-numeric: tabular-nums; }
 .rec-price { font-family: var(--display); font-size: 1.35rem; color: var(--blue); line-height: 1.2; }
 .rec-why { margin: 12px 0 0; font-size: 0.9rem; }
 .rec-note { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); }
-.no-rec { padding: 14px 16px; border-radius: var(--radius); background: #fdecee; border: 1px solid #f0b8bf; font-size: 0.93rem; }
+.no-rec { padding: 12px 14px; border-radius: var(--radius); background: var(--field); border: 1px solid var(--line); color: var(--muted); }
 .sub-title { font-size: 0.95rem; margin: 20px 0 2px; }
+#others .plan-list { margin-top: 8px; }
 .more { margin-top: 10px; font-size: 0.92rem; }
 .more[open] summary { margin-bottom: 4px; }
 .rates-as-of { margin: 16px 0 0; font-size: 0.78rem; color: var(--muted); }

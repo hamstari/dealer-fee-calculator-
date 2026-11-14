@@ -6,18 +6,16 @@ A simple one-page calculator that helps contractors estimate a job and price it,
 
 ## What it does
 
-1. **What will the job cost you?** Materials (plus an allowance for waste), labor hours and cost per hour, subcontractors, and permits/dumpster/other. Each has a slider and a box for typing an exact amount. Shows the total job cost.
-2. **What do you need on top?** Overhead % and profit % (sliders too), with short plain-English hints.
-3. **Your price.** The cash price, its markup on cost, and a bar showing how it splits into job cost, overhead and profit.
-4. **Find the best financing.** Pick the customer's credit score range and what matters most to them (lowest price, no interest for a while, or lowest monthly payment). The calculator recommends a lender and plan, shows what to charge so the dealer fee is covered, and lists the other plans the customer qualifies for and why the rest don't fit (credit score, loan limits, no promo period).
+1. **Job costs.** Materials (plus an allowance for waste), labor hours and cost per hour, subcontractors, and permits/dumpster/other. Each has a slider and a box for typing an exact amount. Shows the total job cost.
+2. **What do you need on top?** Overhead % and profit % (sliders too), as sliders too.
+3. **Cash price**, with a bar showing how it splits into job cost, overhead and profit.
+4. **Financing.** Pick the customer's credit score range and priority (lowest price, 0% promo, or lowest payment). The highlighted card is the recommended lender and plan, with what to charge so the dealer fee is covered; below it are other plans the customer qualifies for, and a fold-out lists the ones that don't fit and why.
 
 ## Updating lender rates
 
 All lender terms live in **`js/lenders.js`**: for each lender, the same-as-cash and zero-interest fees by term, and the installment-loan table (contractor fee for each term and customer APR), plus loan minimums and credit requirements. Contractors can't change them on the page.
 
 It currently holds the Foundation Finance (07/16/2026) and Regions Bank (02/27/2026) rate sheets. When a new sheet comes out, update the numbers and `RATES_AS_OF`, run `npm run build`, and push to `main`; the live site updates automatically. Lines marked `CHECK` still need confirming with the lender.
-
-Fold-outs explain why simply adding the fee % on top leaves you short, and how the math works.
 
 ## The math
 

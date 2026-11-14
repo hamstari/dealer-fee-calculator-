@@ -18,7 +18,7 @@
  * Items marked CHECK are read from the sheet as printed but still need confirming.
  */
 window.EXAMPLE_RATES = false;
-window.RATES_AS_OF = 'Foundation Finance 07/16/2026 · Regions Bank 02/27/2026';
+window.RATES_AS_OF = 'Foundation 7/16/26, Regions 2/27/26';
 
 window.LENDER_SHEETS = [
   {

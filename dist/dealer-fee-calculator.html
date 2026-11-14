@@ -22,7 +22,7 @@
   --line: #dde2ec;
   --field: #f7f9fc;
   --soft: #e8eff9;
-  --radius: 14px;
+  --radius: 8px;
   --display: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -38,12 +38,11 @@ body {
 
 /* header */
 .top { padding: 18px 16px 2px; }
-.eyebrow { margin: 0 0 6px; font-family: var(--display); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); }
+.eyebrow { margin: 0 0 2px; font-family: var(--display); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); }
 .eyebrow .star { color: var(--red); margin-right: 4px; }
-h1 { margin: 0; font-family: var(--display); font-size: clamp(1.35rem, 4.5vw, 1.6rem); font-weight: 800; color: var(--navy); line-height: 1.15; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(1.3rem, 4.5vw, 1.5rem); font-weight: 700; color: var(--navy); line-height: 1.15; }
 h1 .light { font-weight: 400; color: #4a5470; }
 .lede { margin: 8px 0 0; color: var(--muted); }
-.top::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 2px; background: var(--red); margin-top: 14px; }
 
 /* cards */
 .card {
@@ -55,7 +54,7 @@ h1 .light { font-weight: 400; color: #4a5470; }
 }
 h2 {
   display: flex; align-items: center; gap: 10px;
-  margin: 0 0 14px; font-family: var(--display); font-weight: 800; font-size: 1.1rem; color: var(--navy);
+  margin: 0 0 8px; font-family: var(--display); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
 }
 .num {
   display: inline-grid; place-items: center; flex: none;
@@ -73,7 +72,6 @@ h2 {
 }
 .slide-row > label { font-weight: 600; line-height: 1.25; }
 .slide-row .hint { font-size: 0.78rem; margin-top: 0; }
-.slide-row.sub > label { font-weight: 400; padding-left: 10px; border-left: 3px solid var(--soft); }
 .val input { padding-top: 5px; padding-bottom: 5px; }
 .slider {
   -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0;
@@ -128,11 +126,11 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 
 /* result */
 .result { background: var(--navy); border-color: var(--navy); color: #fff; text-align: center; padding: 18px 14px 16px; }
-.result-label { justify-content: center; margin: 0; color: #c9d6ee; font-family: inherit; font-weight: 600; font-size: 1rem; }
+.result-label { justify-content: center; margin: 0; color: #c9d6ee; }
 .result-price { font-family: var(--display); font-weight: 800; font-size: clamp(1.9rem, 8vw, 2.3rem); line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .result-sub { color: #c9d6ee; margin-top: 4px; font-size: 0.95rem; }
 .result-error { color: #ffb3ba; margin: 8px 0 0; }
-.split { display: flex; gap: 2px; height: 12px; border-radius: 999px; overflow: hidden; margin: 18px auto 0; max-width: 460px; }
+.split { display: flex; gap: 2px; height: 8px; border-radius: 3px; overflow: hidden; margin: 18px auto 0; max-width: 460px; }
 .split span { min-width: 3px; }
 .s-cost { background: #8eaedc; }
 .s-oh { background: #4f80c9; }
@@ -158,32 +156,33 @@ input:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color:
 
 /* financing */
 .example-note { margin: -4px 0 14px; padding: 8px 12px; border-radius: 8px; background: #fff4dc; border: 1px solid #e8c774; color: #6b4e0b; font-size: 0.85rem; font-weight: 600; }
-.choice { border: none; padding: 0; margin: 0 0 16px; min-width: 0; }
-.choice legend { font-weight: 600; padding: 0; margin-bottom: 8px; }
+.choice { border: none; padding: 0; margin: 0 0 12px; min-width: 0; }
+.choice legend { font-size: 0.85rem; color: var(--muted); padding: 0; margin-bottom: 5px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips label { position: relative; cursor: pointer; }
 .chips input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .chips span {
-  display: inline-block; padding: 5px 11px; border-radius: 999px;
+  display: inline-block; padding: 5px 10px; border-radius: 5px;
   border: 1px solid var(--line); background: var(--field); font-weight: 600; font-size: 0.92rem; color: var(--ink);
 }
 .chips input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
 .chips input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
 
 .rec-card { border: 2px solid var(--blue); border-radius: var(--radius); padding: 12px 14px; background: var(--soft); margin-top: 4px; }
-.rec-top { display: flex; align-items: center; gap: 10px; }
+.rec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
 .rec-badge { font-family: var(--display); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--red); border-radius: 999px; padding: 3px 10px; }
-.rec-lender { font-family: var(--display); font-weight: 800; font-size: 1.1rem; }
-.rec-plan { font-weight: 600; margin-top: 4px; }
-.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.rec-lender { font-family: var(--display); font-weight: 700; font-size: 1.05rem; }
+.rec-plan { color: var(--muted); }
+.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
 .rec-grid div { display: flex; flex-direction: column; }
 .rec-grid span { font-size: 0.8rem; color: var(--muted); }
 .rec-grid strong { font-variant-numeric: tabular-nums; }
 .rec-price { font-family: var(--display); font-size: 1.35rem; color: var(--blue); line-height: 1.2; }
 .rec-why { margin: 12px 0 0; font-size: 0.9rem; }
 .rec-note { margin: 6px 0 0; font-size: 0.82rem; color: var(--muted); }
-.no-rec { padding: 14px 16px; border-radius: var(--radius); background: #fdecee; border: 1px solid #f0b8bf; font-size: 0.93rem; }
+.no-rec { padding: 12px 14px; border-radius: var(--radius); background: var(--field); border: 1px solid var(--line); color: var(--muted); }
 .sub-title { font-size: 0.95rem; margin: 20px 0 2px; }
+#others .plan-list { margin-top: 8px; }
 .more { margin-top: 10px; font-size: 0.92rem; }
 .more[open] summary { margin-bottom: 4px; }
 .rates-as-of { margin: 16px 0 0; font-size: 0.78rem; color: var(--muted); }
@@ -268,33 +267,32 @@ details[open] summary::before { content: "−"; }
 </head>
 <body>
   <header class="wrap top">
-    <p class="eyebrow"><span class="star">★</span>America Home Financial</p>
-    <h1>Job Price <span class="light">Calculator</span></h1>
-    <p class="lede">Add up your costs, set your markup, and see exactly what to charge, including when the customer finances.</p>
+    <p class="eyebrow">America Home Financial</p>
+    <h1>Job Price Calculator</h1>
   </header>
 
   <main class="wrap">
     <!-- 1. COSTS -->
     <section class="card" aria-labelledby="h-costs">
-      <h2 id="h-costs"><span class="num">1</span> What will the job cost you?</h2>
+      <h2 id="h-costs">Job costs</h2>
       <div class="slide-row">
         <label for="materials">Materials</label>
         <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
         <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
       </div>
       <div class="slide-row sub">
-        <label for="wastePct">Waste &amp; extra <span class="hint">10% is common</span></label>
-        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste and extra" tabindex="-1">
+        <label for="wastePct">Waste</label>
+        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste" tabindex="-1">
         <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
       </div>
       <div class="slide-row">
-        <label for="laborHours">Labor hours <span class="hint">Include your own time</span></label>
+        <label for="laborHours">Labor hours</label>
         <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
         <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
       </div>
       <div class="slide-row">
-        <label for="laborRate">Labor cost per hour</label>
-        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor cost per hour" tabindex="-1">
+        <label for="laborRate">Labor rate</label>
+        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor rate" tabindex="-1">
         <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
       </div>
       <div class="slide-row">
@@ -303,8 +301,8 @@ details[open] summary::before { content: "−"; }
         <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
       </div>
       <div class="slide-row">
-        <label for="other">Permits, dumpster &amp; other</label>
-        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits, dumpster and other" tabindex="-1">
+        <label for="other">Permits &amp; other</label>
+        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits and other" tabindex="-1">
         <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
       </div>
       <div class="total-row" aria-live="polite">
@@ -315,14 +313,14 @@ details[open] summary::before { content: "−"; }
 
     <!-- 2. MARKUP -->
     <section class="card" aria-labelledby="h-markup">
-      <h2 id="h-markup"><span class="num">2</span> What do you need on top?</h2>
+      <h2 id="h-markup">Markup</h2>
       <div class="slide-row">
-        <label for="overheadPct">Overhead <span class="hint">Truck, insurance, office, ads</span></label>
+        <label for="overheadPct">Overhead</label>
         <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
         <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
       </div>
       <div class="slide-row">
-        <label for="marginPct">Profit <span class="hint">What you keep after all bills</span></label>
+        <label for="marginPct">Profit</label>
         <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
         <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
       </div>
@@ -330,9 +328,8 @@ details[open] summary::before { content: "−"; }
 
     <!-- RESULT -->
     <section class="card result" aria-labelledby="h-price" aria-live="polite">
-      <h2 id="h-price" class="result-label">Your price (cash or check)</h2>
+      <h2 id="h-price" class="result-label">Cash price</h2>
       <div id="cash-price" class="result-price">—</div>
-      <div id="markup-line" class="result-sub"></div>
       <div id="split-bar" class="split" aria-hidden="true"></div>
       <ul id="split-legend" class="split-legend"></ul>
       <p id="price-error" class="result-error" hidden></p>
@@ -340,11 +337,10 @@ details[open] summary::before { content: "−"; }
 
     <!-- 3. FINANCING -->
     <section class="card" aria-labelledby="h-fin">
-      <h2 id="h-fin"><span class="num">3</span> Find the best financing</h2>
-      <p id="example-note" class="example-note" hidden>Example rates for demonstration only. These are not real lender terms.</p>
+      <h2 id="h-fin">Financing</h2>
 
       <fieldset class="choice">
-        <legend>Customer's credit score</legend>
+        <legend>Credit score</legend>
         <div class="chips" role="radiogroup">
           <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
           <label><input type="radio" name="score" value="680"><span>680–724</span></label>
@@ -356,11 +352,11 @@ details[open] summary::before { content: "−"; }
       </fieldset>
 
       <fieldset class="choice">
-        <legend>What matters most to the customer?</legend>
+        <legend>Priority</legend>
         <div class="chips" role="radiogroup">
           <label><input type="radio" name="goal" value="price" checked><span>Lowest price</span></label>
-          <label><input type="radio" name="goal" value="promo"><span>No interest for a while</span></label>
-          <label><input type="radio" name="goal" value="payment"><span>Lowest monthly payment</span></label>
+          <label><input type="radio" name="goal" value="promo"><span>0% promo</span></label>
+          <label><input type="radio" name="goal" value="payment"><span>Lowest payment</span></label>
         </div>
       </fieldset>
 
@@ -377,27 +373,7 @@ details[open] summary::before { content: "−"; }
       <p id="rates-as-of" class="rates-as-of"></p>
     </section>
 
-    <details class="card faq">
-      <summary>Why not just add the fee % on top?</summary>
-      <p id="mistake"></p>
-    </details>
-    <details class="card faq">
-      <summary>How the math works</summary>
-      <ul>
-        <li><strong>Price = job cost ÷ (1 − overhead% − profit%).</strong> Overhead and profit are a share of the price, which is how your books measure them. 20% profit is a 25% markup on cost.</li>
-        <li><strong>Financed price = your price ÷ (1 − dealer fee).</strong> On a $10,000 job with a 10% fee, charge $11,111. The lender keeps $1,111 and you get $10,000.</li>
-        <li>The recommended plan is the one this customer qualifies for (by credit score and loan amount) with the lowest dealer fee, or the lowest monthly payment if that's what the customer wants. The loan amount is the financed price.</li>
-        <li><strong>Same-as-cash:</strong> $0 payments and no interest if the customer pays it off before the promo ends. <strong>Zero-interest loan:</strong> equal monthly payments at 0%. <strong>Installment loan:</strong> a regular loan; the more dealer fee you pay, the lower the customer's APR.</li>
-        <li>Monthly payments are estimates. Final approval, rates and terms come from the lender at the time of application.</li>
-        <li>Some lenders don't allow charging financed customers more than cash customers. Check your lender agreement and local rules.</li>
-      </ul>
-      <p class="fine">For estimating only.</p>
-    </details>
   </main>
-
-  <footer class="wrap foot">
-    <button type="button" id="print" class="link">Print / save as PDF</button>
-  </footer>
 
   <script>
 /*
@@ -743,7 +719,7 @@ details[open] summary::before { content: "−"; }
  * Items marked CHECK are read from the sheet as printed but still need confirming.
  */
 window.EXAMPLE_RATES = false;
-window.RATES_AS_OF = 'Foundation Finance 07/16/2026 · Regions Bank 02/27/2026';
+window.RATES_AS_OF = 'Foundation 7/16/26, Regions 2/27/26';
 
 window.LENDER_SHEETS = [
   {
@@ -797,12 +773,6 @@ window.LENDER_SHEETS = [
   var LENDERS = C.expandSheets(window.LENDER_SHEETS || []);
   var STORE_KEY = 'job-price-calc-v6';
   var OLD_KEY = 'job-price-calc-v5';
-
-  var GOAL_WHY = {
-    price: 'lowest dealer fee, so the lowest price for your customer',
-    promo: 'lowest dealer fee among the plans with no interest for a while',
-    payment: 'lowest monthly payment for your customer',
-  };
 
   // ---------- helpers ----------
   var $ = function (id) { return document.getElementById(id); };
@@ -858,42 +828,36 @@ window.LENDER_SHEETS = [
     var r = C.recommend(cashPrice, LENDERS, { score: n(radio('score')), goal: goal });
 
     if (!r.options.length) {
-      $('rec').innerHTML = '<div class="no-rec"><strong>No plan fits this customer.</strong> ' +
-        (goal === 'promo' ? 'Try "Lowest price" instead of "No interest for a while", or check the reasons below.' : 'See the reasons below. A co-signer or a bigger down payment may help.') + '</div>';
+      $('rec').innerHTML = '<div class="no-rec">No plans available for this credit score.</div>';
     } else {
       var best = r.options[0];
-      var why = best.fee === 0 ? 'no dealer fee for you, so the customer pays your cash price' : GOAL_WHY[goal];
       $('rec').innerHTML =
         '<div class="rec-card">' +
-          '<div class="rec-top"><span class="rec-badge">Recommended</span><span class="rec-lender">' + esc(best.lender) + '</span></div>' +
-          '<div class="rec-plan">' + esc(best.plan) + '</div>' +
+          '<div class="rec-head"><span class="rec-lender">' + esc(best.lender) + '</span><span class="rec-plan">' + esc(best.plan) + '</span></div>' +
           '<div class="rec-grid">' +
-            '<div><span>Charge the customer</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
-            '<div><span>Monthly payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
-            '<div><span>Your dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
+            '<div><span>Charge</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
+            '<div><span>Payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
+            '<div><span>Dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' · ' + fmt(best.lenderFee)) + '</strong></div>' +
           '</div>' +
-          '<p class="rec-why">Why: ' + why + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
-          (best.note ? '<p class="rec-note">' + esc(best.note) + (best.kind === 'sac' ? ' To pay it off in time: about ' + fmt(best.payment) + '/mo.' : '') + '</p>' : '') +
-          (best.lenderNote ? '<p class="rec-note">' + esc(best.lenderNote) + '</p>' : '') +
         '</div>';
     }
 
     var rest = r.options.slice(1);
     var row = function (o) {
       return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
-        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o) + '</div></div>' +
+        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o).replace(/^about /, '') + '</div></div>' +
         '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
     };
     var SHOW = 3;
     $('others').innerHTML = rest.length ?
-      '<h3 class="sub-title">Next best options</h3><ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
+      '<ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
     var more = rest.slice(SHOW);
     $('more-wrap').hidden = !more.length;
-    $('more-summary').textContent = 'Show ' + more.length + ' more plan' + (more.length === 1 ? '' : 's') + ' this customer qualifies for';
+    $('more-summary').textContent = more.length + ' more';
     $('more').innerHTML = more.map(row).join('');
 
     $('excluded-wrap').hidden = !r.excluded.length;
-    $('excluded-summary').textContent = r.excluded.length + (r.excluded.length === 1 ? ' plan doesn\'t' : ' plans don\'t') + ' fit this customer';
+    $('excluded-summary').textContent = r.excluded.length + ' not available';
     $('excluded').innerHTML = r.excluded.map(function (o) {
       return '<li><span>' + esc(o.lender) + ', ' + esc(o.plan) + '</span><em>' + esc(o.reason) + '</em></li>';
     }).join('');
@@ -914,17 +878,14 @@ window.LENDER_SHEETS = [
     if (bad) {
       $('price-error').textContent = price.error;
       $('cash-price').textContent = '—';
-      $('markup-line').textContent = '';
       $('split-bar').innerHTML = '';
       $('split-legend').innerHTML = '';
-      $('mistake').textContent = '';
       renderFinancing(0);
       save();
       return;
     }
 
     $('cash-price').textContent = fmt(price.price);
-    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + (Math.round(price.markupPct * 10) / 10) + '% markup on your costs.' : 'Enter your costs above.';
 
     var parts = [
       { label: 'Job cost', v: cost.total, cls: 's-cost' },
@@ -940,15 +901,6 @@ window.LENDER_SHEETS = [
     }).join('') : '';
 
     renderFinancing(price.price);
-
-    // "why not add the fee on top" example, using a typical 10% fee
-    if (show) {
-      var nv = C.naiveMarkup(price.price, 10);
-      var right = C.grossUp(price.price, 10, 0);
-      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With a 10% fee: ' +
-        fmt(price.price) + ' + 10% = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
-        ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. Charge ' + fmt(right.price) + ' instead.';
-    }
 
     save();
   }
@@ -977,7 +929,6 @@ window.LENDER_SHEETS = [
     if (FIELDS.indexOf(e.target.id) >= 0) { showValue(e.target.id, val(e.target.id)); save(); }
   });
   document.addEventListener('change', function (e) { if (e.target.type === 'radio') update(); });
-  $('print').addEventListener('click', function () { window.print(); });
 
   // select the whole number when tapping a field, so it's easy to type over
   var justFocused = null;
@@ -995,8 +946,7 @@ window.LENDER_SHEETS = [
   document.addEventListener('keydown', function () { justFocused = null; });
 
   // ---------- init ----------
-  $('example-note').hidden = !window.EXAMPLE_RATES;
-  $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of: ' + window.RATES_AS_OF + '. Final approval and terms come from the lender.' : '';
+  $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of ' + window.RATES_AS_OF + '. Subject to lender approval.' : '';
   load();
   FIELDS.forEach(function (f) { showValue(f, val(f)); syncSlider(f); });
   update();

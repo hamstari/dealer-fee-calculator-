@@ -5,12 +5,6 @@
   var STORE_KEY = 'job-price-calc-v6';
   var OLD_KEY = 'job-price-calc-v5';
 
-  var GOAL_WHY = {
-    price: 'lowest dealer fee, so the lowest price for your customer',
-    promo: 'lowest dealer fee among the plans with no interest for a while',
-    payment: 'lowest monthly payment for your customer',
-  };
-
   // ---------- helpers ----------
   var $ = function (id) { return document.getElementById(id); };
   var money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
@@ -65,42 +59,36 @@
     var r = C.recommend(cashPrice, LENDERS, { score: n(radio('score')), goal: goal });
 
     if (!r.options.length) {
-      $('rec').innerHTML = '<div class="no-rec"><strong>No plan fits this customer.</strong> ' +
-        (goal === 'promo' ? 'Try "Lowest price" instead of "No interest for a while", or check the reasons below.' : 'See the reasons below. A co-signer or a bigger down payment may help.') + '</div>';
+      $('rec').innerHTML = '<div class="no-rec">No plans available for this credit score.</div>';
     } else {
       var best = r.options[0];
-      var why = best.fee === 0 ? 'no dealer fee for you, so the customer pays your cash price' : GOAL_WHY[goal];
       $('rec').innerHTML =
         '<div class="rec-card">' +
-          '<div class="rec-top"><span class="rec-badge">Recommended</span><span class="rec-lender">' + esc(best.lender) + '</span></div>' +
-          '<div class="rec-plan">' + esc(best.plan) + '</div>' +
+          '<div class="rec-head"><span class="rec-lender">' + esc(best.lender) + '</span><span class="rec-plan">' + esc(best.plan) + '</span></div>' +
           '<div class="rec-grid">' +
-            '<div><span>Charge the customer</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
-            '<div><span>Monthly payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
-            '<div><span>Your dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
+            '<div><span>Charge</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
+            '<div><span>Payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
+            '<div><span>Dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' · ' + fmt(best.lenderFee)) + '</strong></div>' +
           '</div>' +
-          '<p class="rec-why">Why: ' + why + ' for this credit score. You still get your full ' + fmt(cashPrice) + '.</p>' +
-          (best.note ? '<p class="rec-note">' + esc(best.note) + (best.kind === 'sac' ? ' To pay it off in time: about ' + fmt(best.payment) + '/mo.' : '') + '</p>' : '') +
-          (best.lenderNote ? '<p class="rec-note">' + esc(best.lenderNote) + '</p>' : '') +
         '</div>';
     }
 
     var rest = r.options.slice(1);
     var row = function (o) {
       return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
-        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o) + '</div></div>' +
+        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o).replace(/^about /, '') + '</div></div>' +
         '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
     };
     var SHOW = 3;
     $('others').innerHTML = rest.length ?
-      '<h3 class="sub-title">Next best options</h3><ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
+      '<ul class="plan-list">' + rest.slice(0, SHOW).map(row).join('') + '</ul>' : '';
     var more = rest.slice(SHOW);
     $('more-wrap').hidden = !more.length;
-    $('more-summary').textContent = 'Show ' + more.length + ' more plan' + (more.length === 1 ? '' : 's') + ' this customer qualifies for';
+    $('more-summary').textContent = more.length + ' more';
     $('more').innerHTML = more.map(row).join('');
 
     $('excluded-wrap').hidden = !r.excluded.length;
-    $('excluded-summary').textContent = r.excluded.length + (r.excluded.length === 1 ? ' plan doesn\'t' : ' plans don\'t') + ' fit this customer';
+    $('excluded-summary').textContent = r.excluded.length + ' not available';
     $('excluded').innerHTML = r.excluded.map(function (o) {
       return '<li><span>' + esc(o.lender) + ', ' + esc(o.plan) + '</span><em>' + esc(o.reason) + '</em></li>';
     }).join('');
@@ -121,17 +109,14 @@
     if (bad) {
       $('price-error').textContent = price.error;
       $('cash-price').textContent = '—';
-      $('markup-line').textContent = '';
       $('split-bar').innerHTML = '';
       $('split-legend').innerHTML = '';
-      $('mistake').textContent = '';
       renderFinancing(0);
       save();
       return;
     }
 
     $('cash-price').textContent = fmt(price.price);
-    $('markup-line').textContent = cost.total > 0 ? 'That\'s a ' + (Math.round(price.markupPct * 10) / 10) + '% markup on your costs.' : 'Enter your costs above.';
 
     var parts = [
       { label: 'Job cost', v: cost.total, cls: 's-cost' },
@@ -147,15 +132,6 @@
     }).join('') : '';
 
     renderFinancing(price.price);
-
-    // "why not add the fee on top" example, using a typical 10% fee
-    if (show) {
-      var nv = C.naiveMarkup(price.price, 10);
-      var right = C.grossUp(price.price, 10, 0);
-      $('mistake').innerHTML = 'Because the lender takes its fee from the <em>bigger</em> number. With a 10% fee: ' +
-        fmt(price.price) + ' + 10% = ' + fmt(nv.price) + ', but the lender keeps ' + fmt(nv.fee) +
-        ', so you get only ' + fmt(nv.net) + '. That\'s <strong>' + fmt(nv.shortfall) + ' short</strong>. Charge ' + fmt(right.price) + ' instead.';
-    }
 
     save();
   }
@@ -184,7 +160,6 @@
     if (FIELDS.indexOf(e.target.id) >= 0) { showValue(e.target.id, val(e.target.id)); save(); }
   });
   document.addEventListener('change', function (e) { if (e.target.type === 'radio') update(); });
-  $('print').addEventListener('click', function () { window.print(); });
 
   // select the whole number when tapping a field, so it's easy to type over
   var justFocused = null;
@@ -202,8 +177,7 @@
   document.addEventListener('keydown', function () { justFocused = null; });
 
   // ---------- init ----------
-  $('example-note').hidden = !window.EXAMPLE_RATES;
-  $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of: ' + window.RATES_AS_OF + '. Final approval and terms come from the lender.' : '';
+  $('rates-as-of').textContent = window.RATES_AS_OF ? 'Rates as of ' + window.RATES_AS_OF + '. Subject to lender approval.' : '';
   load();
   FIELDS.forEach(function (f) { showValue(f, val(f)); syncSlider(f); });
   update();
