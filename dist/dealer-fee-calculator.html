@@ -76,11 +76,27 @@ h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clam
 /* ---------- sections: ruled, not boxed ---------- */
 .group { padding: 16px 0 14px; border-bottom: 1px solid var(--c-line); }
 .col > .group:last-child { border-bottom: none; }
-.group h2 { margin: 0 0 8px; font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; color: var(--c-navy); }
+.group h2 { display: flex; align-items: center; margin: 0 0 8px; font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; color: var(--c-navy); }
 
 /* ---------- slider rows: label | slider | value ---------- */
-.slide-row { display: grid; grid-template-columns: 118px minmax(0, 1fr) 100px; align-items: center; gap: 4px 12px; padding: 4px 0; }
-.slide-row > label { font-weight: 600; line-height: 1.25; }
+.slide-row { display: grid; grid-template-columns: 140px minmax(0, 1fr) 100px; align-items: center; gap: 4px 12px; padding: 4px 0; }
+.slide-row > .lab { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.lab label { font-weight: 600; line-height: 1.25; }
+.help-btn {
+  flex: none; width: 17px; height: 17px; padding: 0; border-radius: 50%;
+  border: 1px solid var(--c-line-strong); background: var(--c-page); color: var(--c-muted);
+  font: 700 0.75rem/1 var(--f-body); cursor: pointer;
+}
+.help-btn:hover { border-color: var(--c-blue); color: var(--c-blue); }
+.help-btn:active { background: var(--c-soft); }
+.help-btn[aria-expanded="true"] { background: var(--c-blue); border-color: var(--c-blue); color: var(--c-on-dark); }
+.help-btn:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 2px; }
+.slide-row > .help { grid-column: 1 / -1; margin: 0 0 4px; padding: 6px 9px; border-radius: var(--radius); background: var(--c-field); color: var(--c-muted); font-size: 0.88rem; }
+.intro { margin: -4px 0 8px; color: var(--c-muted); font-size: 0.92rem; }
+.step {
+  display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 8px; border-radius: 50%;
+  background: var(--c-navy); color: var(--c-on-dark); font-size: 0.78rem; vertical-align: 1px;
+}
 
 input {
   font: inherit; font-weight: 600; color: var(--c-ink);
@@ -143,6 +159,7 @@ input:disabled { opacity: 0.5; cursor: not-allowed; }
 .price-panel h2 { margin: 0; font-family: var(--f-body); font-weight: 600; font-size: 0.92rem; color: var(--c-on-dark-muted); }
 .price-figure { font-family: var(--f-display); font-weight: 800; font-size: clamp(2rem, 6vw, 2.5rem); line-height: 1.15; font-variant-numeric: tabular-nums; }
 .price-error { color: var(--c-error-on-dark); margin: 6px 0 0; }
+.price-note { margin: 2px 0 0; font-size: 0.85rem; color: var(--c-on-dark-muted); }
 .split { display: flex; gap: 2px; height: 6px; border-radius: 2px; overflow: hidden; margin-top: 12px; }
 .split span { min-width: 3px; }
 .s-cost { background: var(--c-bar-cost); }
@@ -155,7 +172,9 @@ input:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ---------- financing ---------- */
 .choice { border: none; padding: 0; margin: 0 0 10px; min-width: 0; }
-.choice legend { font-size: 0.85rem; color: var(--c-muted); padding: 0; margin-bottom: 4px; }
+.choice legend { font-size: 0.85rem; font-weight: 600; color: var(--c-ink); padding: 0; margin-bottom: 4px; }
+.legend-hint { font-weight: 400; color: var(--c-muted); }
+.choice-hint { margin: 5px 0 0; font-size: 0.85rem; color: var(--c-muted); }
 .seg {
   display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1px;
   background: var(--c-line); border: 1px solid var(--c-line); border-radius: var(--radius); overflow: hidden;
@@ -182,6 +201,7 @@ input:disabled { opacity: 0.5; cursor: not-allowed; }
 .rec-grid span { font-size: 0.8rem; color: var(--c-muted); }
 .rec-grid strong { font-variant-numeric: tabular-nums; }
 .rec-price { font-family: var(--f-display); font-size: 1.35rem; color: var(--c-blue); line-height: 1.2; }
+.rec-quote { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--c-line-strong); font-size: 0.92rem; }
 .no-rec { padding: 10px 12px; border-radius: var(--radius); background: var(--c-field); color: var(--c-muted); }
 
 .plan-list { list-style: none; margin: 0; padding: 0; }
@@ -216,7 +236,8 @@ details summary:focus-visible { outline: 2px solid var(--c-blue); outline-offset
 @media (max-width: 520px) {
   .shell { padding: 16px 16px 24px; }
   .slide-row { grid-template-columns: minmax(0, 1fr) 100px; padding: 3px 0 1px; }
-  .slide-row > label { grid-column: 1; grid-row: 1; }
+  .slide-row > .lab { grid-column: 1; grid-row: 1; }
+  .slide-row > .help { grid-row: 3; margin-top: 2px; }
   .slide-row > .val { grid-column: 2; grid-row: 1; }
   .slide-row > .slider { grid-column: 1 / -1; grid-row: 2; }
   .seg { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -265,36 +286,43 @@ details summary:focus-visible { outline: 2px solid var(--c-blue); outline-offset
     <main class="layout">
       <div class="col">
         <section class="group" aria-labelledby="h-costs">
-          <h2 id="h-costs">Job costs</h2>
+          <h2 id="h-costs"><span class="step">1</span>Job costs</h2>
+          <p class="intro">Enter what this job will cost you before any markup.</p>
           <div class="slide-row">
-            <label for="materials">Materials</label>
+            <div class="lab"><label for="materials">Materials</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-materials" aria-label="What goes in Materials?">?</button></div>
             <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
             <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
+            <p class="help" id="help-materials" hidden>Everything you buy for this job: product, fasteners, trim, delivery and sales tax.</p>
           </div>
           <div class="slide-row">
-            <label for="wastePct">Waste</label>
+            <div class="lab"><label for="wastePct">Waste</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-wastePct" aria-label="What goes in Waste?">?</button></div>
             <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste" tabindex="-1">
             <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
+            <p class="help" id="help-wastePct" hidden>Extra material for cuts, breakage and returns. 10% is a common starting point.</p>
           </div>
           <div class="slide-row">
-            <label for="laborHours">Labor hours</label>
+            <div class="lab"><label for="laborHours">Labor hours</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-laborHours" aria-label="What goes in Labor hours?">?</button></div>
             <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
             <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
+            <p class="help" id="help-laborHours" hidden>Total hours for everyone on the job, including you. Count travel, setup and cleanup.</p>
           </div>
           <div class="slide-row">
-            <label for="laborRate">Labor rate</label>
+            <div class="lab"><label for="laborRate">Labor rate</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-laborRate" aria-label="What goes in Labor rate?">?</button></div>
             <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor rate" tabindex="-1">
             <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
+            <p class="help" id="help-laborRate" hidden>What an hour of labor costs you, including payroll taxes and workers' comp. Not what you bill.</p>
           </div>
           <div class="slide-row">
-            <label for="subs">Subcontractors</label>
+            <div class="lab"><label for="subs">Subcontractors</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-subs" aria-label="What goes in Subcontractors?">?</button></div>
             <input type="range" class="slider" data-for="subs" min="0" max="100000" step="100" value="0" aria-label="Subcontractors" tabindex="-1">
             <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
+            <p class="help" id="help-subs" hidden>Quotes from electricians, plumbers or anyone else you hire for this job.</p>
           </div>
           <div class="slide-row">
-            <label for="other">Permits &amp; other</label>
+            <div class="lab"><label for="other">Permits &amp; other</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-other" aria-label="What goes in Permits and other?">?</button></div>
             <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits and other" tabindex="-1">
             <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
+            <p class="help" id="help-other" hidden>Permits, dumpster, equipment rental, disposal and any other job costs.</p>
           </div>
           <div class="total-row" aria-live="polite">
             <span>Total job cost</span>
@@ -303,16 +331,19 @@ details summary:focus-visible { outline: 2px solid var(--c-blue); outline-offset
         </section>
 
         <section class="group" aria-labelledby="h-markup">
-          <h2 id="h-markup">Markup</h2>
+          <h2 id="h-markup"><span class="step">2</span>Markup</h2>
+          <p class="intro">Add what you need on top to run the business and make a profit.</p>
           <div class="slide-row">
-            <label for="overheadPct">Overhead</label>
+            <div class="lab"><label for="overheadPct">Overhead</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-overheadPct" aria-label="What goes in Overhead?">?</button></div>
             <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
             <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
+            <p class="help" id="help-overheadPct" hidden>What it costs to run your business: truck, insurance, office, phone, advertising. To find yours, divide last year's overhead by last year's sales.</p>
           </div>
           <div class="slide-row">
-            <label for="marginPct">Profit</label>
+            <div class="lab"><label for="marginPct">Profit</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-marginPct" aria-label="What goes in Profit?">?</button></div>
             <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
             <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
+            <p class="help" id="help-marginPct" hidden>What the business keeps after every bill is paid, on top of paying for your own labor.</p>
           </div>
         </section>
       </div>
@@ -323,13 +354,15 @@ details summary:focus-visible { outline: 2px solid var(--c-blue); outline-offset
           <div id="cash-price" class="price-figure">—</div>
           <div id="split-bar" class="split" aria-hidden="true"></div>
           <ul id="split-legend" class="split-legend"></ul>
+          <p class="price-note">Quote this to customers paying cash or check.</p>
           <p id="price-error" class="price-error" hidden></p>
         </section>
 
         <section class="group" aria-labelledby="h-fin">
-          <h2 id="h-fin">Financing</h2>
+          <h2 id="h-fin"><span class="step">3</span>Financing</h2>
+          <p class="intro">If the customer wants to finance, pick their credit range and what matters most to them.</p>
           <fieldset class="choice">
-            <legend>Credit score</legend>
+            <legend>Credit score <span class="legend-hint">(use their best estimate; the lender confirms it)</span></legend>
             <div class="seg" role="radiogroup">
               <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
               <label><input type="radio" name="score" value="680"><span>680–724</span></label>
@@ -347,6 +380,7 @@ details summary:focus-visible { outline: 2px solid var(--c-blue); outline-offset
               <label><input type="radio" name="goal" value="promo"><span>0% promo</span></label>
               <label><input type="radio" name="goal" value="payment"><span>Lowest payment</span></label>
             </div>
+            <p id="goal-hint" class="choice-hint"></p>
           </fieldset>
 
           <div id="rec" aria-live="polite"></div>
@@ -806,6 +840,12 @@ window.LENDER_SHEETS = [
   }
 
   // ---------- financing ----------
+  var GOAL_HINT = {
+    price: 'Picks the plan with the smallest dealer fee, so the customer pays the least.',
+    promo: 'Only same-as-cash and zero-interest plans, cheapest fee first.',
+    payment: 'Picks the plan with the smallest monthly payment, usually a longer loan.',
+  };
+
   function payText(o) {
     if (o.kind === 'sac') return '$0 for ' + o.months + ' mo';
     return 'about ' + fmt(o.payment) + '/mo';
@@ -820,6 +860,7 @@ window.LENDER_SHEETS = [
       return;
     }
     var goal = radio('goal');
+    $('goal-hint').textContent = GOAL_HINT[goal] || '';
     var r = C.recommend(cashPrice, LENDERS, { score: n(radio('score')), goal: goal });
 
     if (!r.options.length) {
@@ -834,6 +875,8 @@ window.LENDER_SHEETS = [
             '<div><span>Payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
             '<div><span>Dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
           '</div>' +
+          '<p class="rec-quote">Quote <strong>' + fmt(best.price) + '</strong> if the customer finances with ' + esc(best.lender) + '. ' +
+            (best.fee === 0 ? 'There\'s no dealer fee, so you receive the full amount.' : 'After the ' + pct(best.fee) + ' dealer fee, you receive your full ' + fmt(cashPrice) + '.') + '</p>' +
         '</div>';
     }
 
@@ -911,6 +954,15 @@ window.LENDER_SHEETS = [
     if (r) r.value = Math.min(n(r.max), Math.max(n(r.min), val(id)));
     if (r) r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min) * 100) + '%');
   }
+
+  // ---------- field help ----------
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.help-btn');
+    if (!b) return;
+    var open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(open));
+    $(b.getAttribute('aria-controls')).hidden = !open;
+  });
 
   // ---------- events ----------
   document.addEventListener('input', function (e) {

@@ -42,6 +42,12 @@
   }
 
   // ---------- financing ----------
+  var GOAL_HINT = {
+    price: 'Picks the plan with the smallest dealer fee, so the customer pays the least.',
+    promo: 'Only same-as-cash and zero-interest plans, cheapest fee first.',
+    payment: 'Picks the plan with the smallest monthly payment, usually a longer loan.',
+  };
+
   function payText(o) {
     if (o.kind === 'sac') return '$0 for ' + o.months + ' mo';
     return 'about ' + fmt(o.payment) + '/mo';
@@ -56,6 +62,7 @@
       return;
     }
     var goal = radio('goal');
+    $('goal-hint').textContent = GOAL_HINT[goal] || '';
     var r = C.recommend(cashPrice, LENDERS, { score: n(radio('score')), goal: goal });
 
     if (!r.options.length) {
@@ -70,6 +77,8 @@
             '<div><span>Payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
             '<div><span>Dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
           '</div>' +
+          '<p class="rec-quote">Quote <strong>' + fmt(best.price) + '</strong> if the customer finances with ' + esc(best.lender) + '. ' +
+            (best.fee === 0 ? 'There\'s no dealer fee, so you receive the full amount.' : 'After the ' + pct(best.fee) + ' dealer fee, you receive your full ' + fmt(cashPrice) + '.') + '</p>' +
         '</div>';
     }
 
@@ -147,6 +156,15 @@
     if (r) r.value = Math.min(n(r.max), Math.max(n(r.min), val(id)));
     if (r) r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min) * 100) + '%');
   }
+
+  // ---------- field help ----------
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.help-btn');
+    if (!b) return;
+    var open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(open));
+    $(b.getAttribute('aria-controls')).hidden = !open;
+  });
 
   // ---------- events ----------
   document.addEventListener('input', function (e) {

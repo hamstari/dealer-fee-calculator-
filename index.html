@@ -19,36 +19,43 @@
     <main class="layout">
       <div class="col">
         <section class="group" aria-labelledby="h-costs">
-          <h2 id="h-costs">Job costs</h2>
+          <h2 id="h-costs"><span class="step">1</span>Job costs</h2>
+          <p class="intro">Enter what this job will cost you before any markup.</p>
           <div class="slide-row">
-            <label for="materials">Materials</label>
+            <div class="lab"><label for="materials">Materials</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-materials" aria-label="What goes in Materials?">?</button></div>
             <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
             <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
+            <p class="help" id="help-materials" hidden>Everything you buy for this job: product, fasteners, trim, delivery and sales tax.</p>
           </div>
           <div class="slide-row">
-            <label for="wastePct">Waste</label>
+            <div class="lab"><label for="wastePct">Waste</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-wastePct" aria-label="What goes in Waste?">?</button></div>
             <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste" tabindex="-1">
             <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
+            <p class="help" id="help-wastePct" hidden>Extra material for cuts, breakage and returns. 10% is a common starting point.</p>
           </div>
           <div class="slide-row">
-            <label for="laborHours">Labor hours</label>
+            <div class="lab"><label for="laborHours">Labor hours</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-laborHours" aria-label="What goes in Labor hours?">?</button></div>
             <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
             <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
+            <p class="help" id="help-laborHours" hidden>Total hours for everyone on the job, including you. Count travel, setup and cleanup.</p>
           </div>
           <div class="slide-row">
-            <label for="laborRate">Labor rate</label>
+            <div class="lab"><label for="laborRate">Labor rate</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-laborRate" aria-label="What goes in Labor rate?">?</button></div>
             <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor rate" tabindex="-1">
             <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
+            <p class="help" id="help-laborRate" hidden>What an hour of labor costs you, including payroll taxes and workers' comp. Not what you bill.</p>
           </div>
           <div class="slide-row">
-            <label for="subs">Subcontractors</label>
+            <div class="lab"><label for="subs">Subcontractors</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-subs" aria-label="What goes in Subcontractors?">?</button></div>
             <input type="range" class="slider" data-for="subs" min="0" max="100000" step="100" value="0" aria-label="Subcontractors" tabindex="-1">
             <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
+            <p class="help" id="help-subs" hidden>Quotes from electricians, plumbers or anyone else you hire for this job.</p>
           </div>
           <div class="slide-row">
-            <label for="other">Permits &amp; other</label>
+            <div class="lab"><label for="other">Permits &amp; other</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-other" aria-label="What goes in Permits and other?">?</button></div>
             <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits and other" tabindex="-1">
             <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
+            <p class="help" id="help-other" hidden>Permits, dumpster, equipment rental, disposal and any other job costs.</p>
           </div>
           <div class="total-row" aria-live="polite">
             <span>Total job cost</span>
@@ -57,16 +64,19 @@
         </section>
 
         <section class="group" aria-labelledby="h-markup">
-          <h2 id="h-markup">Markup</h2>
+          <h2 id="h-markup"><span class="step">2</span>Markup</h2>
+          <p class="intro">Add what you need on top to run the business and make a profit.</p>
           <div class="slide-row">
-            <label for="overheadPct">Overhead</label>
+            <div class="lab"><label for="overheadPct">Overhead</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-overheadPct" aria-label="What goes in Overhead?">?</button></div>
             <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
             <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
+            <p class="help" id="help-overheadPct" hidden>What it costs to run your business: truck, insurance, office, phone, advertising. To find yours, divide last year's overhead by last year's sales.</p>
           </div>
           <div class="slide-row">
-            <label for="marginPct">Profit</label>
+            <div class="lab"><label for="marginPct">Profit</label><button type="button" class="help-btn" aria-expanded="false" aria-controls="help-marginPct" aria-label="What goes in Profit?">?</button></div>
             <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
             <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
+            <p class="help" id="help-marginPct" hidden>What the business keeps after every bill is paid, on top of paying for your own labor.</p>
           </div>
         </section>
       </div>
@@ -77,13 +87,15 @@
           <div id="cash-price" class="price-figure">—</div>
           <div id="split-bar" class="split" aria-hidden="true"></div>
           <ul id="split-legend" class="split-legend"></ul>
+          <p class="price-note">Quote this to customers paying cash or check.</p>
           <p id="price-error" class="price-error" hidden></p>
         </section>
 
         <section class="group" aria-labelledby="h-fin">
-          <h2 id="h-fin">Financing</h2>
+          <h2 id="h-fin"><span class="step">3</span>Financing</h2>
+          <p class="intro">If the customer wants to finance, pick their credit range and what matters most to them.</p>
           <fieldset class="choice">
-            <legend>Credit score</legend>
+            <legend>Credit score <span class="legend-hint">(use their best estimate; the lender confirms it)</span></legend>
             <div class="seg" role="radiogroup">
               <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
               <label><input type="radio" name="score" value="680"><span>680–724</span></label>
@@ -101,6 +113,7 @@
               <label><input type="radio" name="goal" value="promo"><span>0% promo</span></label>
               <label><input type="radio" name="goal" value="payment"><span>Lowest payment</span></label>
             </div>
+            <p id="goal-hint" class="choice-hint"></p>
           </fieldset>
 
           <div id="rec" aria-live="polite"></div>
