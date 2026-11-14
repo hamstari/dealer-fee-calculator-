@@ -32,7 +32,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 13px/1.45 "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 1.08rem/1.45 "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 .wrap { max-width: 600px; margin: 0 auto; padding: 0 16px; }
 
@@ -209,7 +209,6 @@ details[open] summary::before { content: "−"; }
 .foot { padding: 0 16px 40px; }
 
 @media (max-width: 520px) {
-  input { font-size: 16px; } /* below 16px, iPhones zoom in when a field is tapped */
   .rec-grid { grid-template-columns: 1fr 1fr; }
   .rec-grid div:first-child { grid-column: 1 / -1; }
   .excluded li { flex-direction: column; gap: 0; }
@@ -220,6 +219,35 @@ details[open] summary::before { content: "−"; }
   .field-row:has(.labor) { flex-wrap: wrap; }
   .field-row > .short { width: 96px; }
     
+/* Phones viewing the page directly: inputs at 16px so iOS doesn't zoom on tap */
+@media (min-width: 360px) and (max-width: 520px) {
+  input { font-size: 16px; }
+}
+
+/* Narrow frames, e.g. a Wix mobile embed that is laid out narrow and then
+   scaled up to the screen: shrink text and spacing with the frame width. */
+@media (max-width: 359px) {
+  html { font-size: clamp(8.5px, 3.1vw, 12px); }
+  input { font-size: 1.1rem; padding: 5px 7px; }
+  .wrap { padding: 0 8px; }
+  .top { padding: 12px 8px 2px; }
+  .card { padding: 10px; margin: 8px 0; border-radius: 10px; }
+  .field-row { gap: 8px; padding: 5px 0; }
+  .field-row > .money, .field-row > .pct { width: 42%; }
+  .field-row > .short { width: 30%; }
+  .chips { gap: 5px; }
+  .chips span { padding: 4px 8px; }
+  .rec-card { padding: 9px 10px; }
+  .result { padding: 12px 10px; }
+  .money::before { left: 7px; }
+  .money input { padding-left: 16px; }
+  .pct::after { right: 7px; }
+  .pct input { padding-right: 18px; }
+  .hrs::after, .rate::after { right: 6px; }
+  .hrs input { padding-right: 26px; }
+  .rate input { padding-right: 24px; }
+}
+
 @media print {
   body { background: #fff; }
   .foot, .faq, .excluded { display: none !important; }
