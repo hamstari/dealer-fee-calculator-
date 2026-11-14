@@ -68,7 +68,7 @@
           '<div class="rec-grid">' +
             '<div><span>Charge</span><strong class="rec-price">' + fmt(best.price) + '</strong></div>' +
             '<div><span>Payment</span><strong>' + payText(best).replace(/^about /, '') + '</strong></div>' +
-            '<div><span>Dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' · ' + fmt(best.lenderFee)) + '</strong></div>' +
+            '<div><span>Dealer fee</span><strong>' + (best.fee === 0 ? 'None' : pct(best.fee) + ' (' + fmt(best.lenderFee) + ')') + '</strong></div>' +
           '</div>' +
         '</div>';
     }
@@ -76,8 +76,8 @@
     var rest = r.options.slice(1);
     var row = function (o) {
       return '<li class="plan"><div class="plan-info"><div class="plan-name">' + esc(o.plan) + '</div>' +
-        '<div class="plan-meta">' + esc(o.lender) + ' · ' + (o.fee === 0 ? 'no fee' : pct(o.fee) + ' fee') + ' · ' + payText(o).replace(/^about /, '') + '</div></div>' +
-        '<div class="plan-price"><strong>' + fmt(o.price) + '</strong></div></li>';
+        '<div class="plan-meta">' + esc(o.lender) + ', ' + (o.fee === 0 ? 'no dealer fee' : pct(o.fee) + ' dealer fee') + '</div></div>' +
+        '<div class="plan-figs"><strong>' + fmt(o.price) + '</strong><span>' + payText(o).replace(/^about /, '') + '</span></div></li>';
     };
     var SHOW = 3;
     $('others').innerHTML = rest.length ?

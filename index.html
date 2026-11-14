@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dealer Fee Calculator | America Home Financial</title>
+  <title>Job Price Calculator | America Home Financial</title>
   <meta name="description" content="Estimate your job cost, set your price, and know what to charge when a customer finances.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,115 +11,119 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="wrap top">
-    <p class="eyebrow">America Home Financial</p>
-    <h1>Job Price Calculator</h1>
-  </header>
+  <div class="shell">
+    <header class="masthead">
+      <h1>Job price calculator</h1>
+    </header>
 
-  <main class="wrap">
-    <!-- 1. COSTS -->
-    <section class="card" aria-labelledby="h-costs">
-      <h2 id="h-costs">Job costs</h2>
-      <div class="slide-row">
-        <label for="materials">Materials</label>
-        <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
-        <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
-      </div>
-      <div class="slide-row sub">
-        <label for="wastePct">Waste</label>
-        <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste" tabindex="-1">
-        <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
-      </div>
-      <div class="slide-row">
-        <label for="laborHours">Labor hours</label>
-        <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
-        <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
-      </div>
-      <div class="slide-row">
-        <label for="laborRate">Labor rate</label>
-        <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor rate" tabindex="-1">
-        <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
-      </div>
-      <div class="slide-row">
-        <label for="subs">Subcontractors</label>
-        <input type="range" class="slider" data-for="subs" min="0" max="100000" step="100" value="0" aria-label="Subcontractors" tabindex="-1">
-        <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
-      </div>
-      <div class="slide-row">
-        <label for="other">Permits &amp; other</label>
-        <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits and other" tabindex="-1">
-        <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
-      </div>
-      <div class="total-row" aria-live="polite">
-        <span>Total job cost</span>
-        <strong id="cost-total">—</strong>
-      </div>
-    </section>
+    <main class="layout">
+      <div class="col">
+        <section class="group" aria-labelledby="h-costs">
+          <h2 id="h-costs">Job costs</h2>
+          <div class="slide-row">
+            <label for="materials">Materials</label>
+            <input type="range" class="slider" data-for="materials" min="0" max="100000" step="100" value="6000" aria-label="Materials" tabindex="-1">
+            <div class="money val"><input id="materials" type="text" inputmode="decimal" autocomplete="off" value="6000"></div>
+          </div>
+          <div class="slide-row">
+            <label for="wastePct">Waste</label>
+            <input type="range" class="slider" data-for="wastePct" min="0" max="30" step="1" value="10" aria-label="Waste" tabindex="-1">
+            <div class="pct val"><input id="wastePct" type="text" inputmode="decimal" autocomplete="off" value="10"></div>
+          </div>
+          <div class="slide-row">
+            <label for="laborHours">Labor hours</label>
+            <input type="range" class="slider" data-for="laborHours" min="0" max="500" step="1" value="80" aria-label="Labor hours" tabindex="-1">
+            <div class="unit hrs val"><input id="laborHours" type="text" inputmode="decimal" autocomplete="off" value="80"></div>
+          </div>
+          <div class="slide-row">
+            <label for="laborRate">Labor rate</label>
+            <input type="range" class="slider" data-for="laborRate" min="0" max="150" step="1" value="55" aria-label="Labor rate" tabindex="-1">
+            <div class="money unit rate val"><input id="laborRate" type="text" inputmode="decimal" autocomplete="off" value="55"></div>
+          </div>
+          <div class="slide-row">
+            <label for="subs">Subcontractors</label>
+            <input type="range" class="slider" data-for="subs" min="0" max="100000" step="100" value="0" aria-label="Subcontractors" tabindex="-1">
+            <div class="money val"><input id="subs" type="text" inputmode="decimal" autocomplete="off" value="0"></div>
+          </div>
+          <div class="slide-row">
+            <label for="other">Permits &amp; other</label>
+            <input type="range" class="slider" data-for="other" min="0" max="20000" step="50" value="800" aria-label="Permits and other" tabindex="-1">
+            <div class="money val"><input id="other" type="text" inputmode="decimal" autocomplete="off" value="800"></div>
+          </div>
+          <div class="total-row" aria-live="polite">
+            <span>Total job cost</span>
+            <strong id="cost-total">—</strong>
+          </div>
+        </section>
 
-    <!-- 2. MARKUP -->
-    <section class="card" aria-labelledby="h-markup">
-      <h2 id="h-markup">Markup</h2>
-      <div class="slide-row">
-        <label for="overheadPct">Overhead</label>
-        <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
-        <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
+        <section class="group" aria-labelledby="h-markup">
+          <h2 id="h-markup">Markup</h2>
+          <div class="slide-row">
+            <label for="overheadPct">Overhead</label>
+            <input type="range" class="slider" data-for="overheadPct" min="0" max="40" step="1" value="15" aria-label="Overhead" tabindex="-1">
+            <div class="pct val"><input id="overheadPct" type="text" inputmode="decimal" autocomplete="off" value="15"></div>
+          </div>
+          <div class="slide-row">
+            <label for="marginPct">Profit</label>
+            <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
+            <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
+          </div>
+        </section>
       </div>
-      <div class="slide-row">
-        <label for="marginPct">Profit</label>
-        <input type="range" class="slider" data-for="marginPct" min="0" max="40" step="1" value="20" aria-label="Profit" tabindex="-1">
-        <div class="pct val"><input id="marginPct" type="text" inputmode="decimal" autocomplete="off" value="20"></div>
+
+      <div class="col">
+        <section class="price-panel" aria-labelledby="h-price" aria-live="polite">
+          <h2 id="h-price">Cash price</h2>
+          <div id="cash-price" class="price-figure">—</div>
+          <div id="split-bar" class="split" aria-hidden="true"></div>
+          <ul id="split-legend" class="split-legend"></ul>
+          <p id="price-error" class="price-error" hidden></p>
+        </section>
+
+        <section class="group" aria-labelledby="h-fin">
+          <h2 id="h-fin">Financing</h2>
+          <fieldset class="choice">
+            <legend>Credit score</legend>
+            <div class="seg" role="radiogroup">
+              <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
+              <label><input type="radio" name="score" value="680"><span>680–724</span></label>
+              <label><input type="radio" name="score" value="650"><span>650–679</span></label>
+              <label><input type="radio" name="score" value="600"><span>600–649</span></label>
+              <label><input type="radio" name="score" value="550"><span>550–599</span></label>
+              <label><input type="radio" name="score" value="300"><span>Under 550</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="choice">
+            <legend>Priority</legend>
+            <div class="seg seg-3" role="radiogroup">
+              <label><input type="radio" name="goal" value="price" checked><span>Lowest price</span></label>
+              <label><input type="radio" name="goal" value="promo"><span>0% promo</span></label>
+              <label><input type="radio" name="goal" value="payment"><span>Lowest payment</span></label>
+            </div>
+          </fieldset>
+
+          <div id="rec" aria-live="polite"></div>
+          <div id="others"></div>
+          <details id="more-wrap" class="more" hidden>
+            <summary id="more-summary"></summary>
+            <ul id="more" class="plan-list"></ul>
+          </details>
+          <details id="excluded-wrap" class="excluded" hidden>
+            <summary id="excluded-summary"></summary>
+            <ul id="excluded"></ul>
+          </details>
+        </section>
       </div>
-    </section>
+    </main>
 
-    <!-- RESULT -->
-    <section class="card result" aria-labelledby="h-price" aria-live="polite">
-      <h2 id="h-price" class="result-label">Cash price</h2>
-      <div id="cash-price" class="result-price">—</div>
-      <div id="split-bar" class="split" aria-hidden="true"></div>
-      <ul id="split-legend" class="split-legend"></ul>
-      <p id="price-error" class="result-error" hidden></p>
-    </section>
+    <footer class="colophon">
+      <p>America Home Financial</p>
+      <p id="rates-as-of"></p>
+    </footer>
+  </div>
 
-    <!-- 3. FINANCING -->
-    <section class="card" aria-labelledby="h-fin">
-      <h2 id="h-fin">Financing</h2>
-
-      <fieldset class="choice">
-        <legend>Credit score</legend>
-        <div class="chips" role="radiogroup">
-          <label><input type="radio" name="score" value="725" checked><span>725+</span></label>
-          <label><input type="radio" name="score" value="680"><span>680–724</span></label>
-          <label><input type="radio" name="score" value="650"><span>650–679</span></label>
-          <label><input type="radio" name="score" value="600"><span>600–649</span></label>
-          <label><input type="radio" name="score" value="550"><span>550–599</span></label>
-          <label><input type="radio" name="score" value="300"><span>Under 550</span></label>
-        </div>
-      </fieldset>
-
-      <fieldset class="choice">
-        <legend>Priority</legend>
-        <div class="chips" role="radiogroup">
-          <label><input type="radio" name="goal" value="price" checked><span>Lowest price</span></label>
-          <label><input type="radio" name="goal" value="promo"><span>0% promo</span></label>
-          <label><input type="radio" name="goal" value="payment"><span>Lowest payment</span></label>
-        </div>
-      </fieldset>
-
-      <div id="rec" aria-live="polite"></div>
-      <div id="others"></div>
-      <details id="more-wrap" class="more" hidden>
-        <summary id="more-summary"></summary>
-        <ul id="more" class="plan-list"></ul>
-      </details>
-      <details id="excluded-wrap" class="excluded" hidden>
-        <summary id="excluded-summary"></summary>
-        <ul id="excluded"></ul>
-      </details>
-      <p id="rates-as-of" class="rates-as-of"></p>
-    </section>
-
-  </main>
-
+  <noscript><p class="noscript">This calculator needs JavaScript turned on.</p></noscript>
   <script src="js/calc.js"></script>
   <script src="js/lenders.js"></script>
   <script src="js/app.js"></script>

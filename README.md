@@ -2,7 +2,7 @@
 
 By America Home Financial.
 
-A simple one-page calculator that helps contractors estimate a job and price it, including what to charge when the customer finances.
+A simple one-page calculator that helps contractors estimate a job and price it, including what to charge when the customer finances. On desktop the inputs sit on the left and the cash price and lender pick on the right; on phones it stacks.
 
 ## What it does
 
